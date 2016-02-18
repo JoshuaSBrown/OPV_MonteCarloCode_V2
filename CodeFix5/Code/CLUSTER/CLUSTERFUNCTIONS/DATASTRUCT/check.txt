@@ -1,0 +1,222 @@
+Testing:newMidPoint
+Testing:deleteMidPoint
+Testing:printMP
+Should print Order of -2, nei1 22, nei2 74, ID 0
+Id: 0 	 OrderMag -2 	 nei1: 22 	 nei2: 74
+Testing:getMP_id
+Output should be 0
+0
+Testing:setMP_id
+Testing:newOrLL
+Testing:deleteOrLL
+Testing:deleteAllOrLL
+Testing:printOrLL
+Should print OrderMag of 2 and Size of LL of 0
+
+OrderMag 2 Size of LL: 0
+Testing:getOMLLstartMP
+Testing:newNode
+Testing:deleteNode
+Testing:printNode
+Node ID should be 2 followed by 0's
+Node id 2
+Pval 0
+Fro 	 Beh 	 Lef 	 Rig 	 Abo 	 Bel
+0 	 0 	 0 	 0 	 0 	 0
+Testing:getNode_id
+Testing:getNextNode
+Testing:setNode_id
+Testing:getNode_p
+Testing:setNode_p
+Testing:getFlagFro
+Testing:getFlagBeh
+Testing:getFlagLef
+Testing:getFlagRig
+Testing:getFlagAbo
+Testing:getFlagBel
+Testing:getFlag
+Testing:setFlagFro
+Testing:setFlagBeh
+Testing:setFlagLef
+Testing:setFlagRig
+Testing:setFlagAbo
+Testing:setFlagAbo
+Testing:setFlag
+Testing:newNeighNode
+Testing:deleteNeighNode
+Testing:printNeighNode
+Neigh ID should be 5
+NeighNode id 5 HopLength 0
+Testing:getNeighNode_p
+Testing:getNextNeigh
+Testing:setNeighNodeNew_p
+Testing:setNeighNode_id
+Hop length 1
+Testing:newElectrode
+Testing:deleteElectrode
+Testing:printElectrode
+Should print p of 0.0
+Electrode sum 0
+Testing:newNeighLL
+Testing:deleteNeighLL
+Testing:printNeighLL
+Should print size of 0
+NeighLL size 0
+Testing:newClusterLL
+Testing:deleteClsuterLL
+Testing:deleteClusterLLNodes
+Cluster id 3 Number of nodes 0
+Testing:deleteAllClusterLL
+Testing:printNodesClusterLL
+Should print no Nodes but the cluster id should be 5
+
+Nodes in Cluster 5
+
+Testing:getNextClusterLL
+Testing:printClusterLL
+
+Nodes within Cluster id 5 Number of Nodes 0
+No Nodes
+No Neighboring node list
+Testing:getCluster_id
+Testing:getCluster_numNodes
+Testing:setCluster_elecXid
+Testing:setCluster_elecYid
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+
+Testing:setCluster_elecZid
+Testing:setCluster_elecXsum
+Sum is -1.1 should be greater than 0
+ERROR clLL is NULL
+ERROR elecXF does not exist
+Testing:setCluster_elecYsum
+Testing:setCluster_elecZsum
+Testing:addToCluster_elecXsum
+Testing:addToCluster_elecYsum
+Testing:addToCluster_elecZsum
+Testing:getCluster_elecXsum
+Testing:getCluster_elecYsum
+Testing:getCluster_elecZsum
+Testing:setCluster_id
+Testing:getCluster_Sum
+Testing:addToClusterSum
+Testing:setNextClusterLL
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+
+Testing:getStartNode
+Testing:getStartNeigh
+Testing:getCluster_numNodes
+Testing:setCluster_elecXsum
+Sum is -1 should be greater than 0
+ERROR clLL is NULL
+ERROR elecXF does not exist
+Testing:setCluster_elecYsum
+Testing:setCluster_elecZsum
+Testing:getCluster_p
+Testing:setCluster_p
+Testing:getCluster_elecXid
+Testing:getCluster_elecYid
+Testing:getCluster_elecZid
+Testing:getCluster_time
+Testing:addNodeEndClusterLL
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+
+Testing:addNodeNewCluster
+ERROR clLL is NULL
+ERROR mp is NULL
+Cluster id 80 number of Nodes 0
+Testing:addNodeToCluster
+Made it here 0
+
+Joining Clusters 200 size: 3 and 201 Size 3
+Nodes in 201
+Nodes in 200
+Final Cluster 200 size: 6
+Nodes in Cluster 200
+mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+
+Testing:addNeighNodeToCluster
+Testing:addPvalClusterNode
+Testing:addPvalClusterNeighNode
+Cluster id 80 number of Nodes 0
+Hop length 1
+Deleting Neigh Nodes part 2b
+Testing:newArbArray
+Testing:ArbArrayCheck
+Arb Type Check 1
+Testing:deleteArbArray
+Deleting Arb Array
+Reserved 4
+type 1
+Deleting Arb Array
+Reserved 5
+type 0
+Cycling through reserved
+Cycling through reserved
+Cycling through reserved
+Cycling through reserved
+Cycling through reserved
+Deleting Arb Array
+Reserved 5
+type 2
+Testing:getArbElement
+Testing:setArbElement
+Deleting Arb Array
+Reserved 5
+type 2
+Testing:printArbArray
+Testing:getElementsUsed
+Testing:getElementsReserved
+Testing:removeArbElement
+Testing:getMP
+Testing:getNextMP
+Testing:getMPnei1
+Testing:getMPnei2
+Testing:getMPOrder
+Deleting Arb Array
+Reserved 5
+type 2
+Deleting Arb Array
+Reserved 9
+type 2
+Testing:addToOrLL
+TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+Order -5
+Testing:setDefaultArbElement
+Deleting Arb Array
+Reserved 9
+type 2
+Deleting Arb Array
+Reserved 5
+type 0
+Cycling through reserved
+Non NULL element found so deleting
+Cycling through reserved
+Non NULL element found so deleting
+Cycling through reserved
+Cycling through reserved
+Cycling through reserved
+Testing:setNeighNodeNew_p
+NeighNode id 99 HopLength 1
+Hop time 0 pval 0.2
+Testing:setNeighNode_t
+Hop time 0 pval 0.2
+NeighNode id 99 HopLength 1
+Hop time 32 pval 0.2
+Testing:deleteNeighNode
+Hop length 1
+Testing:newElectrode
+Testing:deleteElectrode
+Testing:getElectrode_alpha
+Testing:setElectrode_alpha
+Testing:getElectrode_Charges
+Testing:setElectrode_Charges
+Testing:Electrode_addCharge
+Testing:Electrode_minusCharge
+Testing:getElectrode_FermiEnergy
+Testing:setElectrode_FermiEnergy
+Testing:getElectrode_Sum

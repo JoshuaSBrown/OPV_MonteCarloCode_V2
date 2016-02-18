@@ -1,0 +1,45 @@
+Before Creation
+After Creation
+After Creation of sites
+Seed Matrix
+Rows 1 Columns 3
+6 	6 	6 	
+Testing:CorrCal
+Testing if site i,j,k is one site away from seed
+Rows 1 Columns 3
+6 	6 	6 	
+Testing if site i,j,k is two sites away from seed
+Testing Periodic in x
+
+Testing Periodic in y
+
+Testing Periodic in z
+
+Testing Periodic in xyz
+
+Test1
+Test2
+Test3
+Test4
+Test5
+Resize Matrix current
+Rows 4 Columns 1
+0 	
+1 	
+0 	
+0 	
+Rows 4 Columns 1
+0 	
+1 	
+0 	
+0 	
+Testing:grn
+Before Creation
+After Creation
+After Creation of sites
+Testing:hoppingRate
+Testing:getRandomSite
+Before Creation
+After Creation
+After Creation of sites
+Testing:getRandomSitePos

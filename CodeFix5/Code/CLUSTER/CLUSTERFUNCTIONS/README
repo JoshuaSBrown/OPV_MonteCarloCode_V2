@@ -1,0 +1,10 @@
+The second test script is designed to test the following functions:
+
+o CalculateAllHops
+o MPsort
+o SortOrderMag
+o ClusterSort
+
+The third test script is designed to test the following functions:
+
+o FilterCluster

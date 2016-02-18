@@ -1,0 +1,378 @@
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "matrix.h"
+#include "../../../MEM/mem.h"
+
+#define ELEM(mtx, row, col) \
+  mtx->data[(col-1) * mtx->rows + (row-1)]
+
+struct _matrix {
+	int rows;
+	int cols;
+	double data[0];
+};
+
+
+matrix  newMatrix(int rows, int cols) {
+  if(rows <= 0 || cols <= 0 ) return NULL;
+
+  //allocate a matrix structure
+  matrix m = (matrix ) mem_malloc(sizeof(struct _matrix)+sizeof(double)*rows*cols);
+
+	if(m==NULL){
+		return NULL;
+	}
+  //set dimensions
+  m->rows = rows;
+  m->cols = cols;
+
+  //set all data to 0
+  int i;
+	int j;
+  for (i = 1; i<=rows; i++){
+		for (j=1;j<=cols;j++) {
+    	ELEM(m,i,j)=0.000;
+		}
+	}
+  return m;
+}
+
+matrix  newMatrixSet(int rows, int cols, double set) {
+  if(rows <= 0 || cols <= 0 ) return NULL;
+
+  //allocate a matrix structure
+  matrix m = (matrix ) mem_malloc(sizeof(struct _matrix)+sizeof(double)*rows*cols);
+
+	if(m==NULL){
+		return NULL;
+	}
+  //set dimensions
+  m->rows = rows;
+  m->cols = cols;
+
+  //set all data to 0
+  int i;
+	int j;
+  for (i = 1; i<=rows; i++){
+		for (j=1;j<=cols;j++) {
+    	ELEM(m,i,j)=set;
+		}
+	}
+  return m;
+}
+
+matrix duplicateMatrix(const_matrix mtx){
+
+	if(mtx==NULL){
+		return NULL;
+	}
+
+	matrix mtxNew = (matrix) mem_malloc(sizeof(struct _matrix)+sizeof(double)*mtx->rows*mtx->cols);
+
+	if(mtxNew==NULL){
+		return NULL;
+	}
+	//set Dimenions
+	mtxNew->rows = mtx->rows;
+	mtxNew->cols = mtx->cols;
+
+	int i;
+	int j;
+	double val;
+	for( i= 1;i<=mtxNew->rows;i++){
+		for(j=1;j<=mtxNew->cols;j++){
+			val = getE(mtx,i,j);
+			setE(mtxNew,i,j,val);
+		}
+	}
+	return mtxNew;
+
+}
+
+int deleteMatrix( matrix mtx) {
+  if (!mtx) return -1;
+
+  //mem_free mtx itself
+  mem_free(mtx);
+  return 0;
+}
+
+int printMatrix(const_matrix mtx) {
+	if (!mtx) return -1;
+
+	int i;
+	int j;
+
+	printf("Rows %d Columns %d\n",mtx->rows, mtx->cols);
+
+	for (i=1;i<=mtx->rows;i++) {
+		for(j=1;j<=mtx->cols;j++){
+			printf("%.6g \t",getE(mtx,i,j));			
+		}
+		printf("\n");
+	}
+
+	return 0;
+}
+
+int printRandomEnergyFilesijk(const_matrix mtx) {
+	if (!mtx || mtx->cols!=3) return -1; //null test seg faults
+	printf("\nCols: %d\n",mtx->cols);
+	int i;
+	char *RandomFile="RandomEnergyi.txt";
+	FILE * RandOut;
+
+	if(( RandOut=fopen(RandomFile,"w"))==NULL) {
+		printf("Error! unable to open RandomEnergyi.txt\n");
+	}else{
+		fprintf(RandOut,"%d\n\n",(mtx->rows));
+		for(i=1;i<=mtx->rows;i++){
+			fprintf(RandOut,"%d \t %g\n", i, ELEM(mtx,i,1));
+		}
+	}
+	fclose(RandOut);
+
+	char *RandomFile2="RandomEnergyj.txt";
+	FILE * RandOut2;
+	
+	if(( RandOut2=fopen(RandomFile2,"w"))==NULL) {
+		printf("Error! unable to open RandomEnergyj.txt\n");
+	}else{
+		fprintf(RandOut2,"%d\n\n",(mtx->rows));
+		for(i=1;i<=mtx->rows;i++){
+			fprintf(RandOut2,"%d \t %g\n", i, ELEM(mtx,i,2));
+		}
+	}
+	fclose(RandOut2);
+
+	char *RandomFile3="RandomEnergyk.txt";
+	FILE * RandOut3;
+	
+	if(( RandOut3=fopen(RandomFile3,"w"))==NULL) {
+		printf("Error! unable to open RandomEnergyj.txt\n");
+	}else{
+		fprintf(RandOut3,"%d\n\n",(mtx->rows));
+		for(i=1;i<=mtx->rows;i++){
+			fprintf(RandOut3,"%d \t %g\n", i, ELEM(mtx,i,3));
+		}
+	}
+	fclose(RandOut3); 
+	return 0;
+}
+
+int resizeRow(matrix * mtx, int Row){
+
+	if(!(*mtx)) return -1;
+	if(Row<=0) return -1;
+
+	int cols = (*mtx)->cols;
+	int rows = (*mtx)->rows;
+
+	matrix temp = duplicateMatrix(*mtx); 
+
+	matrix mtxnew = (matrix) mem_realloc(*mtx, sizeof(struct _matrix)+sizeof(double)*Row*cols);
+	if(!mtxnew) return -1;
+
+	mtxnew->rows=Row;
+	mtxnew->cols=cols;
+
+	int i;
+	int j;
+	for (i=1;i<=Row;i++){
+		for (j=1;j<=cols;j++){
+			if(i<=rows){
+				setE(mtxnew,i,j,getE(temp,i,j));
+			}else{
+				setE(mtxnew,i,j,0);
+			}
+		}
+	}
+	
+	deleteMatrix(temp);
+
+	*mtx = mtxnew;
+
+	return 0;
+}
+
+int setAll(matrix mtx, double val){
+	if(!mtx) return -1;
+  
+	//set all data to val
+  int i;
+	int j;
+  for (i = 1; i<=mtx->rows; i++){
+		for (j=1;j<=mtx->cols;j++) {
+    	ELEM(mtx,i,j)=val;
+		}
+	}
+	return 0;
+}
+
+int setAllRowsInCol(matrix mtx, int col, double val){
+
+	if(!mtx) return -1;
+	if(col<=0 || col>mtx->cols)
+		return -1;
+
+	int i;
+	for(i=1;i<=mtx->cols;i++){
+		ELEM(mtx,i,col)=val;
+	}
+	return 0;
+}
+
+int setE(matrix mtx, int row, int col, double val) {
+  if(!mtx) return -1;
+  if (row <= 0 || row > mtx->rows ||
+      col <= 0 || col > mtx->cols)
+    return -2;
+
+  ELEM(mtx, row, col) = val;
+  return 0;
+}
+
+int getRows(const_matrix mtx){
+	if(!mtx) return -1;
+	return mtx->rows;
+}
+
+int getCols(const_matrix mtx){
+	if(!mtx) return -1;
+	return mtx->cols;
+}
+
+double getE(const_matrix mtx, int row, int col) {
+	if(!mtx) 
+		return -1;
+  if (row <= 0 || row > mtx->rows ||
+      col <= 0 || col > mtx->cols)
+    return -2;
+ return (double) ELEM(mtx,row,col);
+}
+
+int matchExist(const_matrix mtx, double match){
+	if(!mtx)
+		return -1;
+
+	int i;
+	int j;
+	for(i=1;i<=mtx->rows; i++){
+		for(j=1;j<=mtx->cols;j++){
+
+			if(ELEM(mtx,i,j)==match){
+				return 1;
+			}
+		}
+	}
+
+	return 0;
+}
+
+int matchExistCol(const_matrix mtx, int col, double match){
+
+	if(!mtx || col<1 || col>=mtx->cols)
+		return -1;
+
+	int i;
+	for(i=1;i<=mtx->rows; i++){
+		if(ELEM(mtx,i,col)==match){
+			return i;
+		}
+	}
+
+	return 0;
+}
+
+int matchReplace(matrix mtx, double match, double replace){
+	if(!mtx)
+		return -1;
+
+	int i;
+	int j;
+	for(i=1;i<=mtx->rows; i++){
+		for(j=1;j<=mtx->cols;j++){
+
+			if(ELEM(mtx,i,j)==match){
+				setE(mtx,i,j,replace);
+			}
+		}
+	}
+	return 0;
+}
+
+int FindRowOfMatchInCol(const_matrix mtx, double match, int col){
+	if(!mtx || col<1 || col>mtx->cols)
+		return -1;
+
+	int i;
+	for(i=1;i<=mtx->rows; i++){
+		if(ELEM(mtx,i,col)==match){
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+double SumOfRow(matrix mtx, int row){
+	if(!mtx || row<1 || row>mtx->rows)
+		return -1;
+
+	int j;
+	double val=0;
+	for(j=1;j<=mtx->cols;j++){
+		val+=ELEM(mtx,row,j);
+	}
+	
+	return val;
+}
+
+double SumOfCol(matrix mtx, int col){
+	if(!mtx || col<1 || col>mtx->cols)
+		return -1;
+
+	int i;
+	double val=0;
+	for(i=1;i<=mtx->rows; i++){
+		val+=ELEM(mtx,i,col);
+	}
+
+	return val;
+}
+
+int DivideEachElement(matrix * mtx, double val){
+	if(mtx==NULL)
+		return -1;
+	
+	if(!(*mtx))
+		return -1;
+
+	int i;
+	int j;
+	for(i=1;i<=(*mtx)->rows; i++){
+		for(j=1;j<=(*mtx)->cols;j++){
+			setE((*mtx),i,j,ELEM((*mtx),i,j)/val);					
+		}
+	}
+
+	return 0;
+}
+
+int DivideEachElementCol(matrix * mtx, int col, double val){
+	if(mtx==NULL || col<1 || col>(*mtx)->cols)
+		return -1;
+
+	if(!(*mtx))
+		return -1;
+
+	int i;
+	for(i=1;i<=(*mtx)->rows;i++){
+		setE((*mtx),i,col,ELEM((*mtx),i,col)/val);	
+	}
+
+	return 0;
+}

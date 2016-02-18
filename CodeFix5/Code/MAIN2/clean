@@ -1,0 +1,6 @@
+#!\bin\bash.exe
+
+echo "Running Script!"
+
+rm -f CHECKPOINT/*
+rm -f Movies/*

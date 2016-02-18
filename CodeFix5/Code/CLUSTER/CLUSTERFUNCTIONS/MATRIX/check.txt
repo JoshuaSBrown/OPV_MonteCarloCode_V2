@@ -1,0 +1,87 @@
+Testing: functions with mtx as null 
+Testing: printMatrix with mtx as null 
+Matrix does not appear to exist!
+Testing: deleteMatrix with mtx as null 
+Testing: setAll with mtx as null 
+Testing: printRandomEnergyFilesijk with mtx as null 
+Testing: getE with mtx as null 
+Testing: getRows with mtx as null 
+Testing: getCols with mtx as null 
+Testing: setE with mtx as null 
+Testing: deleteMatrix with mtx as null 
+Testing: functions with functional mtx
+Testing: newMatrix returning null
+************
+
+Testing: newMatrix, expecting matrix of 0's
+Testing: printMatrix with functional mtx
+Rows 4 Columns 3
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+Testing: setE with functional mtx
+************
+
+Rows 4 Columns 3
+0 	0 	0 	
+0 	0 	343.1 	
+0 	902.8 	0 	
+0 	0 	0 	
+Testing: setE returns null properly
+row -1 col 3 mtx row 4 mtx col 3
+row 15 col 3 mtx row 4 mtx col 3
+row 4 col -1 mtx row 4 mtx col 3
+row 4 col 15 mtx row 4 mtx col 3
+Testing: getE with functional mtx
+Testing: getE returns null properly
+Testing: deleteMatrix
+Testing if printRandomEnergyFilesijk doesn't work with a 15-column matrices
+Testing: getRows
+Testing: getCols
+Testing: resizeRow
+Rows 5 Columns 3
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+Resize Matrix current
+Rows 4 Columns 3
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+Rows 4 Columns 3
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+rows 4
+Rows 4 Columns 3
+34 	0 	0 	
+31 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+Resize Matrix current
+Rows 6 Columns 3
+34 	0 	0 	
+31 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+Rows 6 Columns 3
+34 	0 	0 	
+31 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+Rows 6 Columns 3
+34 	0 	0 	
+31 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+0 	0 	0 	
+0 	-12.3 	0 	

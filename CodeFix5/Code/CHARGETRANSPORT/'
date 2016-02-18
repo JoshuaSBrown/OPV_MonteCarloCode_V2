@@ -1,0 +1,771 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "../CHARGE/charge.h"
+#include "../CLUSTER/CLUSTERFUNCTIONS/SITENODE/sitenode.h"
+#include "../CLUSTER/CLUSTERFUNCTIONS/DATASTRUCT/cluster.h"
+#include "../CLUSTER/CLUSTERFUNCTIONS/clusterfunctions.h"
+#include "../CLUSTER/CLUSTERFUNCTIONS/MATRIX/matrix.h"
+#include "../CLUSTER/CLUSTERFUNCTIONS/MONTECARLO/montecarlo.h"
+#include "../FUNCTIONS/functions.h"
+#include "../MEM/mem.h"
+
+int SiteHop(SNarray snA, Charge * one, SiteNode site, int * totalX, int * totalY, int * totalZ, const int EndX, const int EndY, const int EndZ, const int XElecOn, const int YElecOn, const int ZElecOn, const int PeriodicX, const int PeriodicY, const int PeriodicZ){
+
+	//totalX is used to measure the total current in the X direction as the charges move around
+	//totalY is used to measure the total current in the Y direction as the charges move around
+	//totalZ is used to measure the total current in the Z direction as the charges move around
+	if((PeriodicX==1 && EndX==-1)	|| (PeriodicX==0 && EndX>0) ||\
+     (PeriodicY==1 && EndY==-1)	|| (PeriodicY==0 && EndY>0) ||\
+		 (PeriodicZ==1 && EndZ==-1)	|| (PeriodicZ==0 && EndZ>0)){
+		return -1;
+	}
+
+	if((EndX==0 && XElecOn==1) ||\
+		 (EndY==0 && YElecOn==1) ||\
+		 (EndZ==0 && ZElecOn==1)){
+		return -1;
+	}
+
+	if(snA==NULL || *one == NULL || site ==NULL){
+		return -1;
+	}
+
+	//Initially, the flag is set to 0 
+	//means the charge is able to hop
+	int flag = 0; 
+  double position;
+  int middle;
+	int rv;
+	int l;
+	//Below values define location of the charge in the
+	//sample when the periodicity is removed
+	int x;
+	int y;
+	int z;
+	int SLength;
+	int SWidth;
+	int SHeight;
+
+	SLength = getAlen(snA);
+	SWidth = getAwid(snA);
+	SHeight = getAhei(snA);
+	//First Check is to see if all the neighboring sites are occupied. 
+	//If the site is not located at a boundary
+	//If they are all occupied set the flag to 1
+	x = getCx(*one)%SLength;
+	y = getCy(*one)%SWidth;
+	z = getCz(*one)%SHeight;
+	
+	//This is the random number used to determine which direction a charge hops
+	srand(time(NULL));
+	position = (double)rand() / RAND_MAX;
+	
+	if(x!=0 && x!=(SLength-1) && y!=0 && y!=(SWidth-1) && z!=0 && z!=(SHeight-1)){
+		rv = OccAllNei(snA, x, y, z);
+		if (rv==1){
+			//All neighboring sites are occupied
+			flag=1;
+		}
+
+		if(flag==0){
+
+			l=0;
+			//Cycle through the pvals until the pval
+			//is equal or above the random number
+			printf("Here\n");
+			printf("Value of position %g\n",position);
+			while( getSN_p(site,l)<position){
+				printf("pval SN %g\n",getSN_p(site,l));
+				l++;
+			}
+			middle = l;
+			printf("Here2\n");
+
+		}
+
+	}else{
+		//If the charge is at a boundary requires special attention
+		int codeX;
+		int codeY;
+		int codeZ;
+
+		if (PeriodicX==1){
+		//Periodic in x
+			if(EndX==0){
+			//In this case the charge will never hit a boundary
+				codeX=0;
+
+			}else{
+			//Charge might hit boundary depending on how many samples
+			//charge has traveled through
+
+				if (XElecOn==1){
+				//If there are electrodes at the boundaries will always include the pvals
+					codeX==0;
+				}else{
+					if(x==0){
+					//Need to determine if charge is at the edge of the boundaries.
+						if(getCx(*one)/SLength==0){
+						//Means it is at the boundary
+							codeX=1;
+						}else{
+						//Means not at the boundary
+							codeX=0;
+						}
+					}else if(x==(SLength-1)){
+						
+						if(getCx(*one)/SLength==EndX-1){
+							//Hop forward is not allowed 
+							codeX=2;
+						}else{
+							codeX=0;
+						}
+					}else{
+						codeX=0;
+					}
+				
+				}
+			
+			}
+
+		}else{
+		//Non periodic in x
+			if(XElecOn==0){
+			//This means there are no electrodes on the yz electrodes
+			//on the x axis
+				if(x==0){
+					codeX=1;
+				}else if(x==SLength-1){
+					codeX=2;
+				}else{
+					codeX=0;
+				}
+			}else{
+			//There are electrodes
+				codeX=0;
+			}
+		}
+
+		if (PeriodicY==1){
+		//Periodic in y
+			if(EndY==0){
+			//In this case the charge will never hit a boundary
+				codeY=0;
+
+			}else{
+			//Charge might hit boundary depending on how many samples
+			//charge has traveled through
+	
+				if(YElecOn==1){
+					codeY==0;
+				}else{
+					if(y==0){
+						if(getCy(*one)/SWidth==0){
+							codeY=1;
+						}else{
+							codeY=0;
+						}
+					}else if(y==(SWidth-1)){
+						if(getCy(*one)/SWidth==EndY-1){
+							codeY=2;
+						}else{
+							codeY=0;
+						}
+					}else{
+						codeY=0;
+					}
+				}
+
+			}
+
+		}else{
+		//Non periodic in y
+			if(YElecOn==0){
+			//This means there are no electrodes on the yz electrodes
+			//on the x axis
+				if(y==0){
+					codeY=1;
+				}else if(y==SWidth-1){
+					codeY=2;
+				}else{
+					codeY=0;
+				}
+			}else{
+				codeY=0;
+			}
+
+		}
+
+		if (PeriodicZ==1){
+		//Periodic in z
+			if(EndZ==0){
+			//In this case the charge will never hit a boundary
+				codeZ==0;
+
+			}else{
+			//Charge might hit boundary depending on how many samples
+			//charge has traveled through
+				if(ZElecOn==1){
+					codeZ==0;
+				}else{
+					if(z==0){
+						if(getCz(*one)/SHeight==0){
+							codeZ=1;
+						}else{
+							codeZ=0;
+						}
+					}else if(z==(SHeight-1)){
+						if(getCz(*one)/SWidth==EndZ-1){
+							codeZ=2;
+						}else{
+							codeZ=0;
+						}
+					}else{
+						codeZ=0;
+					}
+				}
+			}
+		}else{
+		//Non periodic in z
+
+			if(ZElecOn==0){
+			//This means there are no electrodes on the yz electrodes
+			//on the x axis
+				if(z==0){
+					codeZ=1;
+				}else if(z==SHeight-1){
+					codeZ=2;
+				}else{
+					codeZ=0;
+				}
+			}else{
+				codeZ=0;
+			}
+		}
+
+		//codeX values:
+		//0 - can hop to +x and -X
+		//1 - cannot hop to -x
+		//2 - cannot hop to +x
+		//codeY values:
+		//0 - can hop to +y and -y
+		//1 - cannot hop to -y
+		//2 - cannot hop to +y
+		//codeZ values:
+		//0 - can hop to +z and -z
+		//1 - cannot hop to -z
+		//2 - cannot hop to +z
+		double value;
+
+		if(codeX==0 && codeY==0 && codeZ==0){
+			position = (double)rand() / RAND_MAX;
+			l=0;
+			//Cycle through the pvals until the pval
+			//is equal or above the random number
+			while( getSN_p(site,l)<position){
+				l++;
+			}
+			middle = l;
+		}else if(codeX>0 && codeY==0 && codeZ==0){
+			//Need to redefine the pvals
+			matrix mtxPval = newMatrix(5,1);
+			if(codeX==1){
+			//Ignore the hop forward
+				value = getSN_p(site,0);
+				setE(mtxPval,1,1,value);
+				value += getSN_p(site,2)-getSN_p(site,1);
+				setE(mtxPval,2,1,value);
+				value += getSN_p(site,3)-getSN_p(site,2);
+				setE(mtxPval,3,1,value);
+				value += getSN_p(site,4)-getSN_p(site,3);
+				setE(mtxPval,4,1,value);
+				value += getSN_p(site,5)-getSN_p(site,4);
+				setE(mtxPval,5,1,value);
+
+				DivideEachElement(&mtxPval,value);
+
+				l=1;
+				//Cycle through the pvals until the pval
+				//is equal or above the random number
+				while( getE(mtxPval,l,1)<position){
+					l++;
+				}
+				
+				if(l==1){
+					l=0;
+				}
+				middle = l;
+				deleteMatrix(mtxPval);
+
+			}else{
+			//Ignore the hop backward
+				value = getSN_p(site,1)-getSN_p(site,0);
+				setE(mtxPval,1,1,value);
+				value += getSN_p(site,2)-getSN_p(site,1);
+				setE(mtxPval,2,1,value);
+				value += getSN_p(site,3)-getSN_p(site,2);
+				setE(mtxPval,3,1,value);
+				value += getSN_p(site,4)-getSN_p(site,3);
+				setE(mtxPval,4,1,value);
+				value += getSN_p(site,5)-getSN_p(site,4);
+				setE(mtxPval,5,1,value);
+
+				DivideEachElement(&mtxPval,value);
+
+				l=1;
+				//Cycle through the pvals until the pval
+				//is equal or above the random number
+				while( getE(mtxPval,l,1)<position){
+					l++;
+				}
+				
+				middle = l;
+				deleteMatrix(mtxPval);
+
+			}
+		}else if(codeX==0 && codeY>0 && codeZ==0){
+			matrix mtxPval = newMatrix(5,1);
+			if(codeY==1){
+			//Not allowed to hop to the left or -y
+				value = getSN_p(site,0);
+				setE(mtxPval,1,1,value);
+				value += getSN_p(site,1)-getSN_p(site,0);
+				setE(mtxPval,2,1,value);
+				value += getSN_p(site,3)-getSN_p(site,2);
+				setE(mtxPval,3,1,value);
+				value += getSN_p(site,4)-getSN_p(site,3);
+				setE(mtxPval,4,1,value);
+				value += getSN_p(site,5)-getSN_p(site,4);
+				setE(mtxPval,5,1,value);
+
+				DivideEachElement(&mtxPval,value);
+
+				l=1;
+				//Cycle through the pvals until the pval
+				//is equal or above the random number
+				while( getE(mtxPval,l,1)<position){
+					l++;
+				}
+			
+				if(l<=2){
+					l--;
+				}
+
+				middle = l;
+				deleteMatrix(mtxPval);
+
+			}else{
+			//Not allowed to hop to the right or +y
+				value = getSN_p(site,0);
+				setE(mtxPval,1,1,value);
+				value += getSN_p(site,1)-getSN_p(site,0);
+				setE(mtxPval,2,1,value);
+				value += getSN_p(site,2)-getSN_p(site,1);
+				setE(mtxPval,3,1,value);
+				value += getSN_p(site,4)-getSN_p(site,3);
+				setE(mtxPval,4,1,value);
+				value += getSN_p(site,5)-getSN_p(site,4);
+				setE(mtxPval,5,1,value);
+
+				DivideEachElement(&mtxPval,value);
+
+				l=1;
+				//Cycle through the pvals until the pval
+				//is equal or above the random number
+				while( getE(mtxPval,l,1)<position){
+					l++;
+				}
+			
+				if(l<=3){
+					l--;
+				}
+
+				middle = l;
+				deleteMatrix(mtxPval);
+
+			}
+		}else if(codeX==0 && codeY==0 && codeZ>0){
+			matrix mtxPval = newMatrix(5,1);
+			if(codeZ==1){
+			//Cannot hop Below
+				value = getSN_p(site,0);
+				setE(mtxPval,1,1,value);
+				value += getSN_p(site,1)-getSN_p(site,0);
+				setE(mtxPval,2,1,value);
+				value += getSN_p(site,2)-getSN_p(site,1);
+				setE(mtxPval,3,1,value);
+				value += getSN_p(site,3)-getSN_p(site,2);
+				setE(mtxPval,4,1,value);
+				value += getSN_p(site,5)-getSN_p(site,4);
+				setE(mtxPval,5,1,value);
+
+				DivideEachElement(&mtxPval,value);
+
+				l=1;
+				//Cycle through the pvals until the pval
+				//is equal or above the random number
+				while( getE(mtxPval,l,1)<position){
+					l++;
+				}
+			
+				if(l<=4){
+					l--;
+				}
+
+				middle = l;
+				deleteMatrix(mtxPval);
+
+			}else{
+			//Cannot hop Above
+				value = getSN_p(site,0);
+				setE(mtxPval,1,1,value);
+				value += getSN_p(site,1)-getSN_p(site,0);
+				setE(mtxPval,2,1,value);
+				value += getSN_p(site,2)-getSN_p(site,1);
+				setE(mtxPval,3,1,value);
+				value += getSN_p(site,3)-getSN_p(site,2);
+				setE(mtxPval,4,1,value);
+				value += getSN_p(site,4)-getSN_p(site,3);
+				setE(mtxPval,5,1,value);
+
+				DivideEachElement(&mtxPval,value);
+
+				l=1;
+				//Cycle through the pvals until the pval
+				//is equal or above the random number
+				while( getE(mtxPval,l,1)<position){
+					l++;
+				}
+			
+				if(l<=5){
+					l--;
+				}
+
+				middle = l;
+				deleteMatrix(mtxPval);
+
+			}
+		}else if(codeX>0 && codeY>0 && codeZ==0){
+			matrix mtxPval = newMatrix(4,1);
+			if(codeX==1){
+				//Not allowed to hop forward
+				value = getSN_p(site,0);
+				setE(mtxPval,1,1,value);
+			}else{
+				//Not allowed to hop backward
+				value = getSN_p(site,1)-getSN_p(site,0);
+				setE(mtxPval,1,1,value);
+			}
+
+			if(codeY==1){
+				//Not allowed to hop to the left
+				value += getSN_p(site,3)-getSN_p(site,2);
+				setE(mtxPval,2,1,value);
+			}else{
+				//Not allowed to hop to the right
+				value += getSN_p(site,2)-getSN_p(site,1);
+				setE(mtxPval,2,1,value);
+			}
+			value += getSN_p(site,4)-getSN_p(site,3);
+			setE(mtxPval,3,1,value);
+			value += getSN_p(site,5)-getSN_p(site,4);
+			setE(mtxPval,4,1,value);
+
+			DivideEachElement(&mtxPval,value);
+
+			l=1;
+			//Cycle through the pvals until the pval
+			//is equal or above the random number
+			while( getE(mtxPval,l,1)<position){
+				l++;
+			}
+		
+			if(l>=3){
+				l++;
+			}else	if(l==2){
+				if(codeY==1){
+					l=3;	
+				}else{
+					l=2;
+				}
+			}else	if(l==1){
+				if(codeX==1){
+					l=0;
+				}else{
+					l=1;
+				}
+			}
+
+			middle = l;
+			deleteMatrix(mtxPval);
+
+
+		}else if(codeX==0 && codeY>0 && codeZ>0){
+			matrix mtxPval = newMatrix(4,1);
+			
+			value = getSN_p(site,0);
+			setE(mtxPval,1,1,value);
+			value += getSN_p(site,1)-getSN_p(site,0);
+			setE(mtxPval,2,1,value);
+		
+			if(codeY==1){
+				//Not allowed to hop to the left
+				value += getSN_p(site,3)-getSN_p(site,2);
+				setE(mtxPval,3,1,value);
+			}else{
+				//Not allowed to hop to the right
+				value += getSN_p(site,2)-getSN_p(site,1);
+				setE(mtxPval,3,1,value);
+			}
+			if(codeZ==1){
+				//Not allowed to hop below
+				value += getSN_p(site,5)-getSN_p(site,4);
+				setE(mtxPval,4,1,value);
+			}else{
+				//Not allowed to hop backward
+				value += getSN_p(site,4)-getSN_p(site,3);
+				setE(mtxPval,4,1,value);
+			}
+			
+			DivideEachElement(&mtxPval,value);
+
+			l=1;
+			//Cycle through the pvals until the pval
+			//is equal or above the random number
+			while( getE(mtxPval,l,1)<position){
+				l++;
+			}
+		
+			if(l<3){
+				l--;
+			}else if(l==3){
+				if(codeY==1){
+					l=3;
+				}else{
+					l=2;
+				}
+			}else{
+				if(codeZ==1){
+					l=5;
+				}else {
+					l=4;
+				}
+			}
+			
+			middle = l;
+			deleteMatrix(mtxPval);
+			
+		}else if(codeX>0 && codeY==0 && codeZ>0){
+			matrix mtxPval = newMatrix(4,1);
+			
+			if(codeX==1){
+				//Not allowed to hop forward
+				value = getSN_p(site,0);
+				setE(mtxPval,1,1,value);
+			}else{
+				//Not allowed to hop backward
+				value = getSN_p(site,1)-getSN_p(site,0);
+				setE(mtxPval,1,1,value);
+			}
+
+			value += getSN_p(site,2)-getSN_p(site,1);
+			setE(mtxPval,2,1,value);
+			value += getSN_p(site,3)-getSN_p(site,2);
+			setE(mtxPval,3,1,value);
+
+			if(codeZ==1){
+				//Not allowed to hop below
+				value += getSN_p(site,5)-getSN_p(site,4);
+				setE(mtxPval,4,1,value);
+			}else{
+				//Not allowed to hop backward
+				value += getSN_p(site,4)-getSN_p(site,3);
+				setE(mtxPval,4,1,value);
+			}
+			
+			DivideEachElement(&mtxPval,value);
+
+			l=1;
+			//Cycle through the pvals until the pval
+			//is equal or above the random number
+			while( getE(mtxPval,l,1)<position){
+				l++;
+			}
+	
+			if(l==1){
+				if(codeX==1){
+					l=0;
+				}else{
+					l=1;
+				}
+			}else if(l==4){
+				if(codeZ==1){
+					l=5;
+				}else{
+					l=4;
+				}
+			}else{
+				l=l;
+			}
+				
+			middle = l;
+			deleteMatrix(mtxPval);
+		
+		}else{
+			matrix mtxPval = newMatrix(3,1);
+			
+			if(codeX==1){
+				//Not allowed to hop forward
+				value = getSN_p(site,0);
+				setE(mtxPval,1,1,value);
+			}else{
+				//Not allowed to hop backward
+				value = getSN_p(site,1)-getSN_p(site,0);
+				setE(mtxPval,1,1,value);
+			}
+			if(codeY==1){
+				//Not allowed to hop to the left
+				value += getSN_p(site,3)-getSN_p(site,2);
+				setE(mtxPval,2,1,value);
+			}else{
+				//Not allowed to hop to the right
+				value += getSN_p(site,2)-getSN_p(site,1);
+				setE(mtxPval,2,1,value);
+			}
+			if(codeZ==1){
+				//Not allowed to hop below
+				value += getSN_p(site,5)-getSN_p(site,4);
+				setE(mtxPval,3,1,value);
+			}else{
+				//Not allowed to hop backward
+				value += getSN_p(site,4)-getSN_p(site,3);
+				setE(mtxPval,3,1,value);
+			}
+	
+			DivideEachElement(&mtxPval,value);
+
+			l=1;
+			//Cycle through the pvals until the pval
+			//is equal or above the random number
+			while( getE(mtxPval,l,1)<position){
+				l++;
+			}
+	
+			if(l==1){
+				if(codeX==1){
+					l=0;
+				}else{
+					l=1;
+				}
+			}else if(l==2){
+				if(codeY==1){
+					l=3;
+				}else{
+					l=2;
+				}
+			}else{
+				if(codeZ==1){
+					l=5;
+				}else{
+					l=4;
+				}
+			}
+
+			middle = l;
+			deleteMatrix(mtxPval);
+		}
+
+	}
+
+	//l value
+	//0 - backward 	x-
+	//1 - forward 	x+
+	//2 - left 			y-
+	//3 - right 		y+
+	//4 - below 		z-
+	//5 - above	 		z+
+
+	if(flag!=1){		
+		switch(middle){
+		//if the charge is on the illuminated electrode (x=0), it recombines there,
+		//ie negative current
+		case 0: if( OccXneg(snA, x, y, z)==1) {
+							//there is no possibility to hopp
+							flag = 1;   
+							break;
+						}
+						//Move the charge backward
+						CxMinus(*one);
+						//current decreases in x
+						*totalX=*totalX-1;  
+						break;
+
+						//if the charge is adjacent to the opposite electrode (x=Length), 
+						//it recombines there, ie positive current
+		case 1: if( OccXpos(snA, x,y ,z)== 1){  
+							//there is no possibility to hop
+							flag = 1;   
+							break;
+						}
+						//move the charge forward
+						CxPlus(*one);   
+						//current increases in x
+						*totalX=*totalX+1;   
+						break;
+
+		//if the site on the left of the charge position is occupied,
+		case 2: if( OccYnegPeriodic(snA, x,y,z)==1){ 
+							//there is no possibility to hopp
+							flag = 1;
+							break;
+						}
+						//move the charge to the left
+						CyMinus(*one);
+						//current decreases in y
+						*totalY=*totalY-1;
+						break;
+
+		//if the site on the right of the charge position is occupied,
+		case 3: if( OccYposPeriodic(snA, x,y,z)==1){   
+							//there is no possibility to hopp
+							flag = 1;   
+							break;
+						}
+						//move the charge to the right
+						CyPlus(*one);
+						//current increases in y
+						*totalY=*totalY+1;
+						break;
+
+		//if the charge is at the lower interface or the site in the decided direction 
+		//(below the charge position) is occupied,
+		case 4: if( OccZneg(snA, x,y,z)==1){  
+							//then there is no possibility to hop
+							flag = 1;   
+							break;
+						}
+						//move the charge down
+						CzMinus(*one);
+						//current decreases in z
+						*totalZ=*totalZ-1;
+						break;
+		
+		//if the charge is at the upper interface or the site in the decided direction 
+		//(above the charge position) is occupied,
+		case 5: if( OccZpos(snA, x,y,z)==1){
+							//there is no possibility to hopp
+							flag = 1;
+							break;
+						}
+						//move the charge up
+						CzPlus(*one);
+						//current increases in z
+						*totalZ=*totalZ+1;
+						break;
+		}
+	}
+	return flag;
+
+}
+
