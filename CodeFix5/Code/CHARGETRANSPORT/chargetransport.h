@@ -100,7 +100,7 @@ int randomWalk( SNarray snA, int CheckPointNum,\
 		Electrode elYr, Electrode elZb, Electrode elZa,\
 		ParameterFrame PF, long double t, matrix Sequence,\
 		matrix FutureSite, ChargeArray * chA,\
-		long int n, int nc, int nca);
+		long int n, int nc, int nca,double Temperature);
 
 int UpdateOccTime(SNarray * snA, Charge * ch,double tim, ParameterFrame PF);
 
@@ -114,8 +114,14 @@ int Post_randomWalk(ArbArray ClArLL, SNarray snA, Electrode elXb, Electrode elXf
 /* If a .ckpt file does exist will determine whether it is the correct kind and wheather
 	 it is the latest version if it is not it will find the latest version and return it
 */
-int CheckPt_Test(int * CheckPtNum, int CheckFileExist, char * FileNameCheckPtVersion,\
+int CheckPt_Test_TOF(int * CheckPtNum, int CheckFileExist, char * FileNameCheckPtVersion,\
 								 int FileNameSize, const double Vx, const double Vy, const double Vz, const double Temperature);
+
+/* If a .ckpt file does exist will determine whether it is the correct kind and wheather
+	 it is the latest version if it is not it will find the latest version and return it
+*/
+int CheckPt_Test_CELIV(int * CheckPtNum, int CheckFileExist, char * FileNameCheckPtVersion,\
+								 int FileNameSize, const double Temperature);
 
 /* Check if Checkpoint files exist
 	 pass a character array e.g.
@@ -128,15 +134,26 @@ int CheckPt_Test(int * CheckPtNum, int CheckFileExist, char * FileNameCheckPtVer
 */
 int CheckPt_exist(char * File, int buffersize);
 
-/* Check if .cluster file exists in the CLUSTERFILE folder
+/* Check if .cluster file exists in the CLUSTERFILE folder for TOF method
 	 returns 0 if exists
 	 returns -1 if does not
 */
-int CheckPt_Cluster(const double Vx, const double Vy, const double Vz, const double T, int r);
+int CheckPt_Cluster_TOF(const double Vx, const double Vy, const double Vz, const double T, int r);
 
-/* Grabs the latest .ckpt file of the particular version
+/* Check if .cluster file exists in the CLUSTERFILE folder for CELIV method
+	 returns 0 if exists
+	 returns -1 if does not
 */
-int CheckPt_Latest(char * File, int buffersize, double Vx, double Vy, double Vz, double T);
+int CheckPt_Cluster_CELIV(const double T, int r);
+
+
+/* Grabs the latest .ckpt file of the particular version and TOF method
+*/
+int CheckPt_Latest_TOF(char * File, int buffersize, double Vx, double Vy, double Vz, double T);
+
+/* Grabs the latest .ckpt file of the particular version and CELIV method
+*/
+int CheckPt_Latest_CELIV(char * File, int buffersize, double T);
 
 /* Load CheckPoint file
 	 */
@@ -149,9 +166,9 @@ int Load_CheckPt(long double * t, SNarray * snA, ChargeArray * chA, matrix * Seq
 */
 int Load_CheckPt_PF(char * FileName, ParameterFrame *PF);
 
-/* Grabs only the data from a checkpoint file
+/* Grabs only the data from a checkpoint file that used TOF method
 */
-int Load_CheckPt_Data(long double * t, SNarray * snA, ChargeArray * chA,matrix * Sequence,\
+int Load_CheckPt_Data_TOF(long double * t, SNarray * snA, ChargeArray * chA,matrix * Sequence,\
 		      matrix * FutureSite, char * FileName,long int * n,int * nc,int * nca,\
 		      int * Num_elXb, int * Num_elXf, int * Num_elYl,\
 		      int * Num_elYr, int * Num_elZb, int * Num_elZa,\

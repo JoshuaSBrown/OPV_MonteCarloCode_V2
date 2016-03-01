@@ -526,16 +526,14 @@ SiteNode getSNwithInd(const_SNarray snA, int Ind){
 
 int getIndexFrontP( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	getLoc(&i, &j, &k, Index, snA);
 	i++;
 	return getIndexPeriodic( snA, i, j, k);
 }
 
 int getIndexFront( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	int rv = getLoc(&i, &j, &k, Index, snA);
 	i++;
 	if (i>=snA->length || rv==-1){
 		return -1;
@@ -545,16 +543,14 @@ int getIndexFront( const_SNarray snA, int Index){
 
 int getIndexBehindP( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	getLoc(&i, &j, &k, Index, snA);
 	i--;
 	return getIndexPeriodic( snA, i, j, k);
 }
 
 int getIndexBehind( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	int rv = getLoc(&i, &j, &k, Index, snA);
 	i--;
 	if (i<0 || rv==-1){
 		return -1;
@@ -564,16 +560,14 @@ int getIndexBehind( const_SNarray snA, int Index){
 
 int getIndexLeftP( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	getLoc(&i, &j, &k, Index, snA);
 	j--;
 	return getIndexPeriodic(snA,i,j,k);
 }
 
 int getIndexLeft( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	int rv = getLoc(&i, &j, &k, Index, snA);
 	j--;
 	if(j<0 || rv==-1){
 		return -1;
@@ -583,16 +577,14 @@ int getIndexLeft( const_SNarray snA, int Index){
 
 int getIndexRightP( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	getLoc(&i, &j, &k, Index, snA);
 	j++;
 	return getIndexPeriodic(snA,i,j,k);
 }
 
 int getIndexRight( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	int rv = getLoc(&i, &j, &k, Index, snA);
 	j++;
 	if(j>=snA->width || rv==-1){
 		return -1;
@@ -602,16 +594,14 @@ int getIndexRight( const_SNarray snA, int Index){
 
 int getIndexBelowP( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	getLoc(&i, &j, &k, Index, snA);
 	k--;
 	return getIndexPeriodic(snA,i,j,k);
 }
 
 int getIndexBelow( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	int rv = getLoc(&i, &j, &k, Index, snA);
 	k--;
 	if(k<0 || rv ==-1 ){
 		return -1;
@@ -621,16 +611,14 @@ int getIndexBelow( const_SNarray snA, int Index){
 
 int getIndexAboveP( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	getLoc(&i, &j, &k, Index, snA);
 	k++;
 	return getIndexPeriodic(snA,i,j,k);
 }
 
 int getIndexAbove( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	int rv = getLoc(&i, &j, &k, Index, snA);
 	k++;
 	if(k>=snA->height || rv==-1){
 		return -1;
@@ -640,8 +628,7 @@ int getIndexAbove( const_SNarray snA, int Index){
 
 int getIndexLeftPeriodic( const_SNarray snA, int Index){
 	int i, j, k;
-	int rv;
-	rv = getLoc(&i, &j, &k, Index, snA);
+	int rv = getLoc(&i, &j, &k, Index, snA);
 	if (rv==-1){
 		return -1;
 	}

@@ -26,14 +26,14 @@ matrix duplicateMatrix(const_matrix mtx);
 	 and -1 if mtx is NULL.*/
 int deleteMatrix(matrix * mtx);
 
-int printMatrix(const_matrix mtx);
+int printMatrix(matrix mtx);
 
 /* If matrix has three cols of data will
 	 print the values in three seperate files.
 	 Returns -1 if the matrix doesn't have 3 columns
 	 or is NULL. Returns 0 if successful. 
  */
-int printRandomEnergyFilesijk(const_matrix mtx);
+int printRandomEnergyFilesijk(matrix mtx);
 
 /* Returns the number of rows of matrix mtx
  * if successful. Returns -1 if mtx is NULL.

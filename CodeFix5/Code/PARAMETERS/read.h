@@ -24,12 +24,14 @@ double GrabDouble(unsigned int position, char * buf);
 //e.g.
 //
 //variable 33
-int ReadParameter(int * method, int * SLength, int * SWidth, int * SHeight,\
+int ReadParameter(int * method,\
+		int * SLength, int * SWidth, int * SHeight,\
 		int * PeriodicX, int * PeriodicY, int * PeriodicZ,\
 		int * EndX, int * EndY, int * EndZ,\
 		int * XElecOn, int * YElecOn, int *ZElecOn,\
 		double * XFermiB, double * XFermiF, double * YFermiL,\
 		double * YFermiR, double * ZFermiB, double * ZFermiA,\
+		double * IntrFermi,\
 		double * alphaxb, double * alphaxf, double * alphayl,\
 		double * alphayr, double * alphazb, double * alphaza,\
 		double * vX, double * vY, double * vZ,\
@@ -73,6 +75,7 @@ int PFset_YFermiL(ParameterFrame PF,double YFermiL);
 int PFset_YFermiR(ParameterFrame PF,double YFermiF);
 int PFset_ZFermiB(ParameterFrame PF,double ZFermiB);
 int PFset_ZFermiA(ParameterFrame PF,double ZFermiA);
+int PFset_IntrFermi(ParameterFrame PF, double IntrFermi);
 int PFset_alphaxb(ParameterFrame PF,double alphaxb);
 int PFset_alphaxf(ParameterFrame PF,double alphaxf);
 int PFset_alphayl(ParameterFrame PF,double alphayl);
@@ -120,7 +123,9 @@ int PFset_AttemptToHop(ParameterFrame PF,double AttemptHop);
 int PFset_gamma(ParameterFrame PF,double gamma);
 int PFset_RelativePerm(ParameterFrame PF,double RelativePerm);
 int PFset_MovieFrames(ParameterFrame PF, int MovieFrames);
-double PFset_Tcv(ParameterFrame PF, double Tcv);
+int PFset_Vcv(ParameterFrame PF, double Vcv);
+int PFset_Tcv(ParameterFrame PF, double Tcv);
+
 
 int PFget_method(ParameterFrame PF);
 int PFget_Len(ParameterFrame PF);
@@ -141,6 +146,7 @@ double PFget_YFermiL(ParameterFrame PF);
 double PFget_YFermiR(ParameterFrame PF);
 double PFget_ZFermiB(ParameterFrame PF);
 double PFget_ZFermiA(ParameterFrame PF);
+double PFget_IntrFermi(ParameterFrame PF);
 double PFget_alphaxb(ParameterFrame PF);
 double PFget_alphaxf(ParameterFrame PF);
 double PFget_alphayl(ParameterFrame PF);
@@ -188,6 +194,6 @@ double PFget_AttemptToHop(ParameterFrame PF);
 double PFget_gamma(ParameterFrame PF);
 double PFget_RelativePerm(ParameterFrame PF);
 int PFget_MovieFrames(ParameterFrame PF);
-int PFget_Tcv(ParameterFrame PF);
-int PFget_Vcv(ParameterFrame PF);
+double PFget_Tcv(ParameterFrame PF);
+double PFget_Vcv(ParameterFrame PF);
 #endif

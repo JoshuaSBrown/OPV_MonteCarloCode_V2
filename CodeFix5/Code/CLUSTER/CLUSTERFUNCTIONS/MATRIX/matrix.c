@@ -228,7 +228,7 @@ int deleteMatrix( matrix * mtx) {
   return 0;
 }
 
-int printMatrix(const_matrix mtx) {
+int printMatrix(matrix mtx) {
 	if (!mtx){
 		printf("Matrix does not appear to exist!\n");
 		return -1;
@@ -256,7 +256,7 @@ int printMatrix(const_matrix mtx) {
 	return 0;
 }
 
-int printRandomEnergyFilesijk(const_matrix mtx) {
+int printRandomEnergyFilesijk(matrix mtx) {
 	if (!mtx || mtx->cols!=3) return -1; //null test seg faults
 	printf("\nCols: %d\n",mtx->cols);
 	int i;

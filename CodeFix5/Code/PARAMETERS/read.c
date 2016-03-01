@@ -27,6 +27,7 @@ struct _ParameterFrame{
 	double YFermiR;
 	double ZFermiB;
 	double ZFermiA;
+	double IntrFermi;
 	double alphaxb;
 	double alphaxf;
 	double alphayl;
@@ -118,6 +119,7 @@ ParameterFrame newParamFrame(void){
 	PF->YFermiR=0;
 	PF->ZFermiB=0;
 	PF->ZFermiA=0;
+	PF->IntrFermi=0;
 	PF->alphaxb=0;
 	PF->alphaxf=0;
 	PF->alphayl=0;
@@ -426,6 +428,22 @@ ParameterFrame newParamFrame_File(void){
 			exit(1);
 		}
 
+		check = match(buffer, "\nIntrinsicFermi");
+		if(check!=-1){
+			position = (unsigned int)check;
+			doubleval = GrabDouble(position, &buffer[0] );
+			printf("IntrinsicFermi %g\n",doubleval);
+			PF->IntrFermi = doubleval;
+		}else{
+			if(PF->method==1){
+				printf("ERROR when reading file can not find IntrinsicFermi!\n");
+				printf("This variable is needed to determine the number of\n");
+				printf("thermally activaited carriers in the material when\n");
+				printf("using the CELIV method\n");
+				exit(1);
+			}
+		}
+
 		//Alpha parameters must be converted from [1/nm] to [1/m]
 		check = match(buffer, "\nalphaXb");
 		if(check!=-1){
@@ -543,6 +561,12 @@ ParameterFrame newParamFrame_File(void){
 			doubleval  = GrabDouble(position, &buffer[0] );
 			printf("VoltageX %g\n",doubleval );
 			PF->VoltageX = doubleval; 
+
+			if(PF->method == 1 && PF->VoltageX!=0){
+				printf("ERROR method is CELIV but initial VoltageX is not 0\n");
+				exit(1);
+			}
+
 		}else{
 			printf("ERROR when reading file can not find VoltageX!\n");
 			exit(1);
@@ -553,7 +577,12 @@ ParameterFrame newParamFrame_File(void){
 			position = (unsigned int)check;
 			doubleval  = GrabDouble(position, &buffer[0] );
 			printf("VoltageY %g\n",doubleval );
-			PF->VoltageY =doubleval; 
+			PF->VoltageY =doubleval;
+			
+			if(PF->method == 1 && PF->VoltageY!=0){
+				printf("ERROR method is CELIV but initial VoltageY is not 0\n");
+				exit(1);
+			} 
 		}else{
 			printf("ERROR when reading file can not find VoltageY!\n");
 			exit(1);
@@ -565,6 +594,11 @@ ParameterFrame newParamFrame_File(void){
 			doubleval = GrabDouble(position, &buffer[0] );
 			printf("VoltageZ %g\n",doubleval);
 			PF->VoltageZ =doubleval;
+			
+			if(PF->method == 1 && PF->VoltageZ!=0){
+				printf("ERROR method is CELIV but initial VoltageZ is not 0\n");
+				exit(1);
+			}
 		}else{
 			printf("ERROR when reading file can not find VoltageZ!\n");
 			exit(1);
@@ -576,6 +610,12 @@ ParameterFrame newParamFrame_File(void){
 			intval = GrabInt(position, &buffer[0] );
 			printf("VStepX %d\n",intval);
 			PF->VStepX = intval;
+
+			if(PF->method==1 && PF->VStepX!=0){
+				printf("ERROR method is CELIV but VStepX is non 0\n");
+				exit(1);
+			}
+
 		}else{
 			printf("ERROR when reading file can not find VStepX!\n");
 			exit(1);
@@ -587,6 +627,11 @@ ParameterFrame newParamFrame_File(void){
 			intval = GrabInt(position, &buffer[0] );
 			printf("VStepY %d\n",intval);
 			PF->VStepY = intval;
+			
+			if(PF->method==1 && PF->VStepY!=0){
+				printf("ERROR method is CELIV but VStepY is non 0\n");
+				exit(1);
+			}
 		}else{
 			printf("ERROR when reading file can not find VStepY!\n");
 			exit(1);
@@ -598,6 +643,11 @@ ParameterFrame newParamFrame_File(void){
 			intval = GrabInt(position, &buffer[0] );
 			printf("VStepZ %d\n",intval);
 			PF->VStepZ = intval;
+			
+			if(PF->method==1 && PF->VStepZ!=0){
+				printf("ERROR method is CELIV but VStepZ is non 0\n");
+				exit(1);
+			}
 		}else{
 			printf("ERROR when reading file can not find VStepZ!\n");
 			exit(1);
@@ -609,6 +659,7 @@ ParameterFrame newParamFrame_File(void){
 			doubleval = GrabDouble(position, &buffer[0] );
 			printf("VincX %g\n",doubleval);
 			PF->VincX = doubleval;
+
 		}else{
 			printf("ERROR when reading file can not find VincX!\n");
 			exit(1);
@@ -620,6 +671,7 @@ ParameterFrame newParamFrame_File(void){
 			doubleval = GrabDouble(position, &buffer[0] );
 			printf("VincY %g\n",doubleval);
 			PF->VincY =doubleval;
+			
 		}else{
 			printf("ERROR when reading file can not find VincY!\n");
 			exit(1);
@@ -631,6 +683,7 @@ ParameterFrame newParamFrame_File(void){
 			doubleval = GrabDouble(position, &buffer[0] );
 			printf("VincZ %g\n",doubleval);
 			PF->VincZ = doubleval;
+			
 		}else{
 			printf("ERROR when reading file can not find VincZ!\n");
 			exit(1);
@@ -688,6 +741,15 @@ ParameterFrame newParamFrame_File(void){
 				exit(1);
 			}
 			PF->NCh = intval;
+			if(PF->method==1){
+				if(PF->NCh>0){
+					printf("ERROR number of charges should be set to 0\n");
+					printf("in CELIV method because charges are generated\n");
+					printf("thermally.\n");
+					exit(1);
+				}
+			}
+
 		}else{
 			printf("ERROR when reading file can not find NCh!\n");
 			exit(1);
@@ -853,6 +915,13 @@ ParameterFrame newParamFrame_File(void){
 			doubleval = GrabDouble(position, &buffer[0] );
 			printf("E0 %g\n",doubleval);
 			PF->E0 = doubleval;
+			if(PF->method==1){
+				if(PF->E0<PF->IntrFermi){
+					printf("ERROR mean of gaussian distribution for DOS\n");
+					printf("is less than IntrFermi\n");
+					exit(1);
+				}
+			}
 		}else{
 			printf("ERROR when reading file can not find E0!\n");
 			exit(1);
@@ -882,6 +951,7 @@ ParameterFrame newParamFrame_File(void){
 				printf("ERROR Fraction of traps is negative\n");
 				exit(1);
 			}
+
 		}else{
 			printf("ERROR when reading file can not find fracTrap!\n");
 			exit(1);
@@ -893,6 +963,15 @@ ParameterFrame newParamFrame_File(void){
 			doubleval = GrabDouble(position, &buffer[0] );
 			printf("Etrap %g\n",doubleval);
 			PF->Etrap = doubleval;
+			
+			if(PF->fracTrap!=0){
+				if(PF->method==1){
+					if(PF->Etrap<(PF->IntrFermi)){
+						printf("ERROR Etrap is less than intrinsic fermi level\n");
+						exit(1);
+					}
+				}
+			}
 		}else{
 			printf("ERROR when reading file can not find Etrap!\n");
 			exit(1);
@@ -1001,9 +1080,18 @@ ParameterFrame newParamFrame_File(void){
 		check = match(buffer,"\nVcv");
 		if(check!=-1){
 			position = (unsigned int)check;
-			intval = GrabInt(position, &buffer[0] );
-			printf("Vcv %d\n",intval);
-			PF->Vcv = intval;
+			doubleval = GrabDouble(position, &buffer[0] );
+			printf("Vcv %g\n",doubleval);
+			PF->Vcv = doubleval;
+
+			if(PF->method==1 && PF->Vcv<=0){
+				printf("ERROR CELIV voltage ramp voltage set less or equal to 0\n");
+				exit(1);
+			}else if(PF->method==0 && PF->Vcv!=0){
+				printf("ERROR Time of flight method specified but CELIV ramp\n");
+				printf("voltage is non 0\n");
+				exit(1);
+			}
 		}else{
 			printf("ERROR when reading file can not find Vcv\n");
 			exit(1);
@@ -1012,9 +1100,19 @@ ParameterFrame newParamFrame_File(void){
 		check = match(buffer,"\nTcv");
 		if(check!=-1){
 			position = (unsigned int)check;
-			intval = GrabInt(position, &buffer[0] );
-			printf("Tcv %d\n",intval);
-			PF->Tcv = intval;
+			doubleval = GrabDouble(position, &buffer[0] );
+			printf("Tcv %g\n",doubleval);
+			PF->Tcv = doubleval;
+
+			if(PF->method==1 && PF->Tcv<=0){
+				printf("ERROR CELIV voltage ramp time set less or equal to 0\n");
+				exit(1);
+			}else if(PF->method==0 && PF->Tcv!=0){
+				printf("ERROR Time of flight method specified but CELIV ramp\n");
+				printf("time is non 0\n");
+				exit(1);
+			}
+
 		}else{
 			printf("ERROR when reading file can not find Tcv!\n");
 			exit(1);
@@ -1036,6 +1134,7 @@ int ReadParameter(int * method,\
 		int * XElecOn, int * YElecOn, int *ZElecOn,\
 		double * XFermiB, double * XFermiF, double * YFermiL,\
 		double * YFermiR, double * ZFermiB, double * ZFermiA,\
+		double * IntrFermi,\
 		double * alphaxb, double * alphaxf, double * alphayl,\
 		double * alphayr, double * alphazb, double * alphaza,\
 		double * vX, double * vY, double * vZ,\
@@ -1170,6 +1269,11 @@ int ReadParameter(int * method,\
 				*ZFermiA = GrabDouble(position, &buffer[0] );
 				printf("ZFermiA %g\n",*ZFermiA);
 
+				position = match(buffer, "\nIntrinsicFermi");
+				*IntrFermi = GrabDouble(position, &buffer[0] );
+				printf("IntrinsicFermi %g\n",*IntrFermi);
+
+				position = match(buffer, "\nalphaXb");
 				position = match(buffer, "\nalphaXb");
 				*alphaxb = GrabDouble(position, &buffer[0] );
 				printf("alphaXb %g\n",*alphaxb);
@@ -1213,26 +1317,50 @@ int ReadParameter(int * method,\
 				position = match(buffer, "\nVoltageX");
 				*VoltageX = GrabDouble(position, &buffer[0] );
 				printf("VoltageX %g\n",*VoltageX);
+				if(*method == 1 && *VoltageX!=0){
+					printf("ERROR method is CELIV but initial VoltageX is not 0\n");
+					exit(1);
+				}
 
 				position = match(buffer, "\nVoltageY");
 				*VoltageY = GrabDouble(position, &buffer[0] );
 				printf("VoltageY %g\n",*VoltageY);
+				if(*method == 1 && *VoltageY!=0){
+					printf("ERROR method is CELIV but initial VoltageY is not 0\n");
+					exit(1);
+				}
 
 				position = match(buffer, "\nVoltageZ");
 				*VoltageZ = GrabDouble(position, &buffer[0] );
 				printf("VoltageZ %g\n",*VoltageZ);
+				if(*method == 1 && *VoltageZ!=0){
+					printf("ERROR method is CELIV but initial VoltageZ is not 0\n");
+					exit(1);
+				}
 
 				position = match(buffer, "\nVStepX");
 				*VStepX = GrabInt(position, &buffer[0] );
 				printf("VStepX %d\n",*VStepX);
+				if(*method == 1 && *VStepX!=0){
+					printf("ERROR method is CELIV but initial VStepX is not 0\n");
+					exit(1);
+				}
 
 				position = match(buffer, "\nVStepY");
 				*VStepY = GrabInt(position, &buffer[0] );
 				printf("VStepY %d\n",*VStepY);
+				if(*method == 1 && *VStepY!=0){
+					printf("ERROR method is CELIV but initial VStepY is not 0\n");
+					exit(1);
+				}
 
 				position = match(buffer, "\nVStepZ");
 				*VStepZ = GrabInt(position, &buffer[0] );
 				printf("VStepZ %d\n",*VStepZ);
+				if(*method == 1 && *VStepZ!=0){
+					printf("ERROR method is CELIV but initial VStepZ is not 0\n");
+					exit(1);
+				}
 
 				position = match(buffer, "\nVincX");
 				*VincX = GrabDouble(position, &buffer[0] );
@@ -1359,11 +1487,11 @@ int ReadParameter(int * method,\
 				printf("MovieFrames %d\n",*MovieFrames);
 
 				position = match(buffer, "\nTcv");
-				*SLength = GrabInt(position, &buffer[0] );
+				*Tcv = GrabDouble(position, &buffer[0] );
 				printf("Tcv %f\n",*Tcv);
 
 				position = match(buffer, "\nVcv");
-				*Vcv = GrabInt(position, &buffer[0] );
+				*Vcv = GrabDouble(position, &buffer[0] );
 				printf("Vcv %f\n",*Vcv);
 
 
@@ -1684,6 +1812,17 @@ int PFset_ZFermiA(ParameterFrame PF,double ZFermiA ){
 	}
 
 	PF->ZFermiA = ZFermiA;
+
+	return 0;
+}
+
+int PFset_IntrFermi(ParameterFrame PF,double IntrFermi ){
+
+	if(PF==NULL){
+		return -1;
+	}
+
+	PF->IntrFermi = IntrFermi;
 
 	return 0;
 }
@@ -2205,7 +2344,7 @@ int PFset_MovieFrames(ParameterFrame PF, int MovieFrames){
 
 }
 
-double PFset_Vcv(ParameterFrame PF, double Vcv){
+int PFset_Vcv(ParameterFrame PF, double Vcv){
 	if(PF==NULL){
 		return -1;
 	}
@@ -2213,7 +2352,7 @@ double PFset_Vcv(ParameterFrame PF, double Vcv){
 	return 0;
 }
 
-double PFset_Tcv(ParameterFrame PF, double Tcv){
+int PFset_Tcv(ParameterFrame PF, double Tcv){
 	if(PF==NULL || Tcv<0){
 		return -1;
 	}
@@ -2392,6 +2531,15 @@ double PFget_ZFermiA(ParameterFrame PF){
 	}
 
 	return PF->ZFermiA;
+}
+
+double PFget_IntrFermi(ParameterFrame PF){
+
+	if(PF==NULL){
+		return -1;
+	}
+
+	return PF->IntrFermi;
 }
 
 double PFget_alphaxb(ParameterFrame PF){
@@ -2815,14 +2963,14 @@ int PFget_MovieFrames(ParameterFrame PF){
 	return PF->MovieFrames;
 }
 
-int PFget_Vcv(ParameterFrame PF){
+double PFget_Vcv(ParameterFrame PF){
 	if(PF==NULL){
 		return -1;
 	}
 	return PF->Vcv;
 }
 
-int PFget_Tcv(ParameterFrame PF){
+double PFget_Tcv(ParameterFrame PF){
 	if(PF==NULL){
 		return -1;
 	}

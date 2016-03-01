@@ -1,6 +1,5 @@
-#!\bin\bash.exe
+#!/bin/bash
 
-echo "Running Script!"
+rm -rf Movies
+rm -f Data*
 
-rm -f CHECKPOINT/*
-rm -f Movies/*

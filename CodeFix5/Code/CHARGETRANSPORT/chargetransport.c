@@ -433,6 +433,7 @@ int ElecHopOffX(Electrode el, int * future, SNarray snA){
 	//This is the random number used to determine which direction a charge hops
 	position = (double)rand() / RAND_MAX;
 	matrix mtx = (matrix) getElectrode_HopRates(el);
+	
 	//Cycle through the pvals until the pval
 	//is equal or above the random number
 
@@ -462,6 +463,7 @@ int ElecHopOffX(Electrode el, int * future, SNarray snA){
 	if(*future==-1){
 
 		printf("Value or row %d Value of col %d future %d position %g\n",row,col,*future,position);
+		//printMatrix(mtx);
 		printf("ERROR Hopping off Electrode and out of system\n");
 		exit(1);
 	}
@@ -832,7 +834,6 @@ int SiteHop(SNarray snA, Charge * one, SiteNode site, int * future, const int En
 		*future = getIndAboP(snA,x,y,z);
 	}
 
-	printf("Value assigned to future %d\n",*future);
 	return 0;
 
 }
@@ -868,8 +869,6 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 	factorX = 0;
 	factorY = 0;
 	factorZ = 0;
-
-	SiteNode sn;
 
 	if(getCx(*ch)<0){
 		factorX = -getCx(*ch)/getAlen(snA)+1;
@@ -944,7 +943,7 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 	}else if(flag1==0 && flag2==1){
 		//Hopping within cluster not allowed
 		//Hopping to neighbors is permitted
-		sn = getSN(snA, x,y,z);
+		//SiteNode sn = getSN(snA, x,y,z);
 		//printf("Hopping Within cluster not allowed\n");
 		//Value of rv
 		//1 - hopped off cluster
@@ -1014,7 +1013,7 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 }
 
 
-//Can use MakeHop when jumping off electrode but not when jumping off because (newID?)
+//Can use MakeHop when jumping off electrode but not when jumping on because (newID?)
 int MakeHop(SNarray snA, int newID, Charge *ch, int * totalX, int * totalY, int * totalZ,\
 		const int PeriodicX, const int PeriodicY, const int PeriodicZ,\
 		const int XElecOn, const int YElecOn, const int ZElecOn){
@@ -1161,12 +1160,12 @@ int MakeHop(SNarray snA, int newID, Charge *ch, int * totalX, int * totalY, int 
 
 }
 
-int CheckPt_Test(int * CheckPtNum,int CheckFileExist, char * FileNameCheckPtVersion, int FileNameSize,\
+int CheckPt_Test_TOF(int * CheckPtNum,int CheckFileExist, char * FileNameCheckPtVersion, int FileNameSize,\
 		const double Vx, const double Vy, const double Vz, const double Temperature){
 
 
 	if(CheckFileExist==0){
-		*CheckPtNum = CheckPt_Latest(FileNameCheckPtVersion,FileNameSize,Vx,Vy,Vz,Temperature);
+		*CheckPtNum = CheckPt_Latest_TOF(FileNameCheckPtVersion,FileNameSize,Vx,Vy,Vz,Temperature);
 		//Just because a .chpt file exist it does not mean it exists for these parameters
 		//Will return a 0 if unable to find a checkpt file with the correct Vx Vy Vz and Temperature
 		//Or unable to find a checkpt file at all in the directory
@@ -1197,6 +1196,42 @@ int CheckPt_Test(int * CheckPtNum,int CheckFileExist, char * FileNameCheckPtVers
 	return 0;
 }
 
+int CheckPt_Test_CELIV(int * CheckPtNum,int CheckFileExist, char * FileNameCheckPtVersion, int FileNameSize,\
+											 const double Temperature){
+
+	if(CheckFileExist==0){
+		*CheckPtNum = CheckPt_Latest_CELIV(FileNameCheckPtVersion,FileNameSize,Temperature);
+		//Just because a .chpt file exist it does not mean it exists for these parameters
+
+		if(*CheckPtNum>0){
+			*CheckPtNum = *CheckPtNum+1;
+			//Confirmed that a checkpt file exists
+			printf("CELIV CheckPoint file found for Temperature %g\n",Temperature);
+			printf("File Name %s\n",FileNameCheckPtVersion);
+			return 1;
+
+		} else if(*CheckPtNum==0){
+			//Confirmed that a checkpt file did not exist for this version
+			printf("CELIV CheckPoint file does not exist for Temperature %g\n",Temperature);
+			*CheckPtNum = 1;
+			return 0;
+
+		} else if(*CheckPtNum<0){
+
+			//This means there was a serios problem either the directory was deleted
+			printf("ERROR unable to open CHECKPOINT directory!\n");
+			exit(1);
+		}
+	}else{
+		*CheckPtNum = 1;
+	}
+
+	return 0;
+}
+
+
+
+
 int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * FileName,\
 		long double * t, matrix * Sequence,\
 		ChargeArray * chA,matrix * FutureSite,ArbArray * ClArLL, SNarray * snA, ParameterFrame PF,\
@@ -1212,6 +1247,7 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 	static const double hbar = 6.58211928E-16;
 
 	//Declaring Variables from parameter frame
+	int method;
 	int SLength;
 	int SWidth;
 	int SHeight;
@@ -1229,6 +1265,7 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 	double SiteDistance;
 
 	//Declaring local variables
+	int loop;
 	int clusterfileExist;
 	int Num_elXf;
 	int Num_elXb;
@@ -1242,6 +1279,7 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 	int OrderL;
 
 	//Initializing Variables from parameter frame
+	method = PFget_method(PF);
 	SLength = PFget_Len(PF);
 	SWidth = PFget_Wid(PF);
 	SHeight = PFget_Hei(PF);
@@ -1261,176 +1299,249 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 	//Initializing Local variables
 	KT = kB*Temperature;
 	*snA = newSNarray(SLength, SWidth, SHeight);
-	*Sequence = newMatrix(Ntot,1);
-	(*FutureSite) = newMatrix(Ntot,1);
-	int rv = printMatrix(*FutureSite);
 
-	printf("Value of Ntot %d\n",Ntot);
-	if(rv==-1){
-		printf("ERROR FutureSite problem!\n");
-		exit(1);
-	}
-
-	if(FutureSite==NULL){
-		printf("ERROR FutureSite NULL\n");
-		exit(1);
-	}
 	//is equivalent to the marcus coefficient at 300 K
 	MarcusJ0 = pow( AttemptToHop*hbar*pow(4*reOrgEnergy*kB*300/M_PI,1/2),1/2);
 	//Calculating full Marcus Coefficient;
 	MarcusCoeff = pow(MarcusJ0,2)/hbar * pow(M_PI/(4*reOrgEnergy*KT),1/2)*exp(-2*gamma*SiteDistance);
 
 	//This means we are starting from scratch
-	if(CheckPtStatus==0){
+	if(method==0){
+		
+		*Sequence = newMatrix(Ntot,1);
+		(*FutureSite) = newMatrix(Ntot,1);
+		int rv = printMatrix(*FutureSite);
+		printf("Value of Ntot %d\n",Ntot);
+		if(rv==-1){
+			printf("ERROR FutureSite problem!\n");
+			exit(1);
+		}
 
-		//Lets first make sure that a .cluster file does not exist before we
-		//create new energies
-		clusterfileExist = CheckPt_Cluster(Vx, Vy, Vz, Temperature, r);
+		if(FutureSite==NULL){
+			printf("ERROR FutureSite NULL\n");
+			exit(1);
+		}
 
-		if(clusterfileExist==0 && PFget_ClusterAlg(PF)!=0){
-			//The cluster file exists already so lets just load what was saved
-			LoadCluster_Data( &FileName[0], &OrderL, snA, electricEnergyX,\
-												electricEnergyY, electricEnergyZ, ClArLL, KT);
+		if(CheckPtStatus==0){
 
+			//Lets first make sure that a .cluster file does not exist before we
+			//create new energies
+			clusterfileExist = CheckPt_Cluster_TOF(Vx, Vy, Vz, Temperature, r);
+
+			if(clusterfileExist==0 && PFget_ClusterAlg(PF)!=0){
+				//The cluster file exists already so lets just load what was saved
+				LoadCluster_Data( &FileName[0], &OrderL, snA, electricEnergyX,\
+						electricEnergyY, electricEnergyZ, ClArLL, KT);
+
+			}else{
+				//Initialize Site Energies
+				printf("Initializing Site Energies\n");
+				initSite(electricEnergyX, electricEnergyY, electricEnergyZ,\
+						KT, *snA, PF);
+			}
+			//Create Sequence matrix to store the charges and the order 
+			//they should be moved which is based on their dwelltime
+			//Charge ids start at 0 and go to Ntot-1
+			printf("Initializing Sequence of Charges\n");
+			for(int i=0; i<Ntot;i++){
+				setE(*Sequence,i+1,1,i);
+			}
+
+			//Initialize all charges in the Matrix and creates chargearray
+			printf("Initializing Charges\n");
+			*chA = initCharget0( *Sequence, *snA,  Ntot, NCh, PFget_D(PF),\
+					XElecOn, YElecOn, ZElecOn,EndX, EndY, EndZ);
+
+			//t - global time initially 0 when starting from scratch
+			//n - number of steps that charges have been injected starts at 1
+			//nc - Number of charges initially in the system equal to the Number
+			//		initially injected
+			//nca - Number of active charges in the system initiallyequal to the number injected
+			*t = 0;
+			*n = 1;
+			*nc = NCh;
+			*nca = NCh;
+
+			////////////////////////////////////////////////////////////////////////
+			//Initialize Electrodes
+			printf("Initializing Electrodes\n");
+			initElec(electricEnergyX, electricEnergyY, electricEnergyZ, MarcusCoeff,\
+					KT, *snA,elXb, elXf, elYl, elYr, elZb, elZa, PF);
+
+			//Initialize where the first few charges will hop to next
+			printf("Initializing future hop sites\n");
+			initFutureSite( snA, FutureSite, chA, PF,\
+					*elXb, *elYl, *elZb );
+
+			if(FutureSite==NULL || Sequence==NULL || chA==NULL){
+				return -1;
+			}
+
+			if(clusterfileExist==-1 && PFget_ClusterAlg(PF)!=0){
+				//Go ahead and calculate clusters and save
+				FindCluster( &OrderL, (*snA), electricEnergyX,\
+						electricEnergyY, electricEnergyZ,\
+						ClArLL,KT,PF);
+
+				ConnectClusterElec( ClArLL,\
+						(*elXb), (*elXf), (*elYl), (*elYr),\
+						(*elZb), (*elZa) );
+
+				SaveCluster( &FileName[0], OrderL, (*snA), electricEnergyX,\
+						electricEnergyY, electricEnergyZ, (*ClArLL), KT, PF,
+						*elXb, *elXf, *elYl, *elYr, *elZb, *elZa);
+
+				PrintFile_xyz(OrderL, (*snA), ClArLL, &FileName[0]);
+				printFileEnergy((*snA), &FileName[0], electricEnergyX,\
+						electricEnergyY, electricEnergyZ,PF);
+
+				PrintNeighFile_xyz(OrderL, (*snA), ClArLL, &FileName[0]);
+				printMatrix(*FutureSite);
+
+			}else{
+				printFileEnergy((*snA), &FileName[0], electricEnergyX,\
+						electricEnergyY, electricEnergyZ,PF);
+			}
+
+
+		}else if(CheckPtStatus==1) {
+			//This means we are starting from a checkpt file that already exists
+
+			//Lets first make sure that a .cluster file does not exist before we
+			//recalculate everything
+			clusterfileExist = CheckPt_Cluster_TOF(Vx, Vy, Vz, Temperature, r);
+
+			//Charge Array chA is created in here
+			printf("Loading Charge and Site information from .ckpt\n");
+			Load_CheckPt_Data_TOF( t, snA, chA, Sequence,\
+					FutureSite, FileNameCheckPtVersion, n,nc, nca,\
+					&Num_elXb, &Num_elXf, &Num_elYl, &Num_elYr,\
+					&Num_elZb, &Num_elZa,Vx,Vy,Vz);
+
+			if(FutureSite==NULL || Sequence==NULL || chA==NULL){
+				printf("ERROR in the load_checkPt_Data_TOF function a datastructure\n");
+				printf("Has been found to be NULL\n");
+				exit(1);
+			}
+
+			////////////////////////////////////////////////////////////////////////
+			//Initialize Electrodes
+			printf("Initializing Electrodes\n");
+			initElec(electricEnergyX, electricEnergyY, electricEnergyZ, MarcusCoeff,\
+					KT, *snA,elXb, elXf, elYl, elYr, elZb, elZa, PF);
+
+
+			printf("Updating number of charges on electrodes based on .ckpt\n");
+			if(elXb!=NULL){
+				setElectrode_Charges(*elXb,Num_elXb);
+			}
+			if(elXf!=NULL){
+				setElectrode_Charges(*elXf,Num_elXf);
+			}
+			if(elYl!=NULL){
+				setElectrode_Charges(*elYl,Num_elYl);
+			}
+			if(elYr!=NULL){
+				setElectrode_Charges(*elYr,Num_elYr);
+			}
+			if(elZb!=NULL){
+				setElectrode_Charges(*elZb,Num_elZb);
+			}
+			if(elZa!=NULL){
+				setElectrode_Charges(*elZa,Num_elZa);
+			}
+
+			if(PFget_ClusterAlg(PF)!=0){
+
+				if(clusterfileExist==0 ){
+					//The .cluster file exists we have already loaded the site information
+					//We only want to load cluster information
+					LoadCluster_Only( &FileName[0], &OrderL, snA, electricEnergyX,\
+							electricEnergyY, electricEnergyZ, ClArLL, KT);
+				}
+
+				ConnectClusterElec( ClArLL,\
+						(*elXb), (*elXf), (*elYl), (*elYr),\
+						(*elZb), (*elZa) );
+			}
 		}else{
+			printf("ERROR found in Pre_randomWalk value of checkptstatus %d\n",CheckPtStatus);
+			exit(1);
+		}
+
+	}else if(method==1){
+
+		if(CheckPtStatus==0){
+
+			//It makes no sense to check for or create cluster files when using the 
+			//CELIV method this is because we would have to recalculate where the clusters
+			//were for each time step
+
 			//Initialize Site Energies
 			printf("Initializing Site Energies\n");
 			initSite(electricEnergyX, electricEnergyY, electricEnergyZ,\
 					KT, *snA, PF);
-		}
-		//Create Sequence matrix to store the charges and the order 
-		//they should be moved which is based on their dwelltime
-		//Charge ids start at 0 and go to Ntot-1
-		printf("Initializing Sequence of Charges\n");
-		for(int i=0; i<Ntot;i++){
-			setE(*Sequence,i+1,1,i);
-		}
+			
+			//Initialize all charges in the Matrix and creates chargearray
+			printf("Initializing Charges\n");
+			*chA = initCharget0_Thermal( *snA, PF, Temperature,\
+					XElecOn, YElecOn, ZElecOn);
 
-		//Initialize all charges in the Matrix and creates chargearray
-		printf("Initializing Charges\n");
-		*chA = initCharget0( *Sequence, *snA,  Ntot, NCh, PFget_D(PF),\
-				XElecOn, YElecOn, ZElecOn,EndX, EndY, EndZ);
+			//Create Sequence matrix to store the charges and the order 
+			//they should be moved which is based on their dwelltime
+			//Charge ids start at 0 and go to Ntot-1
+			printf("Initializing Sequence of Charges\n");
+			Ntot = PFget_Ntot(PF);
+			*Sequence = newMatrix(Ntot,1);
+			for(loop = 0; loop<Ntot; loop++){
+				setE( *Sequence,loop+1,1,loop);
+			}
+			//printf("Here is the problem\n");
+			//exit(1);
+			(*FutureSite) = newMatrix(Ntot,1);
+			quickSort(0, Ntot-1, *Sequence, *chA);
+			
+			//t - global time initially 0 when starting from scratch
+			//n - number of steps that charges have been injected starts at 1
+			//nc - Number of charges initially in the system equal to the Number
+			//		initially injected
+			//nca - Number of active charges in the system initiallyequal to the number injected
+			*t = 0;
+			*n = 1;
+			NCh = PFget_NCh(PF);
+			*nc = NCh;
+			*nca = NCh;
 
-		//t - global time initially 0 when starting from scratch
-		//n - number of steps that charges have been injected starts at 1
-		//nc - Number of charges initially in the system equal to the Number
-		//		initially injected
-		//nca - Number of active charges in the system initiallyequal to the number injected
-		*t = 0;
-		*n = 1;
-		*nc = NCh;
-		*nca = NCh;
+			////////////////////////////////////////////////////////////////////////
+			//Initialize Electrodes
+			printf("Initializing Electrodes\n");
+			initElec(electricEnergyX, electricEnergyY, electricEnergyZ, MarcusCoeff,\
+					KT, *snA,elXb, elXf, elYl, elYr, elZb, elZa, PF);
 
-		////////////////////////////////////////////////////////////////////////
-		//Initialize Electrodes
-		printf("Initializing Electrodes\n");
-		initElec(electricEnergyX, electricEnergyY, electricEnergyZ, MarcusCoeff,\
-				KT, *snA,elXb, elXf, elYl, elYr, elZb, elZa, PF);
-		
-		//Initialize where the first few charges will hop to next
-		printf("Initializing future hop sites\n");
-		initFutureSite( snA, FutureSite, chA, PF,\
-				*elXb, *elYl, *elZb );
+			//Initialize where the first few charges will hop to next
+			printf("Initializing future hop sites\n");
+			initFutureSite( snA, FutureSite, chA, PF,\
+					*elXb, *elYl, *elZb );
 
-		if(FutureSite==NULL || Sequence==NULL || chA==NULL){
-			return -1;
-		}
+			if(FutureSite==NULL || Sequence==NULL || chA==NULL){
+				return -1;
+			}
 
-		if(clusterfileExist==-1 && PFget_ClusterAlg(PF)!=0){
-			//Go ahead and calculate clusters and save
-			FindCluster( &OrderL, (*snA), electricEnergyX,\
-									 electricEnergyY, electricEnergyZ,\
-									 ClArLL,KT,PF);
-
-			ConnectClusterElec( ClArLL,\
-												(*elXb), (*elXf), (*elYl), (*elYr),\
-												(*elZb), (*elZa) );
-
-			SaveCluster( &FileName[0], OrderL, (*snA), electricEnergyX,\
-									 electricEnergyY, electricEnergyZ, (*ClArLL), KT, PF,
-									 *elXb, *elXf, *elYl, *elYr, *elZb, *elZa);
-
-			PrintFile_xyz(OrderL, (*snA), ClArLL, &FileName[0]);
 			printFileEnergy((*snA), &FileName[0], electricEnergyX,\
-					 						electricEnergyY, electricEnergyZ,PF);
-
-			PrintNeighFile_xyz(OrderL, (*snA), ClArLL, &FileName[0]);
+					electricEnergyY, electricEnergyZ,PF);
 			printMatrix(*FutureSite);
 
-		}else{
-			printFileEnergy((*snA), &FileName[0], electricEnergyX,\
-					 						electricEnergyY, electricEnergyZ,PF);
-		}
-
-
-	}else if(CheckPtStatus==1) {
-		//This means we are starting from a checkpt file that already exists
-
-		//Lets first make sure that a .cluster file does not exist before we
-		//recalculate everything
-		clusterfileExist = CheckPt_Cluster(Vx, Vy, Vz, Temperature, r);
-		
-		//Charge Array chA is created in here
-		printf("Loading Charge and Site information from .ckpt\n");
-		Load_CheckPt_Data( t, snA, chA, Sequence,\
-				FutureSite, FileNameCheckPtVersion, n,nc, nca,\
-				&Num_elXb, &Num_elXf, &Num_elYl, &Num_elYr,\
-				&Num_elZb, &Num_elZa,Vx,Vy,Vz);
-		
-		if(FutureSite==NULL || Sequence==NULL || chA==NULL){
-			printf("ERROR in the load_checkPt_Data function a datastructure\n");
-			printf("Has been found to be NULL\n");
+		}else if(CheckPtStatus!=1) {
+			printf("CELIV method has not been setup to run from a chkpt file\n");
+			printf("or anything other than the parameter.txt file as of now.\n");
 			exit(1);
 		}
 
-		////////////////////////////////////////////////////////////////////////
-		//Initialize Electrodes
-		printf("Initializing Electrodes\n");
-		initElec(electricEnergyX, electricEnergyY, electricEnergyZ, MarcusCoeff,\
-				KT, *snA,elXb, elXf, elYl, elYr, elZb, elZa, PF);
 
-
-		printf("Updating number of charges on electrodes based on .ckpt\n");
-		if(elXb!=NULL){
-			setElectrode_Charges(*elXb,Num_elXb);
-		}
-		if(elXf!=NULL){
-			setElectrode_Charges(*elXf,Num_elXf);
-		}
-		if(elYl!=NULL){
-			setElectrode_Charges(*elYl,Num_elYl);
-		}
-		if(elYr!=NULL){
-			setElectrode_Charges(*elYr,Num_elYr);
-		}
-		if(elZb!=NULL){
-			setElectrode_Charges(*elZb,Num_elZb);
-		}
-		if(elZa!=NULL){
-			setElectrode_Charges(*elZa,Num_elZa);
-		}
-
-		if(PFget_ClusterAlg(PF)!=0){
-
-			if(clusterfileExist==0 ){
-				//The .cluster file exists we have already loaded the site information
-				//We only want to load cluster information
-				LoadCluster_Only( &FileName[0], &OrderL, snA, electricEnergyX,\
-													electricEnergyY, electricEnergyZ, ClArLL, KT);
-			}
-			
-			ConnectClusterElec( ClArLL,\
-													(*elXb), (*elXf), (*elYl), (*elYr),\
-													(*elZb), (*elZa) );
-		}
-	}else{
-		printf("ERROR found in Pre_randomWalk value of checkptstatus %d\n",CheckPtStatus);
-		exit(1);
 	}
 
-
 	printf("Printing Future site matrix at end of Pre_randomWalk\n");
-	rv = printMatrix(*FutureSite);
+	int rv = printMatrix(*FutureSite);
 	if(FutureSite==NULL || rv==-1){
 		printf("FutureSite is NULL\n");
 		exit(1);
@@ -1620,13 +1731,17 @@ int randomWalk( SNarray snA,int CheckptNum,\
 		Electrode elYr, Electrode elZb, Electrode elZa,\
 		ParameterFrame PF,long double t,matrix Sequence,\
 		matrix FutureSite,ChargeArray * chA,\
-		long int n,int nc,int nca){
+		long int n,int nc,int nca, double Temperature){
 
 	if(FutureSite==NULL){
 		printf("ERROR Future site matrix found to be NULL on entering randomWalk\n");
 		return -1;
 	}
 
+	//Boltzmann constant Units of [eV/K]
+	static const double kB = 8.6173324E-5;
+	//Planck constant Units of [eV s]
+	static const double hbar = 6.58211928E-16;
 
 	time_t now;
 	time_t later;
@@ -1636,7 +1751,9 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	//n - Number of time steps that have passed where charges are injected
 	//nc - Number of charges in the system
 	//nca - Number of charges that are currently active
-
+	int method = PFget_method(PF);
+	double Tcv = PFget_Tcv(PF);
+	double Vcv = PFget_Vcv(PF);
 	double TStep = PFget_TStep(PF);
 	int TCount = PFget_TCount(PF);
 	int Time_check = PFget_Time_check(PF);
@@ -1680,6 +1797,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	printf("Starting Random Walk\n");
 	//Declaring Variables
 	int Ntot = NCh*TCount;
+	printf("NTot %d NCh %d\n",Ntot,NCh);
 	int flag;
 	int SaveCount;
 	//Movie start point
@@ -1688,6 +1806,9 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	int x, xx, x1;
 	int y, yy, y1;
 	int z, zz, z1;
+
+	int j;
+	int k;
 
 	//Position before charge hopps
 	int PrevX, PrevY, PrevZ;
@@ -1740,7 +1861,21 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	long double TotalVelY;
 	long double TotalVelZ;
 
+	double electricEnergyX;
+	double electricEnergyY;
+	double electricEnergyZ;
+	double Vramp;
+
+	double MarcusJ0;
+	double MarcusCoeff;
+	double KT;
+	double Vx;
+	double Energy;
+
+	int rv;
 	double tim;
+	int ID;
+	int ID2;
 	Charge one;
 	Charge two;
 	SiteNode site;
@@ -1780,6 +1915,14 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	matrix Yvelocity = newMatrix(8,1);
 	matrix Zvelocity = newMatrix(8,1);
 
+	//Matrices holding energies of sites next to electrodes if CELIV is called
+	matrix Xb1;
+	matrix Xb2;
+	matrix Xf1;
+	matrix Xf2;
+
+	SiteNode sn;
+
 	matrix System = newMatrix(8,1);
 
 	//Keeps track of the time when each of the matrices are incremented
@@ -1805,6 +1948,61 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	SaveCount = 1;
 	SaveTime = 0;
 	tim = TStep;
+	
+	//If CELIV method is specified calculate ramp rate
+	if(method==1){
+		Vramp = Vcv/Tcv;
+		KT = kB*Temperature;
+		//is equivalent to the marcus coefficient at 300 K
+		MarcusJ0 = pow( PFget_AttemptToHop(PF)*hbar*pow(4*PFget_reOrg(PF)*kB*300/M_PI,1/2),1/2);
+		//Calculating full Marcus Coefficient;
+		MarcusCoeff = pow(MarcusJ0,2)/hbar * pow(M_PI/(4*PFget_reOrg(PF)*KT),1/2)*exp(-2*PFget_gamma(PF)*PFget_SiteDist(PF));
+		electricEnergyY = 0;
+		electricEnergyZ = 0;
+		//Need to define matrices containing energies of sites next to electrodes
+		Xb1 = newMatrix(SWidth,SHeight);
+		Xb2 = newMatrix(SWidth,SHeight);
+
+		for(j=0;j<SWidth;j++){
+			for(k=0;k<SHeight;k++){
+				sn = getSN(snA,0,j,k);
+				Energy = getEnergy(sn);
+				//Energies of first plane
+				setE(Xb1,j+1,k+1,Energy);
+				sn = getSN(snA,1,j,k);
+				Energy = getEnergy(sn);
+				//Energies of second plane
+				//This is needed so we can calculate
+				//the hops not just to the electrode
+				//but further into the system as well
+				setE(Xb2,j+1,k+1,Energy);
+				//printf("Energy %g\n",Energy);
+			}
+		}
+
+		//Only saving energies of sites next to electrodes
+		Xf1 = newMatrix(SWidth,SHeight);
+		Xf2 = newMatrix(SWidth,SHeight);
+
+		for(j=0;j<SWidth;j++){
+			for(k=0;k<SHeight;k++){
+				sn = getSN(snA,SLength-1,j,k);
+				Energy = getEnergy(sn);
+				//Energies of first plane
+				setE(Xf1,j+1,k+1,Energy);
+				sn = getSN(snA,SLength-2,j,k);
+				Energy = getEnergy(sn);
+				//Energies of second plane
+				//This is needed so we can calculate
+				//the hops not just to the electrode
+				//but further into the system as well
+				setE(Xf2,j+1,k+1,Energy);
+				//printf("Energy %g\n",Energy);
+			}
+		}
+
+	}
+
 
 	while( n<TCount || nca>0){
 
@@ -1818,12 +2016,22 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			exit(1);
 		}
 
+		//if((double)t==(double)TimeTrack1){
+		//	printf("t==TimeTrack\n");
+		//	exit(1);
+		//}
+
 		if (nca==0){
 
 			//Should be the Step time
 			tim = TStep;
 			//t is incremented after the charge hops
 			//the global time is increased
+			if(t==(t+(long double)tim)){
+				printf("Exceeded precision t+tim==t\n");
+				exit(1);
+			}
+			
 			t += (long double) tim;
 
 			SaveTime += (long double) tim;
@@ -1834,6 +2042,39 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				//Here we check to see if we record the data
 				//Nstep is used to determine how many timesteps pass
 				//before recording
+
+				//Here we will check the method if CELIV will update the site hop rates
+				if(method==1){
+
+					//Adjust Vx
+					if((double)t<Tcv){
+						Vx = Vramp*((double)t);
+					}else{
+						Vx = 0;
+					}
+					//Electric field from voltage
+					ElectricFieldX = Vx / (((double)SLength)*SiteDistance);
+					//Electrical energy from voltage between two sites
+					electricEnergyX = SiteDistance*ElectricFieldX;
+					if(electricEnergyX>10){
+						printf("electricEnergyX %g Vx %g Vramp %g t %g\n",electricEnergyX,Vx,Vramp,(double)t);
+						exit(1);
+					}
+					//Update hop rates
+					//	printf("Vramp %g t %g Vx %g SLength %d SiteDistance %g electricField %g electricEnergyX %g\n",Vramp,(double)t,Vx,SLength,SiteDistance,ElectricFieldX,electricEnergyX);				
+					//exit(1);
+
+					initJumPossibility(electricEnergyX, electricEnergyY, electricEnergyZ,\
+							MarcusCoeff, KT,PFget_reOrg(PF), snA,\
+							PeriodicX, PeriodicY, PeriodicZ, XElecOn, YElecOn, ZElecOn);
+				
+					Update_initJumPossibility_ElecX( electricEnergyX, electricEnergyY,\
+							electricEnergyZ, MarcusCoeff, KT, Xb1, Xb2, elXb, 0 , PF);
+					Update_initJumPossibility_ElecX( electricEnergyX, electricEnergyY,\
+							electricEnergyZ, MarcusCoeff, KT, Xf1, Xf2, elXf, 1 , PF);
+
+				}
+
 				SaveCount++;
 
 				printf("SaveTime %Lg TStep %g SaveCount %d Nstep_av %d Movie %d MovieFrames %d\n",SaveTime,TStep,SaveCount,Nstep_av,Movie,MovieFrames);
@@ -1878,6 +2119,10 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			JumpFromElec = 0;
 			ChargeID = getE(Sequence,1,1);
 			one = getCharge(*chA, ChargeID);
+			if(getDwel(one)>1){
+				printf("Time to large from getDwel %g\n",getDwel(one));
+				exit(1);
+			}
 
 			//printf("Number of charges in sample %d active charges %d time %Lg\n",nc,nca, t);
 			//printf("Grabbing Charge %d Value of nca %d\n",ChargeID, nca);
@@ -1949,7 +2194,11 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 			//Get the time it took to make the hop
 			tim = getDwel(one);
-
+			if(tim>1){
+				printf("time to large %g for charge located at (%d,%d,%d)\n",tim,PrevX,PrevY,PrevZ);
+				printChargeA(*chA);
+				exit(1);
+			}
 			//Cannot simply increase the time by the dwelstat if not
 			//all the charges have yet been inserted
 
@@ -1985,7 +2234,17 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 			//t is incremented after the charge hops
 			//the global time is increased
+			if(t==(long double)t+tim){
+				printf("Exceeded precision t==t+tim\n");
+				exit(1);
+			}
 			t += (long double) tim;
+
+			if(tim==0){
+				printf("Error tim is 0\n");
+				printf("TimeTrack1 %g t %g\n",TimeTrack1,(double)t);
+				exit(1);
+			}
 
 			SaveTime += (long double)tim;
 			//The time the charge has been in the sample is updated
@@ -1997,14 +2256,48 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			//printf("SaveTime %Lg TStep %g\n",SaveTime, TStep);
 			printf("SaveTime %Lg TStep %g SaveCount %d Nstep_av %d Movie %d MovieFrames %d\n",SaveTime,TStep,SaveCount,Nstep_av,Movie,MovieFrames);
 
+
 			if(SaveTime >= (long double)TStep){
 				//Here we check to see if we record the data
 				//Nstep is used to determine how many timesteps pass
 				//before recording
 				SaveCount++;
 
+				//Here we will check the method if CELIV will update the site hop rates
+				if(method==1){
+
+					//Adjust Vx
+					if((double)t<Tcv){
+						Vx = Vramp*((double)t);
+					}else{
+						Vx = 0;
+					}
+					//Electric field from voltage
+					ElectricFieldX = Vx / (((double)SLength)*SiteDistance);
+					//Electrical energy from voltage between two sites
+					electricEnergyX = SiteDistance*ElectricFieldX;
+					if(electricEnergyX>10){
+						printf("electricEnergyX %g Vx %g Vramp %g t %g\n",electricEnergyX,Vx,Vramp,(double)t);
+						exit(1);
+					}
+					//Update hop rates
+					//printf("Vramp %g t %g Vx %g SLength %d SiteDistance %g electricField %g electricEnergyX %g\n",Vramp,(double)t,Vx,SLength,SiteDistance,ElectricFieldX,electricEnergyX);				
+					//exit(1);
+					
+					initJumPossibility(electricEnergyX, electricEnergyY, electricEnergyZ,\
+							MarcusCoeff, KT,PFget_reOrg(PF), snA,\
+							PeriodicX, PeriodicY, PeriodicZ, XElecOn, YElecOn, ZElecOn);
+					
+					Update_initJumPossibility_ElecX( electricEnergyX, electricEnergyY,\
+							electricEnergyZ, MarcusCoeff, KT, Xb1, Xb2, elXb, 0 , PF);
+					Update_initJumPossibility_ElecX( electricEnergyX, electricEnergyY,\
+							electricEnergyZ, MarcusCoeff, KT, Xf1, Xf2, elXf, 1 , PF);
+
+				}
+
 				if((SaveCount%Nstep_av)==0){
 					//Saving Data
+					printf("Saving Data\n");
 					SaveCount = 1;
 					SaveTime = fmod(SaveTime,(long double)TStep);
 
@@ -2029,11 +2322,13 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 				}
 
+				//printf("Updating time\n");
 				time(&later);
 				seconds = difftime(later,now);
 
 				if(seconds>(double)(Time_check*60)){
 					time(&now);
+					//printf("Saving Checkpt file\n");
 					Save_CheckPt(FileName, &CheckptNum, snA, *chA, Sequence,FutureSite, t, PF,n, nc, nca,\
 							elXb, elXf, elYl, elYr, elZb, elZa);
 				}
@@ -2046,6 +2341,10 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			UpdateOccTime(&snA,&one,tim, PF);
 			for( i = 1; i<nca; i++ ){
 				two = getCharge(*chA,getE(Sequence,i,1));
+				if(getDwel(two)>1){
+					printf("Dwelltime excessive %g\n",getDwel(two));
+					exit(1);
+				}
 				MinusDwel(two,tim);
 				UpdateOccTime(&snA, &two,tim, PF);
 			}
@@ -2101,6 +2400,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			//printf("Before CheckIfElecHop of t %Lg\n",t);
 			//printf("TotalVelX %Lg\n",TotalVelX);
 
+			printf("t %g TimeTrack1 %g\n",(double)t,(double)TimeTrack1);
 			CheckIfElecHop(xx, yy, zz,\
 					&Xsource, &Ysource, &Zsource,\
 					&Xdrain, &Ydrain, &Zdrain,\
@@ -2242,6 +2542,17 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					//Setting dwell time to large number removing charge from system
 					printf("Hopped to X Drain x position %d\n",xx);
 					ChargeClosure(elXf, &one, &Sequence, &nc, &nca, &TotalCollected, Ntot);
+					rv = getE(Sequence,1,1);
+					
+					ID2 = getE(Sequence,1,1);
+
+					for(i=0; i<Ntot-1;i++){
+						//Updating the waiting queue of charges
+						ID = getE(Sequence,i+2,1);
+						setE(Sequence,i+1,1,ID);
+					}
+
+					setE(Sequence,Ntot,1,ID2);
 
 				}else if(yy == -1 && EndY!=0){
 					//Hopping from left Electrode
@@ -2253,6 +2564,16 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					//Hopped to right electrode
 					printf("Hopped to Y Drain y position %d\n",yy);
 					ChargeClosure(elYr, &one, &Sequence, &nc, &nca, &TotalCollected, Ntot);
+					ID2 = getE(Sequence,1,1);
+
+					for(i=0; i<Ntot-1;i++){
+						//Updating the waiting queue of charges
+						ID = getE(Sequence,i+2,1);
+						setE(Sequence,i+1,1,ID);
+					}
+
+					setE(Sequence,Ntot,1,ID2);
+
 
 				}else if(zz == -1 && EndZ!=0){
 					//Hopping from bottom Electrode
@@ -2264,6 +2585,19 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					//Hopped to top electrode
 					printf("Hopped to Z Drain z position %d\n",zz);
 					ChargeClosure(elZa, &one, &Sequence, &nc, &nca, &TotalCollected, Ntot);
+					//Sequence contains the ids of the charges which go
+					//from 0 to Ntot-1;
+					//Placing the charge that just reached the electrode to 
+					//the back of the list
+					ID2 = getE(Sequence,1,1);
+
+					for(i=0; i<Ntot-1;i++){
+						//Updating the waiting queue of charges
+						ID = getE(Sequence,i+2,1);
+						setE(Sequence,i+1,1,ID);
+					}
+
+					setE(Sequence,Ntot,1,ID2);
 
 				}
 			}
@@ -2282,6 +2616,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			if( (long double)n*TStep<=t || ((n+1)*(long int)NCh)<Ntot){
 				n++;
 			}
+			printf("n %d NCh %d Ntot %d\n",n,NCh,Ntot);	
 			//Initialize new charges that are inserted
 			initCharge( nca, n, chA, Sequence, snA,\
 					Ntot, NCh, D,\
@@ -2294,10 +2629,15 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			TotalVelX += (long double)TrackX*(long double)SiteDistance/((t-TimeTrack1)*(long double)nc);
 			TotalVelY += (long double)TrackY*(long double)SiteDistance/((t-TimeTrack1)*(long double)nc);
 			TotalVelZ += (long double)TrackZ*(long double)SiteDistance/((t-TimeTrack1)*(long double)nc);
+			if(isnan(TotalVelX)){
+				printf("TotalVelX is nan! t %g n %d TStep %g NCh %d Ntot %d\n",(double)t,n,TStep,NCh,Ntot);
+				exit(1);
+			}	
 			TrackX = 0;
 			TrackY = 0;
 			TrackZ = 0;
 			NumAvgVel++;
+			printf("TimeTrack1 set to t\n");
 			TimeTrack1 = t;
 			nc = nc+NCh;
 			nca = nca+NCh;
@@ -2319,6 +2659,12 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			ElectricFieldX, ElectricFieldY, ElectricFieldZ);
 
 	printf("Deleting matrices\n");
+	if(method==1){
+		deleteMatrix(&Xb1);
+		deleteMatrix(&Xb2);
+		deleteMatrix(&Xf1);
+		deleteMatrix(&Xf2);
+	}
 	deleteChargeA(*chA);
 	deleteMatrix(&timeArray);
 	deleteMatrix(&Xcurrent);
@@ -2348,12 +2694,19 @@ int UpdateOccTime(SNarray * snA,Charge * ch, double time, ParameterFrame PF){
 		return -1;
 	}
 
+	int SLength;
+	int SWidth;
+	int SHeight;
 	int i;
 	int j;
 	int k;
 	int XElecOn;
 	int YElecOn;
 	int ZElecOn;
+
+	SLength = PFget_Len(PF);
+	SWidth = PFget_Wid(PF);
+	SHeight = PFget_Hei(PF);
 
 	i = getCx(*ch);
 	j = getCy(*ch);
@@ -2373,9 +2726,13 @@ int UpdateOccTime(SNarray * snA,Charge * ch, double time, ParameterFrame PF){
 		k=(k+getAhei(*snA))%(getAhei(*snA));
 	}
 
-	if(i>=0 && j>=0 && k>=0){
+	if(i>=0 && i<SLength &&  j>=0 && j<SWidth && k>=0 && k<SHeight){
 
 		SiteNode sn = getSN(*snA,i,j,k);
+		if(sn==NULL){
+			printf("ERROR sitenode is NULL %d i %d j %d k\n",i,j,k);
+			exit(1);
+		}
 		addTime(&sn,time);
 	}
 
@@ -2390,7 +2747,7 @@ int CheckPt_exist(char * File, int buffersize){
 	}
 
 	if(File[0]!='\0'){
-		printf("ERROR File has not been initialized to \\0\n");
+		printf("ERROR FileName has not been initialized to \\0\n");
 		return -1;
 	}
 
@@ -2457,7 +2814,7 @@ int CheckPt_exist(char * File, int buffersize){
 	}
 }
 
-int CheckPt_Cluster(const double Vx,const double Vy,const double Vz,const double T, int r){
+int CheckPt_Cluster_TOF(const double Vx,const double Vy,const double Vz,const double T, int r){
 
 	if(T < 0){
 		printf("ERROR Temperature negative\n");
@@ -2491,7 +2848,7 @@ int CheckPt_Cluster(const double Vx,const double Vy,const double Vz,const double
 }
 
 
-int CheckPt_Latest(char * FileNameFull, int buffersize, const double Vx,const double Vy,const double Vz,const double T){
+int CheckPt_Latest_TOF(char * FileNameFull, int buffersize, const double Vx,const double Vy,const double Vz,const double T){
 
 	if(buffersize<0){
 		printf("ERROR Buffer size less than 0 Buffer: %d!\n",buffersize);
@@ -2633,6 +2990,179 @@ int CheckPt_Latest(char * FileNameFull, int buffersize, const double Vx,const do
 
 						if(num>keep && ChT==T && ChVx==Vx && \
 								ChVy==Vy && ChVz==Vz){
+
+							CheckFileExist = 1;
+							keep = num;
+							strcpy(FileNameKeep,FileName);
+						}
+					}
+				}
+			}
+			closedir(d);
+		}
+
+	}else{
+		//CHECKPOINT directory does not exist
+		printf("ERROR CHECKPOINT directory not found\n");
+		return -1;
+	}
+
+	if(CheckFileExist==1){
+		printf("FileNameKeep %s\n",FileNameKeep);
+		if(buffersize<len){
+			printf("Value of len %d value of buffersize %d\n",len,buffersize);
+			printf("ERROR Buffersize is to small!\n");
+			return -1;
+		}
+		strncpy(FileNameFull,FileNameKeep,buffersize-1);
+		return keep;
+	}else{
+		return 0;
+	}
+}
+
+int CheckPt_Latest_CELIV(char * FileNameFull, int buffersize,const double T){
+
+	if(buffersize<0){
+		printf("ERROR Buffer size less than 0 Buffer: %d!\n",buffersize);
+		return -1;
+	}
+	if(T < 0){
+		printf("ERROR Temperature negative\n");
+		return -1;
+	}
+
+	struct stat st;
+	char FileName[256];
+	char FileEx[20];
+	char CheckNum[30];
+	char CheckVx[30] = "";
+	char CheckVy[30] = "";
+	char CheckVz[30] = "";
+	char CheckT[30] = "";
+
+	double ChVx;
+	double ChVy;
+	double ChVz;
+	double ChT;
+	char FileNameKeep[256];
+	int len;
+	int stop1;
+	int stop2;
+	int stop3;
+	int stop4;
+	int stop5;
+	int i;
+
+	int CheckFileExist;
+	//Determines if there is a checkpoint file
+	//What is the highest number of the checkpointfile
+	int num;
+	int keep;
+
+	//Initialize file to Null pointer
+	FileName[0] = '\0';
+	FileNameFull[0] = '\0';
+	CheckFileExist = 0;
+
+	ChVx = 0.0;
+	ChVy = 0.0;
+	ChVz = 0.0;
+	ChT = 0.0;
+
+	if(stat("CHECKPOINT",&st)==0){
+		//CHECKPOINT directory does exist
+		DIR *d;
+		struct dirent *dir;
+		d = opendir("CHECKPOINT");
+		if(d) {
+
+			num = 0;
+			keep = 0;
+			while((dir = readdir(d))!=NULL){
+
+				strcpy(FileName, dir->d_name);
+				//printf("%s\n",FileName);
+				len = strlen(FileName);
+				if(len>4){
+					for(i=4;i>=0;i--){
+						FileEx[4-i] = FileName[len-i];
+					}
+					FileEx[4] = '\0';
+					if(strcmp(FileEx,"ckpt\0")==0){
+						//It is a ckpt file
+
+						//Need to make sure it is the right checkpoint file
+
+						i = 0;
+						while( FileName[len-5-i]!='R'){
+							i++;
+						}
+						stop1 = i;
+						for(i=0;i<(stop1-1);i++){
+							CheckNum[i] = FileName[len-(5+stop1)+(i+1)];
+						}
+
+						CheckNum[stop1-1]='\0';
+						sscanf(CheckNum,"%d",&num);
+
+						i = 0;
+						while( FileName[len-5-stop1-i]!='z'){
+							i++;
+						}
+						stop2 = i;
+
+
+						for(i=0;i<(stop2-1);i++){
+							CheckVz[i] = FileName[len-(5+stop1+stop2)+(i+1)];
+						}
+
+						CheckVz[stop2-1]='\0';
+						sscanf(CheckVz,"%lf",&ChVz);
+
+						i = 0;
+						while( FileName[len-(5+stop1+stop2+i)]!='y'){
+							i++;
+						}
+						stop3 = i;
+						
+						for(i=0;i<(stop3-2);i++){
+
+							CheckVy[i] = FileName[len-(5+stop1+stop2+stop3)+(i+1)];
+						}
+
+						CheckVz[stop3-1]='\0';
+						sscanf(CheckVy,"%lf",&ChVy);
+
+						i = 0;
+						while( FileName[len-(5+stop1+stop2+stop3+i)]!='x'){
+							i++;
+						}
+						stop4 = i;
+						for(i=0;i<(stop4-2);i++){
+							CheckVx[i] = FileName[len-(5+stop1+stop2+stop3+stop4)+(i+1)];
+						}
+
+						CheckVz[stop4-1]='\0';
+						sscanf(CheckVx,"%lf",&ChVx);
+
+
+						i = 0;
+						while( FileName[len-(5+stop1+stop2+stop3+stop4+i)]!='T'){
+							i++;
+						}
+
+						stop5 = i;
+						for(i=0;i<(stop5-2);i++){
+							CheckT[i] = FileName[len-(5+stop1+stop2+stop3+stop4+stop5)+(i+1)];
+						}
+
+						CheckVz[stop5-1]='\0';
+						sscanf(CheckT,"%lf",&ChT);
+
+
+						if(num>keep && ChT==T && ChVx==0 && \
+								ChVy==0 && ChVz==0){
 
 							CheckFileExist = 1;
 							keep = num;
@@ -3122,7 +3652,7 @@ int Load_CheckPt(long double * t, SNarray * snA, ChargeArray * chA, matrix * Seq
 return 0;
 }
 
-int Load_CheckPt_Data(long double * t, SNarray * snA, ChargeArray * chA, matrix * Sequence,\
+int Load_CheckPt_Data_TOF(long double * t, SNarray * snA, ChargeArray * chA, matrix * Sequence,\
 		matrix * FutureSite, char * FileName,long int * n,  int * nc, int *nca,\
 		int * Num_elXb, int * Num_elXf, int * Num_elYl, int * Num_elYr, int * Num_elZb,\
 		int * Num_elZa, double VoltageX, double VoltageY, double VoltageZ){
@@ -4051,8 +4581,8 @@ int Save_CheckPt(char * FileName, int * CheckptNum, SNarray snA,\
 		fprintf(CheckOut,"//Tunneling constant [1/nm]\n");
 		fprintf(CheckOut,"gamma %f\n",PFget_gamma(PF)/1E9);
 		fprintf(CheckOut,"MovieFrames %d\n",PFget_MovieFrames(PF));
-		fprintf(CheckOut,"Vcv %d\n",PFget_Vcv(PF));
-		fprintf(CheckOut,"Tcv %d\n\n",PFget_Tcv(PF));
+		fprintf(CheckOut,"Vcv %g\n",PFget_Vcv(PF));
+		fprintf(CheckOut,"Tcv %g\n\n",PFget_Tcv(PF));
 		fprintf(CheckOut,"Global Time\tTime Increments\tCharges in System\tActive Charges\n%Lg\t%ld\t%d\t%d\n\n",t,n,nc,nca);	
 
 		//Printing sites and energies
@@ -4309,22 +4839,10 @@ int ChargeClosure(Electrode el, Charge * one, matrix * Sequence, int * nc, int *
 	printf("Set Dwel exit\n");
 	setDwel(*one,1E6);
 
+	int rv;
 	int i;
 	int ID;
 	int ID2;
-	//Sequence contains the ids of the charges which go
-	//from 0 to Ntot-1;
-	//Placing the charge that just reached the electrode to 
-	//the back of the list
-	ID2 = getE(*Sequence,1,1);
-
-	for(i=0; i<Ntot-1;i++){
-		//Updating the waiting queue of charges
-		ID = getE(*Sequence,i+2,1);
-		setE(*Sequence,i+1,1,ID);
-	}
-
-	setE(*Sequence,Ntot,1,ID2);
 
 	return 0;
 }
@@ -4359,7 +4877,6 @@ int ChargeElectrode(Electrode el, Charge * one, matrix * Sequence, ChargeArray c
 	}
 	//Set Dwell time to that of the electrode
 	double tim = 1/getElectrode_Sum(el); 
-	printf("set dwel Electrode tim %g\n",tim);
 	setDwel(*one, -log((double)rand()/RAND_MAX)*tim);
 
 	if(tim>1){
@@ -4556,6 +5073,10 @@ int SaveDataPoint(int * CurrentInc, int * NumAvgVel, int nc, int XElecOn, int YE
 	if(nc!=0){
 		vel =(double) ((*TotalVelX)+(long double)(*TrackX)*(long double)SiteDistance/((t-(*TimeTrack1))*(long double)nc))/((long double)(*NumAvgVel)+1);
 		//printf("Xvel %g TotalVelX %Lg TrackX %d t %Lg TimeTrack1 %Lg nc %d\n",vel,*TotalVelX, *TrackX, t,*TimeTrack1, nc);
+		if(isnan(vel)){
+			printf("Vel is nan t %g TimeTrack1 %g\n",(double)t,(double)*TimeTrack1);
+			exit(1);
+		}
 		rv = setE(*Xvelocity,(*CurrentInc),1,(double)vel);
 		vel = (double) ((*TotalVelY)+(long double)(*TrackY)*(long double)SiteDistance/((t-(*TimeTrack1))*(long double)nc))/((long double)(*NumAvgVel)+1);
 		rv = setE(*Yvelocity,(*CurrentInc),1,(double)vel);
@@ -4628,12 +5149,19 @@ int CheckIfElecHop(int xx, int yy, int zz,\
 	long double TrackZ2 = (long double) (*TrackZ);
 	long double nc2 = (long double)(*nc);
 	long double SiteDistance2 = (long double)SiteDistance;
+	
+	printf("t %g TimeTrack1 %g\n",(double)t,(double)*TimeTrack1);
+	
 	if(xx == -1 && PeriodicX!=1){
 		//Arrived at back electrode
 		(*Xsource)=*Xsource+1;
-		(*TotalVelX) = (*TotalVelX) + (TrackX2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
-		(*TotalVelY) = (*TotalVelY) + (TrackY2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
-		(*TotalVelZ) = (*TotalVelZ) + (TrackZ2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+		if( t!=*TimeTrack1){
+			(*TotalVelX) = (*TotalVelX) + (TrackX2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+			(*TotalVelY) = (*TotalVelY) + (TrackY2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+			(*TotalVelZ) = (*TotalVelZ) + (TrackZ2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+		}
+		//If t==timetrack1 it means we recently saved the data and therefore 
+		//therefore the velocity will not have changed.
 		(*TrackX) = 0;
 		(*TrackY) = 0;
 		(*TrackZ) = 0;
@@ -4644,9 +5172,11 @@ int CheckIfElecHop(int xx, int yy, int zz,\
 	}else if(xx == SLength*EndX && EndX != 0 ){
 		//Arrived at front electrode
 		(*Xdrain)=*Xdrain+1;
-		(*TotalVelX) = (*TotalVelX) + (TrackX2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
-		(*TotalVelY) = (*TotalVelY) + (TrackY2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
-		(*TotalVelZ) = (*TotalVelZ) + (TrackZ2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+		if( t!=*TimeTrack1){
+			(*TotalVelX) = (*TotalVelX) + (TrackX2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+			(*TotalVelY) = (*TotalVelY) + (TrackY2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+			(*TotalVelZ) = (*TotalVelZ) + (TrackZ2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+		}
 		(*TrackX) = 0;
 		(*TrackY) = 0;
 		(*TrackZ) = 0;
@@ -4659,9 +5189,11 @@ int CheckIfElecHop(int xx, int yy, int zz,\
 	if(yy == -1 && PeriodicY!=1){
 		//Arrived at Left electrode
 		(*Ysource)=*Ysource+1;
-		(*TotalVelX) = (*TotalVelX) + (TrackX2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
-		(*TotalVelY) = (*TotalVelY) + (TrackY2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
-		(*TotalVelZ) = (*TotalVelZ) + (TrackZ2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+		if( t!=*TimeTrack1){
+			(*TotalVelX) = (*TotalVelX) + (TrackX2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+			(*TotalVelY) = (*TotalVelY) + (TrackY2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+			(*TotalVelZ) = (*TotalVelZ) + (TrackZ2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+		}
 		(*TrackX) = 0;
 		(*TrackY) = 0;
 		(*TrackZ) = 0;
@@ -4672,9 +5204,11 @@ int CheckIfElecHop(int xx, int yy, int zz,\
 	}else if(yy == SWidth*EndY && EndY != 0 ){
 		//Arrived at front electrode
 		(*Ydrain)=*Ydrain+1;
-		(*TotalVelX) = (*TotalVelX) + (TrackX2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
-		(*TotalVelY) = (*TotalVelY) + (TrackY2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
-		(*TotalVelZ) = (*TotalVelZ) + (TrackZ2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+		if( t!=*TimeTrack1){
+			(*TotalVelX) = (*TotalVelX) + (TrackX2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+			(*TotalVelY) = (*TotalVelY) + (TrackY2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+			(*TotalVelZ) = (*TotalVelZ) + (TrackZ2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+		}
 		(*TrackX) = 0;
 		(*TrackY) = 0;
 		(*TrackZ) = 0;
@@ -4687,9 +5221,11 @@ int CheckIfElecHop(int xx, int yy, int zz,\
 	if(zz == -1 && PeriodicZ!=1){
 		//Arrived at bottom electrode
 		(*Zsource)=*Zsource+1;
-		(*TotalVelX) = (*TotalVelX) + (TrackX2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
-		(*TotalVelY) = (*TotalVelY) + (TrackY2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
-		(*TotalVelZ) = (*TotalVelZ) + (TrackZ2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+		if( t!=*TimeTrack1){
+			(*TotalVelX) = (*TotalVelX) + (TrackX2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+			(*TotalVelY) = (*TotalVelY) + (TrackY2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+			(*TotalVelZ) = (*TotalVelZ) + (TrackZ2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+		}
 		(*TrackX) = 0;
 		(*TrackY) = 0;
 		(*TrackZ) = 0;
@@ -4700,9 +5236,11 @@ int CheckIfElecHop(int xx, int yy, int zz,\
 	}else if(zz == SHeight*EndZ && EndZ != 0 ){
 		//Arrived at top electrode
 		(*Zdrain)=*Zdrain+1;
-		(*TotalVelX) = (*TotalVelX) + (TrackX2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
-		(*TotalVelY) = (*TotalVelY) + (TrackY2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
-		(*TotalVelZ) = (*TotalVelZ) + (TrackZ2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+		if( t!=*TimeTrack1){
+			(*TotalVelX) = (*TotalVelX) + (TrackX2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+			(*TotalVelY) = (*TotalVelY) + (TrackY2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+			(*TotalVelZ) = (*TotalVelZ) + (TrackZ2)*(SiteDistance2)/((t-(*TimeTrack1))*(nc2));
+		}
 		(*TrackX) = 0;
 		(*TrackY) = 0;
 		(*TrackZ) = 0;
@@ -4711,6 +5249,10 @@ int CheckIfElecHop(int xx, int yy, int zz,\
 		(*ElecExit)=1;
 	}
 
+	if(isnan(*TotalVelX)){
+		printf("ERROR *TotalVelX is nan!\n");
+		exit(1);
+	}
 	return 0;
 
 }

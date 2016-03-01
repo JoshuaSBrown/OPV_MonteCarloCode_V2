@@ -66,7 +66,7 @@ int PrintFile_xyz( int orderLow, SNarray snA, ArbArray *ArClLL, char * FileName)
 	}
 
 	printf("Printing %s.xyz\n",FileName);
-	int length;
+	//int length;
 	int element;
 	int NodeID;
 	int i, j, k;
@@ -75,7 +75,7 @@ int PrintFile_xyz( int orderLow, SNarray snA, ArbArray *ArClLL, char * FileName)
 	ClusterLL ClLL;
 	Node Nod;
 	SiteNode sn;
-	length = strlen(FileName);
+	//length = strlen(FileName);
 
 	//strcat(FileName,".xyz");
 	char buf[256];
@@ -133,7 +133,7 @@ int PrintNeighFile_xyz( int orderLow, SNarray snA, ArbArray *ArClLL,  char * Fil
 	}
 
 	printf("Printing %s.xyz\n",FileName);
-	int length;
+	//int length;
 	int element;
 	int NodeID;
 	int i, j, k;
@@ -142,7 +142,7 @@ int PrintNeighFile_xyz( int orderLow, SNarray snA, ArbArray *ArClLL,  char * Fil
 	ClusterLL ClLL;
 	NeighNode NeighNod;
 	SiteNode sn;
-	length = strlen(FileName);
+	//length = strlen(FileName);
 
 	//strcat(FileName,".xyz");
   char buf[256];
@@ -476,13 +476,13 @@ int HopOnOffCluster(SNarray snA, int ID, double position){
 	}
 
 	double tcluster = 0.0;
-	double tprob = 0.0;
-	double SsumTotal = 0.0;
+	//double tprob = 0.0;
+	//double SsumTotal = 0.0;
 	double ProbStay = 0.0;
 	
 	tcluster = getCluster_time(ClLL);
-	tprob = tcluster*20;
-	SsumTotal = (1/tprob+1/tcluster);
+	//tprob = tcluster*20;
+	//SsumTotal = (1/tprob+1/tcluster);
 	//ProbStay = (1/tcluster);
 	//ProbStay = ProbStay/SsumTotal;
 	

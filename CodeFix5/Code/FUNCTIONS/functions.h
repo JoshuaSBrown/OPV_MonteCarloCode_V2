@@ -59,6 +59,12 @@ int initJumPossibility_ElecZ( const double electricEnergyX,\
 		const int PeriodicX, const int PeriodicY,\
 		const int XElecOn, const int YElecOn, const int AorB);
 
+/* Update hop rates of sites on and off X electrodes
+*/
+int Update_initJumPossibility_ElecX(const double electricEnergyX, const double electricEnergyY,\
+		const double electricEnergyZ, const double MarcusCoeff, const double KT, matrix X1,\
+		matrix X2, Electrode elX, const int BorF, ParameterFrame PF);
+
 
 int initJumPossibility(const double electricEnergyX,const double electricEnergyY,\
 		const double electricEnergyZ, const double MarcusCoeff,\
@@ -72,6 +78,13 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 ChargeArray initCharget0( matrix Sequence, const_SNarray snA,  const int Ntot, const int NCh,\
 		const double D, const int XElecOn, const int YElecOn, const int ZElecOn,\
 		const int EndX, const int EndY, const int EndZ);
+
+/* InitCharget0 initializes the chargte data structure
+	 in the case the charges are generated from thermal 
+	 effects as is the case in the CELIV type experiments
+*/
+ChargeArray initCharget0_Thermal( const_SNarray snA, ParameterFrame PF, const double Temperature,\
+		const int XElecOn,const int YElecOn,const int ZElecOn);
 
 /* Init Charge responsible for defining initial conditions of charges
 	 as they are added at each timestep. 

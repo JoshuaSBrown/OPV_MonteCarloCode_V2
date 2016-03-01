@@ -36,6 +36,7 @@ int main(void){
 	static const double kB = 8.6173324E-5;
 
 	//Variables from ParameterFrame
+	int method;
 	int SLength;
 	int SWidth;
 	int SHeight;
@@ -53,10 +54,6 @@ int main(void){
 	double TempStart;
 	int TemperatureStep;
 	double TemperatureInc;
-	double reOrgEnergy;
-	double AttemptToHop;
-	double gamma;
-	int rN;
 	int r;
 	double Vx;
 	double Vy;
@@ -134,6 +131,7 @@ int main(void){
 	}
 
 	//Initializing ParameterFrame Variables
+	method = PFget_method(PF);
 	SLength = PFget_Len(PF);
 	SWidth = PFget_Wid(PF);
 	SHeight = PFget_Hei(PF);
@@ -151,90 +149,145 @@ int main(void){
 	TempStart = PFget_TempStart(PF);
 	TemperatureStep = PFget_TempStep(PF);
 	TemperatureInc = PFget_TempInc(PF);
-	reOrgEnergy = PFget_reOrg(PF);
-	AttemptToHop = PFget_AttemptToHop(PF);
-	gamma = PFget_gamma(PF);
 
-	rN = 1;
 	Vx = VoltageX;
 	Vxcount = 0;
 
-	//Cycle through Xvoltages
-//	mem_check();
-	while(Vxcount<=VStepX){
-		Vy = VoltageY;
-		Vycount = 0;
+	//TOF method
+	if(method==0){
+		//Cycle through Xvoltages
+		//	mem_check();
+		while(Vxcount<=VStepX){
+			Vy = VoltageY;
+			Vycount = 0;
 
-		//Cycle through Yvoltages
-		while(Vycount<=VStepY){
-			Vz = VoltageZ;
-			Vzcount = 0;
+			//Cycle through Yvoltages
+			while(Vycount<=VStepY){
+				Vz = VoltageZ;
+				Vzcount = 0;
 
-			//Cycle through Zvoltages
-			while(Vzcount<=VStepZ){
+				//Cycle through Zvoltages
+				while(Vzcount<=VStepZ){
 
-				for(count=0;count<TemperatureStep;count++){
+					for(count=0;count<TemperatureStep;count++){
 
-					Temperature = TempStart;
-					KT = kB*Temperature; 
+						Temperature = TempStart;
+						KT = kB*Temperature; 
 
-					for(r=1;r<Rcount+1;r++){
+						for(r=1;r<Rcount+1;r++){
 
-						//Electric field from voltage
-						electricFieldX = Vx / (SLength*SiteDistance);
-						electricFieldY = Vy / (SWidth*SiteDistance);
-						electricFieldZ = Vz / (SHeight*SiteDistance);
+							//Electric field from voltage
+							electricFieldX = Vx / (SLength*SiteDistance);
+							electricFieldY = Vy / (SWidth*SiteDistance);
+							electricFieldZ = Vz / (SHeight*SiteDistance);
 
-						//Electrical energy from voltage between two sites
-						electricEnergyX = SiteDistance*electricFieldX;
-						electricEnergyY = SiteDistance*electricFieldY;
-						electricEnergyZ = SiteDistance*electricFieldZ;
+							//Electrical energy from voltage between two sites
+							electricEnergyX = SiteDistance*electricFieldX;
+							electricEnergyY = SiteDistance*electricFieldY;
+							electricEnergyZ = SiteDistance*electricFieldZ;
 
-						printf("Calculating .ckpt status\n");
-						CheckPtStatus = -1;
-						CheckPtStatus = CheckPt_Test(&CheckPointNum, CheckFileExist, FileNameCheckPtVersion,\
-																				 FileNameSize,Vx, Vy, Vz, Temperature);
-						
-						sprintf(FileName,"DataT%gVx%gVy%gVz%gR%d",Temperature,Vx,Vy,Vz,r);
-						
-						Pre_randomWalk(CheckPtStatus, FileNameCheckPtVersion,FileName, &t, &Sequence, &chA,\
-													 &FutureSite,&ClArLL, &snA, PF,\
-													 electricEnergyX, electricEnergyY, electricEnergyZ,r,Vx,Vy,Vz, Temperature,\
-													 &n, &nc, &nca, &elXb, &elXf, &elYl, &elYr, &elZb, &elZa);	
+							printf("Calculating .ckpt status\n");
+							CheckPtStatus = -1;
+							CheckPtStatus = CheckPt_Test_TOF(&CheckPointNum, CheckFileExist, FileNameCheckPtVersion,\
+									FileNameSize,Vx, Vy, Vz, Temperature);
 
-						if(FutureSite==NULL){
-							printf("FutureSite matrix NULL\n");
-							exit(1);
+							sprintf(FileName,"DataT%gVx%gVy%gVz%gR%d",Temperature,Vx,Vy,Vz,r);
+
+							Pre_randomWalk(CheckPtStatus, FileNameCheckPtVersion,FileName, &t, &Sequence, &chA,\
+									&FutureSite,&ClArLL, &snA, PF,\
+									electricEnergyX, electricEnergyY, electricEnergyZ,r,Vx,Vy,Vz, Temperature,\
+									&n, &nc, &nca, &elXb, &elXf, &elYl, &elYr, &elZb, &elZa);	
+
+							if(FutureSite==NULL){
+								printf("FutureSite matrix NULL\n");
+								exit(1);
+							}
+
+							printFileEnergy(snA, &FileName[0],\
+									electricEnergyX, electricEnergyY, electricEnergyZ, PF);
+							printMatrix(FutureSite);
+
+							randomWalk(snA, CheckPointNum, &FileName[0],\
+									electricFieldX,	electricFieldY, electricFieldZ,\
+									elXb, elXf, elYl, elYr, elZb, elZa, PF, t, Sequence,\
+									FutureSite, &chA, n, nc, nca, Temperature); 
+
+							printf("Printing Visit Freq files\n");
+							printVisitFreq(snA,&FileName[0]);
+
+							Post_randomWalk(ClArLL, snA, elXb, elXf, elYl, elYr, elZb, elZa,PF);
+
 						}
 
-						printFileEnergy(snA, &FileName[0],\
-														electricEnergyX, electricEnergyY, electricEnergyZ, PF);
-						printMatrix(FutureSite);
-
-						randomWalk(snA, CheckPointNum, &FileName[0],\
-								electricFieldX,	electricFieldY, electricFieldZ,\
-								elXb, elXf, elYl, elYr, elZb, elZa, PF, t, Sequence,\
-								FutureSite, &chA, n, nc, nca); 
-
-						printf("Printing Visit Freq files\n");
-						printVisitFreq(snA,&FileName[0]);
-
-						Post_randomWalk(ClArLL, snA, elXb, elXf, elYl, elYr, elZb, elZa,PF);
-
+						Temperature += TemperatureInc;
 					}
-
-					Temperature += TemperatureInc;
+					Vzcount++;
+					Vz += VincZ;
 				}
-				Vzcount++;
-				Vz += VincZ;
+				Vycount++;
+				Vy += VincY;
 			}
-			Vycount++;
-			Vy += VincY;
+			Vxcount++;
+			Vx += VincX;
 		}
-		Vxcount++;
-		Vx += VincX;
-	}
+	}else if(method==1){
+		//CELIV method
+		for(count=0;count<TemperatureStep;count++){
 
+			Temperature = TempStart;
+			KT = kB*Temperature; 
+
+			for(r=1;r<Rcount+1;r++){
+
+				//Electric field from voltage
+				electricFieldX = Vx / (SLength*SiteDistance);
+				electricFieldY = Vy / (SWidth*SiteDistance);
+				electricFieldZ = Vz / (SHeight*SiteDistance);
+
+				//Electrical energy from voltage between two sites
+				electricEnergyX = SiteDistance*electricFieldX;
+				electricEnergyY = SiteDistance*electricFieldY;
+				electricEnergyZ = SiteDistance*electricFieldZ;
+
+				printf("Calculating .ckpt status\n");
+				CheckPtStatus = -1;
+				CheckPtStatus = CheckPt_Test_CELIV( &CheckPointNum, CheckFileExist, FileNameCheckPtVersion,\
+						FileNameSize,Temperature);
+
+				sprintf(FileName,"DataT%gR%d",Temperature,r);
+
+				Pre_randomWalk(CheckPtStatus, FileNameCheckPtVersion,FileName, &t, &Sequence, &chA,\
+						&FutureSite,&ClArLL, &snA, PF,\
+						electricEnergyX, electricEnergyY, electricEnergyZ,r,Vx,Vy,Vz, Temperature,\
+						&n, &nc, &nca, &elXb, &elXf, &elYl, &elYr, &elZb, &elZa);	
+
+				if(FutureSite==NULL){
+					printf("FutureSite matrix NULL\n");
+					exit(1);
+				}
+
+				//printFileEnergy(snA, &FileName[0],\
+						electricEnergyX, electricEnergyY, electricEnergyZ, PF);
+				//printMatrix(FutureSite);
+
+				randomWalk(snA, CheckPointNum, &FileName[0],\
+						electricFieldX,	electricFieldY, electricFieldZ,\
+						elXb, elXf, elYl, elYr, elZb, elZa, PF, t, Sequence,\
+						FutureSite, &chA, n, nc, nca, Temperature); 
+
+				printf("Printing Visit Freq files\n");
+				printVisitFreq(snA,&FileName[0]);
+
+				Post_randomWalk(ClArLL, snA, elXb, elXf, elYl, elYr, elZb, elZa,PF);
+
+			}
+
+			Temperature += TemperatureInc;
+		}
+
+	}else{
+		printf("ERROR method option can only be ToF (method==0) or CELIV (method==1)\n");
+	}
 	end = clock();
 	time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
 	time(&finish);

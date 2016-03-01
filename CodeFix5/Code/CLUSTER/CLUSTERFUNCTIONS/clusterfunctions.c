@@ -2172,7 +2172,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 	int Node_IDFro, Node_IDBeh, Node_IDLef, Node_IDRig, Node_IDAbo, Node_IDBel;
 	int Elec_Fro, Elec_Beh, Elec_Lef, Elec_Rig, Elec_Abo, Elec_Bel;
 	int i, j, k;
-	int rv;
+	//int rv;
 	int order;
 	Node tempNode;
 	ClusterLL TempClLL;
@@ -2205,7 +2205,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							Node_IDFro=getIndFroP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
 							//Add NeighNode to the linklist
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDFro);
+							addNeighNodeToCluster(&TempClLL, Node_IDFro);
 
 							if(Elec_Fro==-1){
 								//Identify Front Electrode as a neighbor to the cluster
@@ -2222,7 +2222,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is behind
 							Node_IDBeh=getIndBehP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDBeh);
+							addNeighNodeToCluster(&TempClLL, Node_IDBeh);
 
 							if(Elec_Beh==-1){ 
 								//Identify left Electrode as a neighbor to the cluster
@@ -2239,7 +2239,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is to the left
 							Node_IDLef=getIndLefP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDLef);
+							addNeighNodeToCluster(&TempClLL, Node_IDLef);
 							if(Elec_Lef==-1) {
 								setCluster_elecYid(&TempClLL,0);
 							}
@@ -2253,7 +2253,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is to the right
 							Node_IDRig=getIndRigP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDRig);
+							addNeighNodeToCluster(&TempClLL, Node_IDRig);
 							if(Elec_Rig==-1) {
 								setCluster_elecYid(&TempClLL,1);
 							}
@@ -2267,7 +2267,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is below
 							Node_IDBel=getIndBelP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDBel);
+							addNeighNodeToCluster(&TempClLL, Node_IDBel);
 							if(Elec_Bel==-1){
 								setCluster_elecZid(&TempClLL,0);
 							}
@@ -2281,7 +2281,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is above
 							Node_IDAbo=getIndAboP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDAbo);
+							addNeighNodeToCluster(&TempClLL, Node_IDAbo);
 							if(Elec_Abo==-1) {
 								setCluster_elecZid(&TempClLL,1);
 							}
@@ -2323,7 +2323,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 								//Add the Front Electrode as a neighbor to the cluster
 								setCluster_elecXid(&TempClLL,1);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDFro);
+								addNeighNodeToCluster(&TempClLL, Node_IDFro);
 							}
 						}else{
 							if(Elec_Fro==-1){
@@ -2341,7 +2341,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 								//Identify left Electrode as a neighbor to the cluster
 								setCluster_elecXid(&TempClLL,0);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDBeh);
+								addNeighNodeToCluster(&TempClLL, Node_IDBeh);
 							}
 						}else{
 							if(Elec_Beh==-1){ 
@@ -2354,7 +2354,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is to the left
 							Node_IDLef=getIndLefP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDLef);
+							addNeighNodeToCluster(&TempClLL, Node_IDLef);
 							if(Elec_Lef==-1) {
 								setCluster_elecYid(&TempClLL,0);
 							}
@@ -2368,7 +2368,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is to the right
 							Node_IDRig=getIndRigP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDRig);
+							 addNeighNodeToCluster(&TempClLL, Node_IDRig);
 							if(Elec_Rig==-1) {
 								setCluster_elecYid(&TempClLL,1);
 							}
@@ -2382,7 +2382,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is below
 							Node_IDBel=getIndBelP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDBel);
+							addNeighNodeToCluster(&TempClLL, Node_IDBel);
 							if(Elec_Bel==-1){
 								setCluster_elecZid(&TempClLL,0);
 							}
@@ -2396,7 +2396,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is above
 							Node_IDAbo=getIndAboP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDAbo);
+							addNeighNodeToCluster(&TempClLL, Node_IDAbo);
 							if(Elec_Abo==-1) {
 								setCluster_elecZid(&TempClLL,1);
 							}
@@ -2433,7 +2433,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							Node_IDFro=getIndFroP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
 							//Add NeighNode to the linklist
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDFro);
+							addNeighNodeToCluster(&TempClLL, Node_IDFro);
 
 							if(Elec_Fro==-1){
 								//Identify Front Electrode as a neighbor to the cluster
@@ -2450,7 +2450,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is behind
 							Node_IDBeh=getIndBehP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDBeh);
+							addNeighNodeToCluster(&TempClLL, Node_IDBeh);
 
 							if(Elec_Beh==-1){ 
 								//Identify left Electrode as a neighbor to the cluster
@@ -2470,7 +2470,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Lef==-1) {
 								setCluster_elecYid(&TempClLL,0);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDLef);
+								addNeighNodeToCluster(&TempClLL, Node_IDLef);
 							}
 						}else{
 							if(Elec_Lef==-1) {
@@ -2485,7 +2485,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Rig==-1) {
 								setCluster_elecYid(&TempClLL,1);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDRig);
+								addNeighNodeToCluster(&TempClLL, Node_IDRig);
 							}
 						}else{
 							if(Elec_Rig==-1) {
@@ -2497,7 +2497,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is below
 							Node_IDBel=getIndBelP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDBel);
+							addNeighNodeToCluster(&TempClLL, Node_IDBel);
 							if(Elec_Bel==-1){
 								setCluster_elecZid(&TempClLL,0);
 							}
@@ -2511,7 +2511,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is above
 							Node_IDAbo=getIndAboP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDAbo);
+							addNeighNodeToCluster(&TempClLL, Node_IDAbo);
 							if(Elec_Abo==-1) {
 								setCluster_elecZid(&TempClLL,1);
 							}
@@ -2548,7 +2548,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							Node_IDFro=getIndFroP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
 							//Add NeighNode to the linklist
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDFro);
+							addNeighNodeToCluster(&TempClLL, Node_IDFro);
 
 							if(Elec_Fro==-1){
 								//Identify Front Electrode as a neighbor to the cluster
@@ -2565,7 +2565,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is behind
 							Node_IDBeh=getIndBehP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDBeh);
+							addNeighNodeToCluster(&TempClLL, Node_IDBeh);
 
 							if(Elec_Beh==-1){ 
 								//Identify left Electrode as a neighbor to the cluster
@@ -2582,7 +2582,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is to the left
 							Node_IDLef=getIndLefP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDLef);
+							addNeighNodeToCluster(&TempClLL, Node_IDLef);
 							if(Elec_Lef==-1) {
 								setCluster_elecYid(&TempClLL,0);
 							}
@@ -2596,7 +2596,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is to the right
 							Node_IDRig=getIndRigP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDRig);
+							addNeighNodeToCluster(&TempClLL, Node_IDRig);
 							if(Elec_Rig==-1) {
 								setCluster_elecYid(&TempClLL,1);
 							}
@@ -2613,7 +2613,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Bel==-1){
 								setCluster_elecZid(&TempClLL,0);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDBel);
+								addNeighNodeToCluster(&TempClLL, Node_IDBel);
 							}
 						}else{
 							if(Elec_Bel==-1){
@@ -2628,7 +2628,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Abo==-1) {
 								setCluster_elecZid(&TempClLL,1);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDAbo);
+								addNeighNodeToCluster(&TempClLL, Node_IDAbo);
 							}
 						}else{
 							if(Elec_Abo==-1) {
@@ -2668,7 +2668,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 								//Identify Front Electrode as a neighbor to the cluster
 								setCluster_elecXid(&TempClLL,1);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDFro);
+								addNeighNodeToCluster(&TempClLL, Node_IDFro);
 							}
 						}else{
 							if(Elec_Fro==-1){
@@ -2686,7 +2686,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 								//Identify left Electrode as a neighbor to the cluster
 								setCluster_elecXid(&TempClLL,0);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDBeh);
+								addNeighNodeToCluster(&TempClLL, Node_IDBeh);
 							}
 						}else{
 							if(Elec_Beh==-1){ 
@@ -2702,7 +2702,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Lef==-1) {
 								setCluster_elecYid(&TempClLL,0);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDLef);
+								addNeighNodeToCluster(&TempClLL, Node_IDLef);
 							}
 						}else{
 							if(Elec_Lef==-1) {
@@ -2717,7 +2717,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Rig==-1) {
 								setCluster_elecYid(&TempClLL,1);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDRig);
+								addNeighNodeToCluster(&TempClLL, Node_IDRig);
 							}
 						}else{
 							if(Elec_Rig==-1) {
@@ -2729,7 +2729,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is below
 							Node_IDBel=getIndBelP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDBel);
+							addNeighNodeToCluster(&TempClLL, Node_IDBel);
 							if(Elec_Bel==-1){
 								setCluster_elecZid(&TempClLL,0);
 							}
@@ -2743,7 +2743,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is above
 							Node_IDAbo=getIndAboP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDAbo);
+							addNeighNodeToCluster(&TempClLL, Node_IDAbo);
 							if(Elec_Abo==-1) {
 								setCluster_elecZid(&TempClLL,1);
 							}
@@ -2780,7 +2780,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							Node_IDFro=getIndFroP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
 							//Add NeighNode to the linklist
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDFro);
+							addNeighNodeToCluster(&TempClLL, Node_IDFro);
 							if(Elec_Fro==-1){
 								//Identify Front Electrode as a neighbor to the cluster
 								setCluster_elecXid(&TempClLL,1);
@@ -2796,7 +2796,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is behind
 							Node_IDBeh=getIndBehP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDBeh);
+							addNeighNodeToCluster(&TempClLL, Node_IDBeh);
 
 							if(Elec_Beh==-1){ 
 								//Identify left Electrode as a neighbor to the cluster
@@ -2816,7 +2816,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Lef==-1) {
 								setCluster_elecYid(&TempClLL,0);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDLef);
+								addNeighNodeToCluster(&TempClLL, Node_IDLef);
 							}
 						}else{
 							if(Elec_Lef==-1) {
@@ -2831,7 +2831,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Rig==-1) {
 								setCluster_elecYid(&TempClLL,1);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDRig);
+								addNeighNodeToCluster(&TempClLL, Node_IDRig);
 							}
 						}else{
 							if(Elec_Rig==-1) {
@@ -2846,7 +2846,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Bel==-1){
 								setCluster_elecZid(&TempClLL,0);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDBel);
+								addNeighNodeToCluster(&TempClLL, Node_IDBel);
 							}
 						}else{
 							if(Elec_Bel==-1){
@@ -2861,7 +2861,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Abo==-1) {
 								setCluster_elecZid(&TempClLL,1);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDAbo);
+								addNeighNodeToCluster(&TempClLL, Node_IDAbo);
 							}
 						}else{
 							if(Elec_Abo==-1) {
@@ -2901,7 +2901,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 								//Add the Front Electrode as a neighbor to the cluster
 								setCluster_elecXid(&TempClLL,1);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDFro);
+								addNeighNodeToCluster(&TempClLL, Node_IDFro);
 							}
 						}else{
 							if(Elec_Fro==-1){
@@ -2919,7 +2919,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 								//Add the left Electrode as a neighbor to the cluster
 								setCluster_elecXid(&TempClLL,0);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDBeh);
+								addNeighNodeToCluster(&TempClLL, Node_IDBeh);
 							}
 						}else{
 							if(Elec_Beh==-1){ 
@@ -2932,7 +2932,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is to the left
 							Node_IDLef=getIndLefP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDLef);
+							addNeighNodeToCluster(&TempClLL, Node_IDLef);
 							if(Elec_Lef==-1) {
 								setCluster_elecYid(&TempClLL,0);
 							}
@@ -2946,7 +2946,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							//Neighbor that is to the right
 							Node_IDRig=getIndRigP(snA, i, j, k);
 							//If ID is -1 means it's outside the boundaries
-							rv = addNeighNodeToCluster(&TempClLL, Node_IDRig);
+							addNeighNodeToCluster(&TempClLL, Node_IDRig);
 							if(Elec_Rig==-1) {
 								setCluster_elecYid(&TempClLL,1);
 							}
@@ -2963,7 +2963,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Bel==-1){
 								setCluster_elecZid(&TempClLL,0);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDBel);
+								addNeighNodeToCluster(&TempClLL, Node_IDBel);
 							}
 						}else{
 							if(Elec_Bel==-1){
@@ -2978,7 +2978,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Abo==-1) {
 								setCluster_elecZid(&TempClLL,1);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDAbo);
+								addNeighNodeToCluster(&TempClLL, Node_IDAbo);
 							}
 						}else{
 							if(Elec_Abo==-1) {
@@ -3018,7 +3018,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 								//Add the Front Electrode as a neighbor to the cluster
 								setCluster_elecXid(&TempClLL,1);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDFro);
+								addNeighNodeToCluster(&TempClLL, Node_IDFro);
 							}
 						}else{
 							if(Elec_Fro==-1){
@@ -3036,7 +3036,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 								//Add the left Electrode as a neighbor to the cluster
 								setCluster_elecXid(&TempClLL,0);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDBeh);
+								addNeighNodeToCluster(&TempClLL, Node_IDBeh);
 							}
 						}else{
 							if(Elec_Beh==-1){ 
@@ -3052,7 +3052,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Lef==-1) {
 								setCluster_elecYid(&TempClLL,0);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDLef);
+								addNeighNodeToCluster(&TempClLL, Node_IDLef);
 							}
 						}else{
 							if(Elec_Lef==-1) {
@@ -3067,7 +3067,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Rig==-1) {
 								setCluster_elecYid(&TempClLL,1);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDRig);
+								addNeighNodeToCluster(&TempClLL, Node_IDRig);
 							}
 						}else{
 							if(Elec_Rig==-1) {
@@ -3082,7 +3082,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Bel==-1){
 								setCluster_elecZid(&TempClLL,0);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDBel);
+								addNeighNodeToCluster(&TempClLL, Node_IDBel);
 							}
 						}else{
 							if(Elec_Bel==-1){
@@ -3097,7 +3097,7 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 							if(Elec_Abo==-1) {
 								setCluster_elecZid(&TempClLL,1);
 							}else{
-								rv = addNeighNodeToCluster(&TempClLL, Node_IDAbo);
+								addNeighNodeToCluster(&TempClLL, Node_IDAbo);
 							}
 						}else{
 							if(Elec_Abo==-1) {
@@ -3140,8 +3140,8 @@ int CalculateSumAndP(const int TotalOrders, const_SNarray snA, ArbArray * ClArLL
 	//Individual hoprates off the cluster will determine 
 	//the probability a charge will hop to a given site
 	int element;
-	double count, count2;
-	double sum, sum2;
+	double count;//, count2;
+	double sum;//, sum2;
 	ClusterLL TempClLL;
 	Node tempNode;
 	matrix mtxHopOpt;
@@ -3166,9 +3166,9 @@ int CalculateSumAndP(const int TotalOrders, const_SNarray snA, ArbArray * ClArLL
 			while (TempClLL!=NULL){
 
 				count=0.0;
-				count2=0.0;
+				//count2=0.0;
 				sum=0.0;
-				sum2=0.0;
+				//sum2=0.0;
 				tempNode= getStartNode(TempClLL);
 
 				mtxHopOpt = newMatrix( getCluster_numNodes(TempClLL),3);
@@ -3946,7 +3946,7 @@ int FindCluster( int * OrderL, SNarray snA, double electricEnergyX,\
 	int MidPtsTotal;
 	int orderLow;
 	int orderHigh;
-	int rv;
+	//int rv;
 	ArbArray mpA = MPsort(&orderLow, &orderHigh, &MidPtsTotal, MasterM, snA, PeriodicX, PeriodicY, PeriodicZ);
 	
 
@@ -3977,7 +3977,7 @@ int FindCluster( int * OrderL, SNarray snA, double electricEnergyX,\
 	printf("Now that the nodes are all organized into their respective clusters\n");
 	printf("we will check to see if they are actually lead to charge traps.\n");
 
-	rv = FilterCluster( TotalOrders,orderLow, MasterM, &ClArLL, snA,\
+	FilterCluster( TotalOrders,orderLow, MasterM, &ClArLL, snA,\
 			PeriodicX, PeriodicY, PeriodicZ,\
 			XElecOn, YElecOn, ZElecOn);
 
@@ -3990,16 +3990,16 @@ int FindCluster( int * OrderL, SNarray snA, double electricEnergyX,\
 
 	//printing out the order of magnitudes of the hops to all the neighbors to ensure this is correct
 	//PrintCheck(TotalOrders, orderLow, ClArLL, snA, MasterM);
-	rv = ArbArrayCheck(ClArLL);
+	ArbArrayCheck(ClArLL);
 
 	printf("Order High %d Order Low %d\n",orderHigh,orderLow);
 	//Print out one cluster to determine what is going on
 
 	//At this point we need to figure out which sites are neighboring the Clusters
 	//Each Cluster should have a list of neighboring sites
-	rv = CalculateNeighNodes(TotalOrders, orderLow, &ClArLL, snA,\
+	CalculateNeighNodes(TotalOrders, orderLow, &ClArLL, snA,\
 			PeriodicX, PeriodicY, PeriodicZ );
-	rv = ArbArrayCheck(ClArLL);
+	ArbArrayCheck(ClArLL);
 
 	//printf("Printing Neighbor Array.\n");
 	//printArbArray(ClArLL, orderLow);
@@ -4007,22 +4007,22 @@ int FindCluster( int * OrderL, SNarray snA, double electricEnergyX,\
 	printf("Calculating Sum and P of clusters\n");
 	CalculateSumAndP( TotalOrders, snA, &ClArLL,  MasterM, Attempts,\
 			PeriodicX, PeriodicY, PeriodicZ);
-	rv = ArbArrayCheck(ClArLL);
+	ArbArrayCheck(ClArLL);
 
 	printf("Connecting Clusters to SiteNodes\n");
 	ConnectClusterSN(TotalOrders, snA, ClArLL);
 
 	printf("Deleting MasterM matrix\n");
 	deleteMatrix(&MasterM);
-	rv = ArbArrayCheck(ClArLL);
+	ArbArrayCheck(ClArLL);
 
 	printf("Deleting ArLL without deleting mid points\n");
-	rv=deleteArbArray(&ArLL);
-	rv = ArbArrayCheck(ClArLL);
+	deleteArbArray(&ArLL);
+	ArbArrayCheck(ClArLL);
 	printf("\nDeleting mpA and mid points\n");
-	rv=deleteAllMidPointArray(&mpA);
+	deleteAllMidPointArray(&mpA);
 	*ClArLL1=ClArLL;
-	rv = ArbArrayCheck(*ClArLL1);
+	ArbArrayCheck(*ClArLL1);
 
 	*OrderL = orderLow;
 	return 0;
@@ -4041,7 +4041,6 @@ int SaveCluster( char * FileName, int OrderL, SNarray snA, double electricEnergy
 
 	int i,j,k;
 	struct stat st = {0};
-	char str[20];
 	char bufCheck[256];
 	FILE * ClusterOut;
 
@@ -4983,7 +4982,7 @@ int LoadCluster( char * FileName, int * OrderL, SNarray * snA, double *electricE
 						
 						printf("TotalNodes %d\n",totalNodes);
 						fscanf(ClusterIn,"%d",&totalNodes);
-						setArbElement(ClArLL1, count, (void *) ClLL);
+						setArbElement(*ClArLL1, count, (void *) ClLL);
 						printf("Setting element of ArbArray\n");		
 						//Connect with the site nodes
 						for(count4=0;count4<getRows(mtx);count4++){
@@ -5812,7 +5811,7 @@ int LoadCluster_Only( char * FileName, int * OrderL, SNarray * snA, double elect
 						
 						printf("TotalNodes %d\n",totalNodes);
 						fscanf(ClusterIn,"%d",&totalNodes);
-						setArbElement(ClArLL1, count, (void *) ClLL);
+						setArbElement(*ClArLL1, count, (void *) ClLL);
 						printf("Setting element of ArbArray\n");		
 						//Connect with the site nodes
 						for(count4=0;count4<getRows(mtx);count4++){

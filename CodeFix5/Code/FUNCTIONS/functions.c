@@ -1,6 +1,7 @@
 #include <stdio.h> 
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
 
 #include "../PARAMETERS/read.h"
 //#include "../MEM/mem.h"
@@ -23,6 +24,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	}
 
 	//Grabbing parameters from parameter frame
+	int method = PFget_method(PF);
 	double reOrgEnergy = PFget_reOrg(PF);
 	double AttemptToHop = PFget_AttemptToHop(PF);
 	double gamma = PFget_gamma(PF);
@@ -42,6 +44,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	int XElecOn = PFget_XElecOn(PF);
 	int YElecOn = PFget_YElecOn(PF);
 	int ZElecOn = PFget_ZElecOn(PF);
+	double IntrFermi = PFget_IntrFermi(PF);
 
 	int SLength = getAlen(snA);
 	int SWidth = getAwid(snA);
@@ -49,7 +52,6 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	int traps, seeds, sites;
 	int i, j, k, m;
 	int ii, jj, kk;
-	int rv;
 	int index;
 	double seed_dist;
 	double trap_dist;
@@ -61,10 +63,10 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	double CorRad=lambda*CutOff;
 	double CorRadtemp;
 	double percent;
-	double SiteDistanceNM;
+	//double SiteDistanceNM;
 
 	//Converting to [nm]
-	SiteDistanceNM = SiteDistance*1E9;
+	//SiteDistanceNM = SiteDistance*1E9;
 	//Boltzmann constant Units of [eV/K]
 	static const double kB = 8.6173324E-5;
 	//Planck constant Units of [eV s]
@@ -137,9 +139,17 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 				setE(AsTr,i+1,3,(double)kk);
 
 				SiteEnergy = grn(Etrap, Tsigma);
-				setEnergy(pN,SiteEnergy);
-				setInitE(pN,1);
-				i++;
+				if(method==1){
+					if(SiteEnergy>IntrFermi){
+						setEnergy(pN,SiteEnergy);
+						setInitE(pN,1);
+						i++;
+					}
+				}else{
+						setEnergy(pN,SiteEnergy);
+						setInitE(pN,1);
+						i++;
+				}
 			}
 		}
 		printf("Percent Complete %ld\n",(long int)(100));
@@ -175,7 +185,6 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 				}else if(SeedProt==2){
 					SiteEnergy = E0;
 				}
-
 				setEnergy(pN,SiteEnergy);
 				setInitE(pN,1);
 				i++;
@@ -196,10 +205,17 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 					//printf("Initial ID %d initE %d\n",getIndex(snA,i,j,k), getInitE(getSN(snA,i,j,k)));
 					while (SumEcor==0 && getInitE(getSN(snA,i,j,k))==0){
 
-						SiteEnergy=grn(E0, sigma);
+						if(method==1){
+								SiteEnergy=IntrFermi;
+							while(SiteEnergy<=IntrFermi){
+								SiteEnergy=grn(E0, sigma);
+							}
+						}else{
+							SiteEnergy=grn(E0, sigma);
+						}
 						//assert(As!=NULL);
 						//Accounting for correlation from seeds
-						rv = CorrCal(As, i,j,k, CorRadtemp, SiteEnergy, SiteDistance,snA, &SumCor, &SumEcor, &seed_dist,\
+						CorrCal(As, i,j,k, CorRadtemp, SiteEnergy, SiteDistance,snA, &SumCor, &SumEcor, &seed_dist,\
 										SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda);
 							
 						//Accounting for correlation from traps
@@ -225,9 +241,9 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 								printf("Percent Complete %ld\n",(int long)(percent*100));
 								percent+=0.1;
 							}
-							
+
 							m++;
-							
+
 						}
 						
 						if(CorRadtemp>1){
@@ -308,7 +324,13 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 						setE(As,m+1,1,(double)i);
 						setE(As,m+1,2,(double)j);
 						setE(As,m+1,3,(double)k);
-						m++;
+						if(method==1){
+							if(SiteEnergy>IntrFermi){
+								m++;
+							}
+						}else{
+							m++;
+						}
 					}
 				}
 			}
@@ -323,7 +345,14 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 
 				
 				printf("index %d\n",index);
-				SiteEnergy=grn(E0, sigma);
+				if(method==1){
+					SiteEnergy=IntrFermi;
+					while(SiteEnergy<=IntrFermi){
+						SiteEnergy=grn(E0, sigma);
+					}
+				}else{
+					SiteEnergy=grn(E0, sigma);
+				}
 				CorRadtemp=CorRad;
 				//Calculate Correlation Energies for the UnAssigned positions
 				SumEcor=0;
@@ -368,8 +397,26 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 		deleteMatrix(&UnAs);
 	}
 
-	rv=deleteMatrix(&AsTr);
-	
+	deleteMatrix(&AsTr);
+
+	//Final Filter if using CELIV method
+	if(method==1){
+		printf("Final Filter for CELIV method of site Energies\n");
+		for(i = 0; i < SLength; i++){
+			for(j = 0; j < SWidth; j++){
+				for(k = 0; k < SHeight; k++){
+
+					pN = getSN(snA,i,j,k);
+					SiteEnergy = getEnergy(pN);
+					if(SiteEnergy<IntrFermi){
+						SiteEnergy = grn(E0,sigma);
+						setEnergy(pN,SiteEnergy);
+					}
+				}
+			}
+		}
+	}
+
 	printf("Finished initializing.\n");
 	//initialize jumping possibility; that is initializing sum and p[6] inside this function
 	//For all the sitenodes
@@ -461,7 +508,7 @@ int initElec(const double electricEnergyX, const double electricEnergyY,\
 	matrix Za1;
 	matrix Za2;
 
-	SNarray snAelec;
+	//SNarray snAelec;
 	SiteNode sn;
 
 	SLength = getAlen(snA);
@@ -528,11 +575,11 @@ int initElec(const double electricEnergyX, const double electricEnergyY,\
 			 	RelativePerm, vX, SWidth, SHeight, PeriodicY, PeriodicZ,\
 				YElecOn, ZElecOn, 0);
 
-	snAelec = (SNarray) getElectrode_AdjacentSites(*elXb);
+	//snAelec = (SNarray) getElectrode_AdjacentSites(*elXb);
 	//printf("Length %d Width %d Height %d\n",getAlen(snAelec),getAwid(snAelec),getAhei(snAelec));
 		
 	deleteMatrix(&Xb1);
-		deleteMatrix(&Xb2);
+	deleteMatrix(&Xb2);
 		
 		printf("Initializing jump rates to front electrode\n");
 		//Calculating jump rates for forward electrode
@@ -545,7 +592,7 @@ int initElec(const double electricEnergyX, const double electricEnergyY,\
 		deleteMatrix(&Xf2);
 
 
-	snAelec = (SNarray) getElectrode_HopRates(*elXb);
+	//snAelec = (SNarray) getElectrode_HopRates(*elXb);
 	//printf("Length %d Width %d Height %d\n",getAlen(snAelec),getAwid(snAelec),getAhei(snAelec));
 
 	}
@@ -690,7 +737,7 @@ int initElec(const double electricEnergyX, const double electricEnergyY,\
 		deleteMatrix(&Za2);
 	}
 
-  snAelec = (SNarray) getElectrode_AdjacentSites(*elXb);
+  //snAelec = (SNarray) getElectrode_AdjacentSites(*elXb);
 	//printf("Length %d Width %d Height %d\n",getAlen(snAelec),getAwid(snAelec),getAhei(snAelec));
 
 	
@@ -889,7 +936,7 @@ int initJumPossibility_ElecX( const double electricEnergyX,\
 	if(SumRate<0.1){
 		//printf("j %d k %d\n",j,k);
 		printf("MarcusCoeff %g hoppingRate %g\n",MarcusCoeff,hoppingRate(Energy,KT,reOrgEnergy));
-		printf("WARNING SumRate way is very small may need to adjust electrode fermi levels %g\n",SumRate);
+		printf("WARNING SumRate is very small may need to adjust electrode fermi levels %g\n",SumRate);
 	}
 	
 	pval = 0;
@@ -912,6 +959,259 @@ int initJumPossibility_ElecX( const double electricEnergyX,\
 	printf("End of Init ElectrodeX\n");
 	return 0;
 }
+
+int Update_initJumPossibility_ElecX( const double electricEnergyX,\
+											const double electricEnergyY, const double electricEnergyZ,\
+											const double MarcusCoeff,	const double KT, matrix X1, matrix X2,\
+											Electrode elX, const int BorF, ParameterFrame PF){
+
+
+	if(elX==NULL){
+		printf("ERROR elX is NULL in initJumPossibility_ElecX\n");
+		exit(1);
+	}
+	//This function as it is is not equiped to deal with multiple electrodes when they are 
+	//turned on 
+
+	//BorF - Back or front electrode back - 0 front - 1
+	//X1 - contains the energies of the sites next to the electrodes
+	//X2 - contains the energies further into the system at position 1 or position Slength-2
+
+	//This function is for initializing the electrodes on the x 
+	//axis, two sitenode arrays are passed which contains the energies
+	//of the electrodes(Fermi energy) and the energies of the sites
+	//next to the electrode. A matrix is then created that stores
+	//the hop rates to and from the electrode only in the x directio
+
+	//Constants from Parameter Frame
+	double SiteDistance;
+	double reOrgEnergy;
+	double RelativePermittivity;
+	double vX;
+	int SWidth;
+	int SHeight;
+	int PeriodicY;
+	int PeriodicZ;
+	int YElecOn;
+	int ZElecOn;
+
+	//Constants
+	//Units of Coulombs
+	const double q = 1.601E-19;	
+	//Units of Farads/m = (C^2/J) * (1/m)
+	const double epsilon0 = 8.8541878176E-12;
+
+	//Used to capture the tunneling constant of the electrode [1/nm]
+	double alpha;
+
+	//Image force energy [eV]
+	double EnergyImageForce;
+	//Fermi Energy of the electrode [eV]
+	double ElecFermi;
+	//Barrier Height between the electrode and the site [eV]
+	double W;
+	//Total Energy Difference between site and site hopping too [eV]
+	double Energy;
+	//Energy of current site [eV]
+	double SiteEnergy;
+	//Energy of Neighbor site [eV]
+	double SiteEnergyNeigh;
+
+	double rate;
+	double SumRate;
+	double pval;
+
+	int j, k, l;
+	//one node have 6 hopping rate for 6 neighbor node
+	double v[6];
+	double sum;
+	SiteNode sn;
+	//int divisor;
+
+	//Initialize Variables
+	SiteDistance = PFget_SiteDist(PF);
+	reOrgEnergy = PFget_reOrg(PF);
+	RelativePermittivity = PFget_RelativePerm(PF);
+	vX = PFget_vX(PF);
+	SWidth = PFget_Wid(PF);
+	SHeight = PFget_Hei(PF);
+	PeriodicY = PFget_Py(PF);
+	PeriodicZ = PFget_Pz(PF);
+	YElecOn = PFget_YElecOn(PF);
+	ZElecOn = PFget_ZElecOn(PF);
+
+	//Shockley barrier height [eV] this is the difference in energy between 
+	//the electrode and the conduction band (LUMO) of the semiconductor
+	//If it is positive electrons must overcome energy to move to the semiconductor
+
+ 	EnergyImageForce = pow(q,2)/(16*M_PI*epsilon0*RelativePermittivity*SiteDistance)*1/q;
+	ElecFermi = getElectrode_FermiEnergy(elX);
+	alpha = getElectrode_alpha(elX);
+	//Hops from sites within the system should use marcus formalism
+	//Hops from electrode should use miller and Abrahams theory
+
+	//Load the SNarray for all the nodes next to the electrode
+	SNarray snAX = (SNarray) getElectrode_AdjacentSites(elX); 
+	
+	assert(snAX!=NULL);
+	//Load the matrix that will store all the hops off the electrode
+	//from the Electrode datastructure
+	matrix mtxX = (matrix) getElectrode_HopRates(elX);
+	assert(mtxX!=NULL);
+	
+	SumRate = 0;
+
+	printf("\nSiteEnergy %g EnergyImageForce %g electricEnergyX %g\n",SiteEnergy,EnergyImageForce,electricEnergyX);
+	//printf("SWidth %d SHeight %d\n",SWidth,SHeight);
+	//printf("According to snAX length %d width %d height %d\n",getAlen(snAX),getAwid(snAX),getAhei(snAX));
+	//printf("vX %g SiteDistance %g alpha %g KT %g\n",vX,SiteDistance, alpha, KT);
+
+	for(j = 0; j < SWidth; j++){
+		for(k = 0; k < SHeight; k++){
+
+			//Dealing with hops from front and back of the plane 
+			if ( BorF == 0 ){
+				//assuming plane is infront of back electrode
+				SiteEnergy = getE(X1, j+1, k+1);
+				sn = getSN(snAX,0,j,k);
+				setEnergy(sn,SiteEnergy);
+				//printf("SiteEnergy %g\n",SiteEnergy);
+				//Hop from Electrode to site forward hop
+				W = (SiteEnergy-EnergyImageForce) - ElecFermi;
+				Energy = W - electricEnergyX;
+				//printf("Energy %g SiteDistance %g alpha %g KT %g value of vX %g\n",Energy,SiteDistance,alpha, KT,vX);
+				rate = vX*hoppingRateMillerAbraham( Energy, SiteDistance, alpha, KT);
+				//printf("value of rate %g\n",rate);
+				setE(mtxX,j+1,k+1,rate);
+				//printf("EnergyA %g\t",Energy);
+				//Hop from site to neighboring site forward hop
+				SiteEnergyNeigh = getE(X2,j+1,k+1);
+				W = SiteEnergyNeigh - (SiteEnergy-EnergyImageForce);
+				Energy = W - electricEnergyX;
+				v[1] = MarcusCoeff*hoppingRate(Energy, KT, reOrgEnergy);	
+				//printf("EnergyB %g\t",Energy);
+
+				//Hop from site to Electrode backward hop
+				W = ElecFermi - (SiteEnergy - EnergyImageForce);
+				Energy = W + electricEnergyX;
+				v[0] = MarcusCoeff*hoppingRate(Energy, KT, reOrgEnergy);
+				//printf("EnergyC %g\t",Energy);
+
+			}else{
+				//assuming plane is behind front electrode
+				SiteEnergy = getE(X1, j+1, k+1);
+				sn = getSN(snAX,0,j,k);
+				setEnergy(sn,SiteEnergy);
+
+				//Hop from Electrode to site backwards hop
+				W = (SiteEnergy-EnergyImageForce) - ElecFermi;
+				Energy = W + electricEnergyX;
+				rate = vX*hoppingRateMillerAbraham( Energy, SiteDistance, alpha, KT);
+				setE(mtxX,j+1,k+1,rate);
+				//printf("EnergyD %g\t",Energy);
+
+				//Hop from site to neighboring site backwards hop
+				SiteEnergyNeigh = getE(X2,j+1,k+1);
+				W = SiteEnergyNeigh - (SiteEnergy-EnergyImageForce);
+				Energy = W + electricEnergyX;
+				v[0] = MarcusCoeff*hoppingRate(Energy, KT, reOrgEnergy);	
+				//printf("EnergyE %g\t",Energy);
+
+				//Hop from site to Electrode forward hop
+				W = ElecFermi - (SiteEnergy - EnergyImageForce);
+				Energy = W - electricEnergyX;
+				v[1] = MarcusCoeff*hoppingRate(Energy, KT, reOrgEnergy);
+				//printf("EnergyF %g\t",Energy);
+
+			}
+
+			//No need to include image force energy all these sites 
+			//are along the same plane
+
+			//Grabbing energy of site neighboring (0,j,k) to the left
+			SiteEnergyNeigh = getE(X1, ((j-1+SWidth)%SWidth)+1, k+1);
+			Energy = SiteEnergyNeigh - SiteEnergy + electricEnergyY;
+			//  printf("EnergyG %g\t",Energy);
+			v[2] = MarcusCoeff*hoppingRate(Energy, KT, reOrgEnergy);	
+			//printf("EnergyG %g\t",Energy);
+
+			//Grabbing energy of site neighboring (0,j,k) to the right
+			SiteEnergyNeigh = getE(X1, ((j+1)%SWidth)+1,k+1);
+			Energy = SiteEnergyNeigh - SiteEnergy - electricEnergyY;
+			//	printf("EnergyH %g\t",Energy);
+			v[3] = MarcusCoeff*hoppingRate(Energy, KT, reOrgEnergy);	
+			//printf("EnergyH %g\t",Energy);
+
+			//Grabbing energy of site neighboring (0,j,k) below
+			SiteEnergyNeigh = getE(X1, j+1, ((k-1+SHeight)%SHeight)+1);
+			Energy = SiteEnergyNeigh - SiteEnergy + electricEnergyZ;
+			//	printf("EnergyI %g\t",Energy);
+			v[4] = MarcusCoeff*hoppingRate(Energy, KT, reOrgEnergy);	
+			//printf("EnergyI %g\t",Energy);
+
+			//Grabbing energy of site neighboring (0,j,k) above
+			SiteEnergyNeigh = getE(X1, j+1, ((k+1)%SHeight)+1);
+			Energy = SiteEnergyNeigh - SiteEnergy - electricEnergyZ;
+			//	printf("EnergyJ %g\t",Energy);
+			v[5] = MarcusCoeff*hoppingRate(Energy, KT, reOrgEnergy);
+			//printf("EnergyJ %g\t",Energy);
+
+			if( j == 0 && PeriodicY==0 && YElecOn==0)
+					v[2] = 0;
+
+			if( j == SWidth-1 && PeriodicY==0 && YElecOn==0)
+					v[3] = 0;
+
+			if( k == 0 && PeriodicZ==0 && ZElecOn==0)
+					v[4] = 0;
+
+			if( k == SHeight-1 && PeriodicZ==0 && ZElecOn==0)
+					v[5] = 0;
+
+       sum=0;
+			 for(l = 0; l < 6; l++) {
+				 sum = sum + v[l];
+			 }
+
+			 setsum(sn, sum);
+			
+			 pval=0;
+			 for(l=0; l< 6;l++){
+				 setSN_p(sn,l,v[l]/sum+pval);
+				 pval = getSN_p(sn,l);
+			 }
+			 SumRate += rate;		 
+		}
+	}
+
+	setElectrode_Sum(elX, SumRate);
+	if(SumRate<0.1){
+		//printf("j %d k %d\n",j,k);
+		printf("MarcusCoeff %g hoppingRate %g\n",MarcusCoeff,hoppingRate(Energy,KT,reOrgEnergy));
+		printf("WARNING SumRate is very small may need to adjust electrode fermi levels %g\n",SumRate);
+	}
+	
+	pval = 0;
+	for(j = 0; j< SWidth;j++){
+		for(k=0;k<SHeight;k++){
+			pval = getE(mtxX,j+1,k+1)/SumRate + pval;
+			setE(mtxX,j+1,k+1, pval);
+		}
+	}
+
+	if(mtxX==NULL || snAX == NULL){
+		printf("ERROR mtx or snA NULL in initJumPossibility_ElecX\n");
+		exit(1);
+	}
+	setElectrode_HopRates(elX, (void *) mtxX);
+	setElectrode_AdjacentSites(elX, (void *) snAX);
+	printf("End of Update ElectrodeX\n");
+	//printMatrix(mtxX);
+	return 0;
+}
+
+
+
 
 int initJumPossibility_ElecY( const double electricEnergyX,\
 											const double electricEnergyY, const double electricEnergyZ,\
@@ -1399,6 +1699,143 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 }
 
 //////////////////////////////////////////////////////////////////
+
+ChargeArray initCharget0_Thermal( const_SNarray snA,\
+					ParameterFrame PF, const double Temperature, const int XElecOn,const int YElecOn,const int ZElecOn){
+
+	//D is the dimension to fit the real data
+	//NCh is the total number of Charges injected per time step
+	//Ntot is the total number of charges that will be injected
+
+
+	if(snA==NULL ||\
+		 XElecOn<0 || YElecOn<0 || ZElecOn<0 ||\
+		 XElecOn>1 || YElecOn>1 || ZElecOn>1 ){
+		return NULL;
+	}
+
+	printf("In initCharget0_Thermal\n");
+  //Boltzmann constant Units of [eV/K]
+	static const double kB = 8.6173324E-5;
+
+	int NCh;
+	int SLength;
+	int SWidth;
+	int SHeight;
+	double IntrFermi;
+
+	int loop;
+	int i, j, k;
+	int num1;
+	int num2;
+	int unOccYZ;
+	int unOccXZ;
+	int unOccXY;
+	double ran;
+	double Energy;
+	double prob;
+	SiteNode site;
+	
+	SLength = PFget_Len(PF);
+	SWidth = PFget_Wid(PF);
+	SHeight = PFget_Hei(PF);
+
+	IntrFermi = PFget_IntrFermi(PF);
+
+	matrix X = newMatrix(100,1);
+	matrix Y = newMatrix(100,1);
+	matrix Z = newMatrix(100,1);
+
+	NCh = 0;
+	//We must determine the number of charges in the system
+	//from thermal activation, and where they are activaited
+	printf("len %d wid %d hei %d Temp %g Fermi %g\n",SLength,SWidth,SHeight,Temperature,IntrFermi);	
+	
+	for(i=0;i<SLength;i++){
+		for(j=0;j<SWidth;j++){
+			for(k=0;k<SHeight;k++){
+				site = getSN(snA,i,j,k);
+				if(site==NULL){
+					printf("site is NULL\n");
+				}
+				Energy = getEnergy(site);
+				
+				ran = ((double)rand())/((double)RAND_MAX); 
+				prob = 1/(1+exp((Energy-IntrFermi)/(kB*Temperature)));
+				
+				printf("ran %g prob %g Energy %g i %d j %d k %d\n",ran,prob,Energy,i,j,k);
+				//Site is occupied
+				if(ran<prob){
+				
+					printf("NCh %d\n",NCh);
+					NCh++;
+					if(NCh>getRows(X)){
+						resizeRow(&X,NCh+100);
+						resizeRow(&Y,NCh+100);
+						resizeRow(&Z,NCh+100);
+					}
+					setE(X,NCh,1,(double)i);
+					setE(Z,NCh,1,(double)j);
+					setE(Y,NCh,1,(double)k);
+					setDwelStat(site,NCh-1);
+					setVisFreq(site,getVisFreq(getSN(snA,i,j,k))+1);
+					setVis(site,1);
+				}
+
+			}
+		}
+	}
+
+	printf("Total thermally active charges %d\n",NCh);
+	if(NCh==0){
+		printf("Either your temperature is too low or your sample is to small\n");
+		printf("Unable to generate thermally activatied chargets!\n");
+		exit(1);
+	}
+	if(NCh<getRows(X)){
+		resizeRow(&X,NCh);
+		resizeRow(&Y,NCh);
+		resizeRow(&Z,NCh);
+	}
+	
+	PFset_Ntot(PF,NCh);
+	PFset_NCh(PF,NCh);
+	//Now we can create the charges and initialize their positions
+	ChargeArray chA = newChargeA(NCh);
+	Charge ch;
+	for(loop=0;loop<NCh;loop++){
+		
+		ch = getCharge(chA,loop);
+		i = (int)getE(X,loop+1,1);
+		j = (int)getE(Y,loop+1,1);
+		k = (int)getE(Z,loop+1,1);
+		setCx(ch,i);
+		setCy(ch,j);
+		setCz(ch,k);
+		site = getSN(snA,i,j,k);
+		ran = rand();
+		setDwel(ch,-log(ran/RAND_MAX)/(getsum(site)));
+		if isinf(getDwel(ch)) {
+			printf("Value of getsum(site) %g\n",getsum(site));
+			printf("ERROR Dweltime is infinite!\n");
+			printf("You probably failed to call initsite. This means that getsum(site)\n");
+			printf("will return a 0. -6.0*log(ran/RAND_MAX)/(D*0) ->inf\n");
+		}
+
+	}
+
+	if((XElecOn+YElecOn+ZElecOn)>1){
+		printf("WARNING Only equipped to deal with one electrode turned on at a time!!!\n\n");
+		return NULL;
+	}
+
+	deleteMatrix(&X);
+	deleteMatrix(&Y);
+	deleteMatrix(&Z);
+
+	return chA;
+}
+
 
 ChargeArray initCharget0( matrix Sequence, const_SNarray snA,const int Ntot,const int NCh,\
 					const double D,const int XElecOn,const int YElecOn,const int ZElecOn, \

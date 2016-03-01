@@ -2203,7 +2203,7 @@ int addNodeToCluster( ClusterLL clLL, MidPoint mp){
 	ClusterLL tempclLL=clLL;
 	Node tempNode= clLL->startNode;
 
-	int ClusterId = clLL->id;
+	//int ClusterId = clLL->id;
 	int unfoundnei;
 
 	while(tempNode->id!=mp->nei1 && tempNode->id!=mp->nei2){
@@ -2218,7 +2218,7 @@ int addNodeToCluster( ClusterLL clLL, MidPoint mp){
 			} else {
 				//Move to the next ClusterLL
 				tempclLL = tempclLL->next;
-				ClusterId = tempclLL->id;
+				//ClusterId = tempclLL->id;
 				tempNode =  tempclLL->startNode;
 			}
 		}else{
@@ -2260,7 +2260,7 @@ int addNodeToCluster( ClusterLL clLL, MidPoint mp){
 		addNodeEndClusterLL(foundclLL, unfoundnei);
 		return 0;
 	}
-	ClusterId=tempclLL->id;
+	//ClusterId=tempclLL->id;
 	tempNode= tempclLL->startNode;
 
 	while(tempNode->id!=unfoundnei){
@@ -2275,7 +2275,7 @@ int addNodeToCluster( ClusterLL clLL, MidPoint mp){
 				//Move to the next ClusterLL
 				PrevClusterLL = tempclLL;
 				tempclLL = tempclLL->next;
-				ClusterId = tempclLL->id;
+				//ClusterId = tempclLL->id;
 				tempNode = tempclLL->startNode;
 			}
 		}else{
@@ -2502,7 +2502,6 @@ int deleteArbArray(ArbArray * Arb){
 	if((*Arb)==NULL){
 		return -1;
 	}
-	int rv;
 	printf("Deleting Arb Array\n");
 	printf("Reserved %d\n",(*Arb)->reserved);
 	printf("type %d\n",(*Arb)->type);
@@ -2530,7 +2529,7 @@ int deleteArbArray(ArbArray * Arb){
 			if ((*Arb)->Num[i]!=NULL){
 				printf("Deleting Array\n");
 				clLL = (*Arb)->Num[i];
-				rv = deleteAllClusterLL(&clLL );
+				deleteAllClusterLL(&clLL );
 				(*Arb)->Num[i]=NULL;
 			}
 		}
