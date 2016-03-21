@@ -1129,6 +1129,11 @@ int MakeHop(SNarray snA, int newID, Charge *ch, int * totalX, int * totalY, int 
 				}
 			}
 
+			if(XDiff<-2 || XDiff>2){
+				printf("ERROR XDiff %d is greater or less than 2\n",XDiff);
+				exit(1);
+			}
+
 			*totalX = *totalX+XDiff;
 			*totalY = *totalY+YDiff;
 			*totalZ = *totalZ+ZDiff;
@@ -1754,6 +1759,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	int method = PFget_method(PF);
 	double Tcv = PFget_Tcv(PF);
 	double Vcv = PFget_Vcv(PF);
+	double Tlag = PFget_Tlag(PF);
 	double TStep = PFget_TStep(PF);
 	int TCount = PFget_TCount(PF);
 	int Time_check = PFget_Time_check(PF);
@@ -1837,6 +1843,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	int Zdrain;
 	int Zsource;
 
+	int ChargeCheck;
 	int CurrentInc;
 	int TotalCollected;
 	int ElecExit;
@@ -1874,6 +1881,8 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 	int rv;
 	double tim;
+	long double CELIV_totalT = (long double)(Tlag + Tcv);
+
 	int ID;
 	int ID2;
 	Charge one;
@@ -2004,15 +2013,27 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	}
 
 
-	while( n<TCount || nca>0){
+	while( (n<TCount || nca>0) && ((t<=CELIV_totalT && method==1) || method==0) ){
 
 		//If no charges have been inserted in the system we will
 		//simply increment the time
 
 		printf("nca %d nc %d elXb %d elXf %d\n",nca,nc,getElectrode_Charges(elXb),getElectrode_Charges(elXf));
-
-		if( nc+getElectrode_Charges(elXb) != nca){
-			printf("Charges lost somehow!\n");
+		ChargeCheck = nc;
+		if(XElecOn==1){
+			ChargeCheck = ChargeCheck+getElectrode_Charges(elXb);
+		}
+		if(YElecOn==1){
+			ChargeCheck = ChargeCheck+getElectrode_Charges(elYl);
+		}
+		if(ZElecOn==1){
+			ChargeCheck = ChargeCheck+getElectrode_Charges(elZb);
+		}
+			
+		if( ChargeCheck != nca){
+			printf("nc %d elXb %d ",nc,getElectrode_Charges(elXb));
+			printf("elYl %d elZb\n",getElectrode_Charges(elYl),getElectrode_Charges(elZb));
+			printf("Charges lost somehow ChargeCheck %d nca %d!\n",ChargeCheck,nca);
 			exit(1);
 		}
 
@@ -2029,6 +2050,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			//the global time is increased
 			if(t==(t+(long double)tim)){
 				printf("Exceeded precision t+tim==t\n");
+				printf("t %Le tim %g\n",t,tim);
 				exit(1);
 			}
 			
@@ -2198,6 +2220,10 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				printf("time to large %g for charge located at (%d,%d,%d)\n",tim,PrevX,PrevY,PrevZ);
 				printChargeA(*chA);
 				exit(1);
+			}else if(tim<=0){
+				printChargeA(*chA);
+				printf("time equal or less than 0 tim %g\n",tim);
+				exit(1);
 			}
 			//Cannot simply increase the time by the dwelstat if not
 			//all the charges have yet been inserted
@@ -2236,6 +2262,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			//the global time is increased
 			if(t==(long double)t+tim){
 				printf("Exceeded precision t==t+tim\n");
+				printf("t %Le tim %g\n",t,tim);
 				exit(1);
 			}
 			t += (long double) tim;

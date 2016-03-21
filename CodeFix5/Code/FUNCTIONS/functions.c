@@ -29,6 +29,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	double AttemptToHop = PFget_AttemptToHop(PF);
 	double gamma = PFget_gamma(PF);
 	double lambda = PFget_lambda(PF);
+	int ScaleAfterCorr = PFget_ScaleAfterCorr(PF);
 	double CutOff = PFget_CutOff(PF);
 	double fracSeed = PFget_FracSeed(PF);
 	double fraction = PFget_FracTrap(PF);
@@ -63,6 +64,9 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	double CorRad=lambda*CutOff;
 	double CorRadtemp;
 	double percent;
+	double maxEnergy;
+	double minEnergy;
+
 	//double SiteDistanceNM;
 
 	//Converting to [nm]
@@ -85,7 +89,6 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	//Calculating full Marcus Coefficient;
 	MarcusCoeff = pow(MarcusJ0,2)/hbar * pow(M_PI/(4*reOrgEnergy*KT),1/2)*exp(-2*gamma*SiteDistance);
 
-	//printf("Value of Marcus Coeff at begginning %g hbar %g reOrgEnergy %g KT %g gamma %g SiteDistanceNM %g\n",MarcusCoeff, hbar, reOrgEnergy, KT, gamma, SiteDistanceNM);
 
 	if (CorRad < SiteDistance) {
 		printf("WARNING CorRad is less than SiteDistance!!!\n");
@@ -139,17 +142,9 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 				setE(AsTr,i+1,3,(double)kk);
 
 				SiteEnergy = grn(Etrap, Tsigma);
-				if(method==1){
-					if(SiteEnergy>IntrFermi){
-						setEnergy(pN,SiteEnergy);
-						setInitE(pN,1);
-						i++;
-					}
-				}else{
-						setEnergy(pN,SiteEnergy);
-						setInitE(pN,1);
-						i++;
-				}
+				setEnergy(pN,SiteEnergy);
+				setInitE(pN,1);
+				i++;
 			}
 		}
 		printf("Percent Complete %ld\n",(long int)(100));
@@ -185,6 +180,19 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 				}else if(SeedProt==2){
 					SiteEnergy = E0;
 				}
+				
+				if(i==0){
+					minEnergy = SiteEnergy;
+					maxEnergy = SiteEnergy;
+				}else{
+					if(SiteEnergy>maxEnergy){
+						maxEnergy = SiteEnergy;
+					}
+					if(SiteEnergy<minEnergy){
+						minEnergy = SiteEnergy;
+					}
+				}
+
 				setEnergy(pN,SiteEnergy);
 				setInitE(pN,1);
 				i++;
@@ -205,14 +213,15 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 					//printf("Initial ID %d initE %d\n",getIndex(snA,i,j,k), getInitE(getSN(snA,i,j,k)));
 					while (SumEcor==0 && getInitE(getSN(snA,i,j,k))==0){
 
-						if(method==1){
-								SiteEnergy=IntrFermi;
-							while(SiteEnergy<=IntrFermi){
-								SiteEnergy=grn(E0, sigma);
-							}
-						}else{
-							SiteEnergy=grn(E0, sigma);
+						SiteEnergy=grn(E0, sigma);
+						
+						if(SiteEnergy>maxEnergy){
+							maxEnergy = SiteEnergy;
 						}
+						if(SiteEnergy<minEnergy){
+							minEnergy = SiteEnergy;
+						}
+
 						//assert(As!=NULL);
 						//Accounting for correlation from seeds
 						CorrCal(As, i,j,k, CorRadtemp, SiteEnergy, SiteDistance,snA, &SumCor, &SumEcor, &seed_dist,\
@@ -319,18 +328,23 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 							percent+=0.1;
 						}
 						SiteEnergy  = grn(E0, sigma);  
+						if(i==0 && j==0 && k==0){
+							minEnergy = SiteEnergy;
+							maxEnergy = SiteEnergy;
+						}else{
+							if(SiteEnergy>maxEnergy){
+								maxEnergy = SiteEnergy;
+							}
+							if(SiteEnergy<minEnergy){
+								minEnergy = SiteEnergy;
+							}
+						}
 						setEnergy(getSN(snA,i,j,k),SiteEnergy);
 						setInitE(getSN(snA,i,j,k),1); //initialize  energy for seeds
 						setE(As,m+1,1,(double)i);
 						setE(As,m+1,2,(double)j);
 						setE(As,m+1,3,(double)k);
-						if(method==1){
-							if(SiteEnergy>IntrFermi){
-								m++;
-							}
-						}else{
-							m++;
-						}
+						m++;
 					}
 				}
 			}
@@ -339,20 +353,18 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 
 		//Here we are cycling through the sites that have not been assigned energies
 		if(UnAs!=NULL){
-			printf("Calculating Energies for correlated sites2\n");
 			percent=0;
 			for( index=0; index<(sites-(seeds+traps));index++) {
 
+				SiteEnergy=grn(E0, sigma);
 				
-				printf("index %d\n",index);
-				if(method==1){
-					SiteEnergy=IntrFermi;
-					while(SiteEnergy<=IntrFermi){
-						SiteEnergy=grn(E0, sigma);
-					}
-				}else{
-					SiteEnergy=grn(E0, sigma);
+				if(SiteEnergy>maxEnergy){
+					maxEnergy = SiteEnergy;
 				}
+				if(SiteEnergy<minEnergy){
+					minEnergy = SiteEnergy;
+				}
+				
 				CorRadtemp=CorRad;
 				//Calculate Correlation Energies for the UnAssigned positions
 				SumEcor=0;
@@ -398,23 +410,9 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	}
 
 	deleteMatrix(&AsTr);
-
-	//Final Filter if using CELIV method
-	if(method==1){
-		printf("Final Filter for CELIV method of site Energies\n");
-		for(i = 0; i < SLength; i++){
-			for(j = 0; j < SWidth; j++){
-				for(k = 0; k < SHeight; k++){
-
-					pN = getSN(snA,i,j,k);
-					SiteEnergy = getEnergy(pN);
-					if(SiteEnergy<IntrFermi){
-						SiteEnergy = grn(E0,sigma);
-						setEnergy(pN,SiteEnergy);
-					}
-				}
-			}
-		}
+	//Final filter to normalize energies after applying correlation
+	if(ScaleAfterCorr==1){
+		ScaleAfterCorrFunc(maxEnergy,minEnergy, PF, &snA);
 	}
 
 	printf("Finished initializing.\n");
@@ -427,6 +425,136 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	return 0;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+int ScaleAfterCorrFunc(double maxEnergy, double minEnergy, ParameterFrame PF,\
+			SNarray * snA){
+
+	//Proclaim local variables
+	int i;
+	int j;
+	int k;
+	double FWHM;
+	double FWHM1;
+	double quantity;
+	int count;
+	int numbins;
+	int maxbin;
+	double HM;
+	double edge;
+	double SiteEnergy;
+	double EnergyInc;
+	double diff;
+	double diff1;
+	int SaveCount;
+	int SaveCount1;
+	SiteNode site;
+	matrix bins;
+
+	//Proclaim PF variables
+	int SLength;
+	int SWidth;
+	int SHeight;
+	double E0;
+	double sigma;
+
+	//Initialize PF variables
+	SLength = PFget_Len(PF);
+	SWidth = PFget_Wid(PF);
+	SHeight = PFget_Hei(PF);
+	E0 = PFget_E0(PF);
+	sigma = PFget_sigma(PF);
+
+	//Initialize local variables
+	//This is the Full width half maximum before correlation is applied
+	FWHM = 2.355*sigma;
+	numbins = 100;
+	bins = newMatrix(numbins,1);
+	EnergyInc = (maxEnergy-minEnergy)/((double)numbins);
+	SaveCount = 0;
+	SaveCount1 = 0;
+	//Initialize max and min bins
+	maxbin = 0;
+
+	for(i = 0; i < SLength; i++){
+		for(j = 0; j < SWidth; j++){
+			for(k = 0; k < SHeight; k++){
+
+				site = getSN(*snA,i,j,k);
+				SiteEnergy = getEnergy(site);
+				edge = minEnergy;
+				count = 0;
+				while (SiteEnergy >= edge){
+
+					edge = edge + EnergyInc; 
+					count++;
+
+					if (SiteEnergy<edge || edge==maxEnergy){
+						quantity = getE(bins,count,1)+1;
+						setE(bins,count,1,quantity);
+						if(quantity>maxbin){
+							maxbin = quantity;
+						}
+					}
+
+					if(count>numbins){
+
+						if(SiteEnergy <= edge+0.00001){
+							quantity = getE(bins,count-1,1)+1;
+							setE(bins,count-1,1,quantity);
+							if(quantity>maxbin){
+								maxbin=quantity;
+							}
+						}else{
+							printf("minEnergy %g maxEnergy %g edge %g\n",minEnergy,maxEnergy,edge);
+							printf("ERROR in sorting energies into bins we have exceeded the number of bins\n");
+							exit(1);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	HM = maxbin/2;
+	diff = maxbin;
+	diff1 = maxbin;
+	//Next step is to determine where the FWHM of the bins
+	edge = minEnergy;
+	for(count=1;count<=numbins;count++){
+		edge = edge + EnergyInc;
+		quantity = getE(bins,count,1);
+
+		if(edge>=E0){
+			if(abs(quantity-HM)<diff){
+				diff = abs(quantity-HM);
+				SaveCount = count;
+			}
+
+		}else if(edge<E0){
+			if(abs(quantity-HM)<diff1){
+				diff1 = abs(quantity-HM);
+				SaveCount1 = count;
+			}
+		}
+	}
+
+	//This is the FWHM1 after energies have been correlated
+	FWHM1 = fabs(minEnergy+EnergyInc*((double)SaveCount)-E0)+fabs(minEnergy+EnergyInc*((double)SaveCount1)-E0);
+	//Now we need to alter the snA Energies
+	for(i = 0; i < SLength; i++){
+		for(j = 0; j < SWidth; j++){
+			for(k = 0; k < SHeight; k++){
+
+				site = getSN(*snA,i,j,k);
+				SiteEnergy = (getEnergy(site)-E0)*(FWHM)/FWHM1+E0;
+				setEnergy(site,SiteEnergy);
+			}
+		}
+	}
+	deleteMatrix(&bins);
+
+	return 0;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 int initElec(const double electricEnergyX, const double electricEnergyY,\
@@ -573,7 +701,7 @@ int initElec(const double electricEnergyX, const double electricEnergyY,\
 		initJumPossibility_ElecX(electricEnergyX, electricEnergyY, electricEnergyZ,\
 			  SiteDistance, MarcusCoeff, KT,reOrgEnergy, Xb1, Xb2, *elXb,\
 			 	RelativePerm, vX, SWidth, SHeight, PeriodicY, PeriodicZ,\
-				YElecOn, ZElecOn, 0);
+				YElecOn, ZElecOn,PFget_ImageCharge(PF), 0);
 
 	//snAelec = (SNarray) getElectrode_AdjacentSites(*elXb);
 	//printf("Length %d Width %d Height %d\n",getAlen(snAelec),getAwid(snAelec),getAhei(snAelec));
@@ -586,7 +714,7 @@ int initElec(const double electricEnergyX, const double electricEnergyY,\
 		initJumPossibility_ElecX(electricEnergyX, electricEnergyY, electricEnergyZ,\
 			  SiteDistance, MarcusCoeff, KT,reOrgEnergy, Xf1, Xf2, *elXf,\
 			 	RelativePerm, vX,SWidth, SHeight, PeriodicY, PeriodicZ,\
-				YElecOn, ZElecOn, 1);
+				YElecOn, ZElecOn,PFget_ImageCharge(PF), 1);
 		
 		deleteMatrix(&Xf1);
 		deleteMatrix(&Xf2);
@@ -651,7 +779,7 @@ int initElec(const double electricEnergyX, const double electricEnergyY,\
 		initJumPossibility_ElecY(electricEnergyX, electricEnergyY, electricEnergyZ,\
 			  SiteDistance, MarcusCoeff, KT,reOrgEnergy, Yl1, Yl2, *elYl,\
 			 	RelativePerm, vY, SLength,SHeight, PeriodicX, PeriodicZ,\
-				XElecOn, ZElecOn, 0);
+				XElecOn, ZElecOn,PFget_ImageCharge(PF), 0);
 		
 		deleteMatrix(&Yl1);
 		deleteMatrix(&Yl2);
@@ -661,7 +789,7 @@ int initElec(const double electricEnergyX, const double electricEnergyY,\
 		initJumPossibility_ElecY(electricEnergyX, electricEnergyY, electricEnergyZ,\
 			  SiteDistance, MarcusCoeff, KT,reOrgEnergy, Yr1, Yr2, *elYr,\
 			 	RelativePerm, vY, SLength, SHeight, PeriodicX, PeriodicZ,\
-				XElecOn, ZElecOn, 1);
+				XElecOn, ZElecOn,PFget_ImageCharge(PF), 1);
 	
 		deleteMatrix(&Yr1);
 		deleteMatrix(&Yr2);
@@ -721,7 +849,7 @@ int initElec(const double electricEnergyX, const double electricEnergyY,\
 		initJumPossibility_ElecZ(electricEnergyX, electricEnergyY, electricEnergyZ,\
 			  SiteDistance, MarcusCoeff, KT,reOrgEnergy, Zb1, Zb2, *elZb,\
 			 	RelativePerm, vZ, SLength, SWidth, PeriodicX, PeriodicY,\
-				XElecOn, YElecOn, 0);
+				XElecOn, YElecOn,PFget_ImageCharge(PF), 0);
 		
 		deleteMatrix(&Zb1);
 		deleteMatrix(&Zb2);
@@ -731,7 +859,7 @@ int initElec(const double electricEnergyX, const double electricEnergyY,\
 		initJumPossibility_ElecZ(electricEnergyX, electricEnergyY, electricEnergyZ,\
 			  SiteDistance, MarcusCoeff, KT,reOrgEnergy, Za1, Za2, *elZa,\
 			 	RelativePerm, vZ, SLength, SWidth, PeriodicX, PeriodicY,\
-				XElecOn, YElecOn, 1);
+				XElecOn, YElecOn,PFget_ImageCharge(PF), 1);
 		
 		deleteMatrix(&Za1);
 		deleteMatrix(&Za2);
@@ -753,7 +881,7 @@ int initJumPossibility_ElecX( const double electricEnergyX,\
 											const double RelativePermittivity,const double vX,\
 											const int SWidth, const int SHeight,\
 											const int PeriodicY, const int PeriodicZ,\
-											const int YElecOn, const int ZElecOn, const int BorF){
+											const int YElecOn, const int ZElecOn,const int ImageCharge, const int BorF){
 
 
 	if(elX==NULL){
@@ -809,8 +937,11 @@ int initJumPossibility_ElecX( const double electricEnergyX,\
 	//Shockley barrier height [eV] this is the difference in energy between 
 	//the electrode and the conduction band (LUMO) of the semiconductor
 	//If it is positive electrons must overcome energy to move to the semiconductor
-
- 	EnergyImageForce = pow(q,2)/(16*M_PI*epsilon0*RelativePermittivity*SiteDistance)*1/q;
+	if(ImageCharge==1){
+ 		EnergyImageForce = pow(q,2)/(16*M_PI*epsilon0*RelativePermittivity*SiteDistance)*1/q;
+	}else{
+		EnergyImageForce = 0;
+	}
 	ElecFermi = getElectrode_FermiEnergy(elX);
 	alpha = getElectrode_alpha(elX);
 	//Hops from sites within the system should use marcus formalism
@@ -994,7 +1125,7 @@ int Update_initJumPossibility_ElecX( const double electricEnergyX,\
 	int PeriodicZ;
 	int YElecOn;
 	int ZElecOn;
-
+	int rv;
 	//Constants
 	//Units of Coulombs
 	const double q = 1.601E-19;	
@@ -1043,8 +1174,11 @@ int Update_initJumPossibility_ElecX( const double electricEnergyX,\
 	//Shockley barrier height [eV] this is the difference in energy between 
 	//the electrode and the conduction band (LUMO) of the semiconductor
 	//If it is positive electrons must overcome energy to move to the semiconductor
-
- 	EnergyImageForce = pow(q,2)/(16*M_PI*epsilon0*RelativePermittivity*SiteDistance)*1/q;
+	if(PFget_ImageCharge(PF)==1){
+ 		EnergyImageForce = pow(q,2)/(16*M_PI*epsilon0*RelativePermittivity*SiteDistance)*1/q;
+	}else{
+		EnergyImageForce = 0;
+	}
 	ElecFermi = getElectrode_FermiEnergy(elX);
 	alpha = getElectrode_alpha(elX);
 	//Hops from sites within the system should use marcus formalism
@@ -1061,7 +1195,7 @@ int Update_initJumPossibility_ElecX( const double electricEnergyX,\
 	
 	SumRate = 0;
 
-	printf("\nSiteEnergy %g EnergyImageForce %g electricEnergyX %g\n",SiteEnergy,EnergyImageForce,electricEnergyX);
+	//printf("\nSiteEnergy %g EnergyImageForce %g electricEnergyX %g\n",SiteEnergy,EnergyImageForce,electricEnergyX);
 	//printf("SWidth %d SHeight %d\n",SWidth,SHeight);
 	//printf("According to snAX length %d width %d height %d\n",getAlen(snAX),getAwid(snAX),getAhei(snAX));
 	//printf("vX %g SiteDistance %g alpha %g KT %g\n",vX,SiteDistance, alpha, KT);
@@ -1173,7 +1307,7 @@ int Update_initJumPossibility_ElecX( const double electricEnergyX,\
 				 sum = sum + v[l];
 			 }
 
-			 setsum(sn, sum);
+			 rv=setsum(sn, sum);
 			
 			 pval=0;
 			 for(l=0; l< 6;l++){
@@ -1221,7 +1355,7 @@ int initJumPossibility_ElecY( const double electricEnergyX,\
 											const double RelativePermittivity, const double vY,\
 											const int SLength, const int SHeight,\
 											const int PeriodicX, const int PeriodicZ,\
-											const int XElecOn, const int ZElecOn, const int LorR){
+											const int XElecOn, const int ZElecOn,const int ImageCharge, const int LorR){
 
 	//This function as it is is not equiped to deal with multiple electrodes when they are 
 	//turned on 
@@ -1272,8 +1406,11 @@ int initJumPossibility_ElecY( const double electricEnergyX,\
 	//Shockley barrier height [eV] this is the difference in energy between 
 	//the electrode and the conduction band (LUMO) of the semiconductor
 	//If it is positive electrons must overcome energy to move to the semiconductor
-
- 	EnergyImageForce = pow(q,2)/(16*M_PI*epsilon0*RelativePermittivity*SiteDistance)*1/q;
+	if(ImageCharge==1){
+ 		EnergyImageForce = pow(q,2)/(16*M_PI*epsilon0*RelativePermittivity*SiteDistance)*1/q;
+	}else{
+		EnergyImageForce = 0;	
+	}
 	ElecFermi = getElectrode_FermiEnergy(elY);
 	alpha = getElectrode_alpha(elY);
 	//Hops from sites within the system should use marcus formalism
@@ -1413,7 +1550,7 @@ int initJumPossibility_ElecZ( const double electricEnergyX,\
 											const double RelativePermittivity, const double vZ,\
 											const int SLength, const int SWidth,\
 											const int PeriodicX, const int PeriodicY,\
-											const int XElecOn, const int YElecOn, const int AorB){
+											const int XElecOn, const int YElecOn,const int ImageCharge, const int AorB){
 
 	//This function as it is is not equiped to deal with multiple electrodes when they are 
 	//turned on 
@@ -1464,8 +1601,11 @@ int initJumPossibility_ElecZ( const double electricEnergyX,\
 	//Shockley barrier height [eV] this is the difference in energy between 
 	//the electrode and the conduction band (LUMO) of the semiconductor
 	//If it is positive electrons must overcome energy to move to the semiconductor
-
- 	EnergyImageForce = pow(q,2)/(16*M_PI*epsilon0*RelativePermittivity*SiteDistance)*1/q;
+	if(ImageCharge==1){
+ 		EnergyImageForce = pow(q,2)/(16*M_PI*epsilon0*RelativePermittivity*SiteDistance)*1/q;
+	}else{
+		EnergyImageForce = 0;
+	}
 	ElecFermi = getElectrode_FermiEnergy(elZ);
 	alpha = getElectrode_alpha(elZ);
 	//Hops from sites within the system should use marcus formalism
@@ -1613,6 +1753,7 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 		return -1;
 	}
 
+	int rv;
 	int SLength = getAlen(snA);
 	int SWidth = getAwid(snA);
 	int SHeight = getAhei(snA);
@@ -1681,7 +1822,11 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 				}
 		
 				//Don't want the average but the sum
-				setsum(SNi,sum);
+				rv = setsum(SNi,sum);
+				if(rv==-1){
+					printf("setsum return -1\n");
+					exit(1);
+				}
 				//This is WRONG: use the average probability to place charges in the queue--average 
 				//rather than sum to avoid "trapping" charges at the interface
 				pval=0;
@@ -1726,11 +1871,6 @@ ChargeArray initCharget0_Thermal( const_SNarray snA,\
 
 	int loop;
 	int i, j, k;
-	int num1;
-	int num2;
-	int unOccYZ;
-	int unOccXZ;
-	int unOccXY;
 	double ran;
 	double Energy;
 	double prob;
@@ -1749,25 +1889,20 @@ ChargeArray initCharget0_Thermal( const_SNarray snA,\
 	NCh = 0;
 	//We must determine the number of charges in the system
 	//from thermal activation, and where they are activaited
-	printf("len %d wid %d hei %d Temp %g Fermi %g\n",SLength,SWidth,SHeight,Temperature,IntrFermi);	
+	//printf("len %d wid %d hei %d Temp %g Fermi %g\n",SLength,SWidth,SHeight,Temperature,IntrFermi);	
 	
 	for(i=0;i<SLength;i++){
 		for(j=0;j<SWidth;j++){
 			for(k=0;k<SHeight;k++){
 				site = getSN(snA,i,j,k);
-				if(site==NULL){
-					printf("site is NULL\n");
-				}
 				Energy = getEnergy(site);
 				
 				ran = ((double)rand())/((double)RAND_MAX); 
 				prob = 1/(1+exp((Energy-IntrFermi)/(kB*Temperature)));
 				
-				printf("ran %g prob %g Energy %g i %d j %d k %d\n",ran,prob,Energy,i,j,k);
 				//Site is occupied
 				if(ran<prob){
 				
-					printf("NCh %d\n",NCh);
 					NCh++;
 					if(NCh>getRows(X)){
 						resizeRow(&X,NCh+100);
@@ -1775,8 +1910,8 @@ ChargeArray initCharget0_Thermal( const_SNarray snA,\
 						resizeRow(&Z,NCh+100);
 					}
 					setE(X,NCh,1,(double)i);
-					setE(Z,NCh,1,(double)j);
-					setE(Y,NCh,1,(double)k);
+					setE(Y,NCh,1,(double)j);
+					setE(Z,NCh,1,(double)k);
 					setDwelStat(site,NCh-1);
 					setVisFreq(site,getVisFreq(getSN(snA,i,j,k))+1);
 					setVis(site,1);
@@ -1832,7 +1967,6 @@ ChargeArray initCharget0_Thermal( const_SNarray snA,\
 	deleteMatrix(&X);
 	deleteMatrix(&Y);
 	deleteMatrix(&Z);
-
 	return chA;
 }
 

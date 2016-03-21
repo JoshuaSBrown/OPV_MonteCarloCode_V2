@@ -19,6 +19,11 @@
 int initSite(const double electricEnergyX, const double electricEnergyY,\
 		const double electricEnergyZ, double KT, SNarray snA, ParameterFrame PF);
 
+/* Rescale Energies after applying correlation
+*/
+int ScaleAfterCorrFunc(double maxEnergy, double minEnergy, ParameterFrame PF,\
+		SNarray * snA);
+
 /* Initializes the Electrode hops onto the electrode and hops off of the 
 	 electrode
  */
@@ -37,7 +42,7 @@ int initJumPossibility_ElecX( const double electricEnergyX,\
 		matrix X1, matrix X2, Electrode elX, const double RelativePermittivity,\
 		const double vX, const int SWidth, const int SHeight,\
 		const int PeriodicY, const int PeriodicZ,\
-		const int YElecOn, const int ZElecOn, const int BorF);
+		const int YElecOn, const int ZElecOn, const int ImageCharge, const int BorF);
 
 /* Initilalizes parameters on the electrodes position on the x axis
  */
@@ -47,7 +52,7 @@ int initJumPossibility_ElecY( const double electricEnergyX,\
 		matrix Y1, matrix Y2, Electrode elY, const double RelativePermittivity,\
 		const double vY,const int SLength, const int SHeight,\
 		const int PeriodicX, const int PeriodicZ,\
-		const int XElecOn, const int ZElecOn, const int LorR);
+		const int XElecOn, const int ZElecOn, const int ImageCharge, const int LorR);
 
 /* Initializes parameters on the electrodes position on the z axis
 */
@@ -57,7 +62,7 @@ int initJumPossibility_ElecZ( const double electricEnergyX,\
 		matrix Z1, matrix Z2, Electrode elZ, const double RelativePermittivity,\
 		const double vZ, const int SLength, const int SWidth,\
 		const int PeriodicX, const int PeriodicY,\
-		const int XElecOn, const int YElecOn, const int AorB);
+		const int XElecOn, const int YElecOn, const int ImageCharge, const int AorB);
 
 /* Update hop rates of sites on and off X electrodes
 */

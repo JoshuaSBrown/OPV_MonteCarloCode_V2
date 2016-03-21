@@ -27,6 +27,7 @@ struct _ParameterFrame{
 	double YFermiR;
 	double ZFermiB;
 	double ZFermiA;
+	int ImageCharge;
 	double IntrFermi;
 	double alphaxb;
 	double alphaxf;
@@ -59,6 +60,7 @@ struct _ParameterFrame{
 	int ClusterAlg;
 	double CutOff;
 	double lambda;
+	int ScaleAfterCorr;
 	int SeedProt;
 	int Attempts;
 	double fracSeed;
@@ -77,6 +79,7 @@ struct _ParameterFrame{
 	int MovieFrames;
 	double Tcv;
 	double Vcv;
+	double Tlag;
 };
 
 int deleteParamFrame(ParameterFrame * PF){
@@ -119,6 +122,7 @@ ParameterFrame newParamFrame(void){
 	PF->YFermiR=0;
 	PF->ZFermiB=0;
 	PF->ZFermiA=0;
+	PF->ImageCharge=0;
 	PF->IntrFermi=0;
 	PF->alphaxb=0;
 	PF->alphaxf=0;
@@ -151,6 +155,7 @@ ParameterFrame newParamFrame(void){
 	PF->ClusterAlg=0;
 	PF->CutOff=0;
 	PF->lambda=0;
+	PF->ScaleAfterCorr;
 	PF->SeedProt=0;
 	PF->Attempts=0;
 	PF->fracSeed=0;
@@ -169,6 +174,7 @@ ParameterFrame newParamFrame(void){
 	PF->MovieFrames=0;
 	PF->Tcv=0;
 	PF->Vcv=0;
+	PF->Tlag=0;
 	return PF;
 }
 
@@ -236,6 +242,11 @@ ParameterFrame newParamFrame_File(void){
 			intval = GrabInt(position, &buffer[0] );
 			printf("SLength %d\n",intval);
 			PF->SLength = intval;
+			if(intval<=1){
+				printf("ERROR SLength set to a value less than 2!\n");
+				printf("SLength must be at least 2 SiteNodes wide.\n");
+				exit(1);
+			}
 		}else{
 			printf("ERROR when reading file can not find SLength!\n");
 			exit(1);
@@ -247,6 +258,11 @@ ParameterFrame newParamFrame_File(void){
 			intval = GrabInt(position, &buffer[0] );
 			printf("SWidth %d\n",intval);
 			PF->SWidth = intval;
+			if(intval<=1){
+				printf("ERROR SWidth set to a value less than 2!\n");
+				printf("SWidth must be at least 2 SiteNodes wide.\n");
+				exit(1);
+			}
 		}else{
 			printf("ERROR when reading file can not find SWidth!\n");
 			exit(1);
@@ -258,6 +274,11 @@ ParameterFrame newParamFrame_File(void){
 			intval = GrabInt(position, &buffer[0] );
 			printf("SHeight %d\n",intval);
 			PF->SHeight = intval;
+			if(intval<=1){
+				printf("ERROR SHeight set to a value less than 2!\n");
+				printf("SHeight must be at least 2 SiteNodes wide.\n");
+				exit(1);
+			}
 		}else{
 			printf("ERROR when reading file can not find SHeight!\n");
 			exit(1);
@@ -425,6 +446,24 @@ ParameterFrame newParamFrame_File(void){
 			PF->ZFermiA = doubleval;
 		}else{
 			printf("ERROR when reading file can not find ZFermiA!\n");
+			exit(1);
+		}
+		
+		check = match(buffer, "\nImageCharge");
+		if(check!=-1){
+			position = (unsigned int)check;
+			intval = GrabInt(position, &buffer[0] );
+			printf("ImageCharge %g\n",intval);
+			PF->ImageCharge = intval;
+			if (intval<0 || intval>1){
+				printf("ERROR ImageCharge is set either above 1 or\n");
+				printf("less than 0. It can either be 1 for on or \n");
+				printf("0 for off\n");
+				exit(1);
+			}
+
+		}else{
+			printf("ERROR when reading file can not find ImageCharge!\n");
 			exit(1);
 		}
 
@@ -858,6 +897,25 @@ ParameterFrame newParamFrame_File(void){
 			exit(1);
 		}
 
+		check = match(buffer, "\nScaleAfterCorr");
+		if(check!=-1){
+			position = (unsigned int)check;
+			intval = GrabInt(position, &buffer[0] );
+			printf("ScaleAfterCorr %d\n",intval);
+			if(intval<0){
+				printf("ERROR ScaleAfterCorr is negative can only be 0-off or 1-on\n");
+				exit(1);
+			}else if(intval>1){
+				printf("ERROR ScaleAfterCorr is greater than 1 can only be 0-off or 1-on\n");
+				exit(1);
+			}
+			PF->ScaleAfterCorr = intval;
+		}else{
+			printf("ERROR when reading file can not find ScaleAfterCorr!\n");
+			exit(1);
+		}
+
+
 		check = match(buffer, "\nSeedProt");
 		if(check!=-1){
 			position = (unsigned int)check;
@@ -949,6 +1007,10 @@ ParameterFrame newParamFrame_File(void){
 				exit(1);
 			}else if(doubleval<0){
 				printf("ERROR Fraction of traps is negative\n");
+				exit(1);
+			}else if(PF->ScaleAfterCorr!=0 && doubleval!=0){
+				printf("ERROR Fraction of traps is non zero and ScaleAfterCorr is set to on\n");
+				printf("At the moment the two options are not compatible\n");
 				exit(1);
 			}
 
@@ -1117,7 +1179,26 @@ ParameterFrame newParamFrame_File(void){
 			printf("ERROR when reading file can not find Tcv!\n");
 			exit(1);
 		}
-						
+			
+		check = match(buffer,"\nTlag");
+		if(check!=-1){
+			position = (unsigned int)check;
+			doubleval = GrabDouble(position, &buffer[0] );
+			printf("Tlag %g\n",doubleval);
+			PF->Tlag = doubleval;
+			if(PF->method==1 && PF->Tlag<0){
+				printf("ERROR CELIV voltage ramp lag time set less than 0\n");
+				exit(1);
+			}else if(PF->method==0 && PF->Tlag!=0){
+				printf("ERROR Time of flight method specified but CELIV ramp\n");
+				printf("lag time is non 0\n");
+				exit(1);
+			}
+
+		}else{
+			printf("ERROR when reading file can not find Tlag!\n");
+			exit(1);
+		}			
 
 		free(buffer);
 		fclose(handler);
@@ -1134,7 +1215,7 @@ int ReadParameter(int * method,\
 		int * XElecOn, int * YElecOn, int *ZElecOn,\
 		double * XFermiB, double * XFermiF, double * YFermiL,\
 		double * YFermiR, double * ZFermiB, double * ZFermiA,\
-		double * IntrFermi,\
+		int * ImageCharge, double * IntrFermi,\
 		double * alphaxb, double * alphaxf, double * alphayl,\
 		double * alphayr, double * alphazb, double * alphaza,\
 		double * vX, double * vY, double * vZ,\
@@ -1144,14 +1225,14 @@ int ReadParameter(int * method,\
 		double * SiteDistance, double * D, int * TCount,\
 		int * NCh, int * Ntot, double * TStep, int * N_av,\
 		int * Nstep_av, int * Time_check, int * Rcount,int * ClusterAlg, double * CutOff,\
-		double * lambda, int * SeedProt, int * Attempts,\
+		double * lambda, int * ScaleAfterCorr,int * SeedProt, int * Attempts,\
 		double * fracSeed, double * E0, double * sigma,\
 		double * fracTrap, double * Etrap, double * Tsigma,\
 		double * TempStart, int * TemperatureStep,\
 		double * TemperatureInc, double * reOrgEnergy,\
 		double * AttemptToHop, double * gamma,\
 		double * RelativePerm, int * MovieFrames,\
-		double * Vcv, double * Tcv){
+		double * Vcv, double * Tcv, double * Tlag){
 
 			char *buffer = NULL;
 			int position;
@@ -1200,14 +1281,29 @@ int ReadParameter(int * method,\
 				position = match(buffer, "\nSLength");
 				*SLength = GrabInt(position, &buffer[0] );
 				printf("SLength %d\n",*SLength);
+				if(*SLength<=1){
+					printf("ERROR SLength set to a value less than 2!\n");
+					printf("SLength must be at least 2 SiteNodes wide.\n");
+					exit(1);
+				}
 
 				position = match(buffer, "\nSWidth");
 				*SWidth = GrabInt(position, &buffer[0] );
 				printf("SWidth %d\n",*SWidth);
+				if(*SWidth<=1){
+					printf("ERROR SWidth set to a value less than 2!\n");
+					printf("SWidth must be at least 2 SiteNodes wide.\n");
+					exit(1);
+				}
 
 				position = match(buffer, "\nSHeight");
 				*SHeight = GrabInt(position, &buffer[0] );
 				printf("SHeight %d\n",*SHeight);
+				if(*SHeight<=1){
+					printf("ERROR SHeight set to a value less than 2!\n");
+					printf("SHeight must be at least 2 SiteNodes wide.\n");
+					exit(1);
+				}
 
 				position = match(buffer, "\nPeriodicX");
 				*PeriodicX = GrabInt(position, &buffer[0] );
@@ -1268,6 +1364,10 @@ int ReadParameter(int * method,\
 				position = match(buffer, "\nZFermiA");
 				*ZFermiA = GrabDouble(position, &buffer[0] );
 				printf("ZFermiA %g\n",*ZFermiA);
+
+				position = match(buffer, "\nImageCharge");
+				*ImageCharge = GrabDouble(position, &buffer[0] );
+				printf("ImageCharge %g\n",*ImageCharge);
 
 				position = match(buffer, "\nIntrinsicFermi");
 				*IntrFermi = GrabDouble(position, &buffer[0] );
@@ -1426,6 +1526,10 @@ int ReadParameter(int * method,\
 				*lambda = GrabDouble(position, &buffer[0] );
 				printf("lambda %g\n",*lambda);
 
+				position = match(buffer, "\nScaleAfterCorr");
+				*ScaleAfterCorr = GrabInt(position, &buffer[0] );
+				printf("ScaleAfterCorr %d\n",*ScaleAfterCorr);
+
 				position = match(buffer, "\nSeedProt");
 				*SeedProt = GrabInt(position, &buffer[0] );
 				printf("SeedProt %d\n",*SeedProt);
@@ -1493,6 +1597,10 @@ int ReadParameter(int * method,\
 				position = match(buffer, "\nVcv");
 				*Vcv = GrabDouble(position, &buffer[0] );
 				printf("Vcv %f\n",*Vcv);
+
+				position = match(buffer, "\nTlag");
+				*Tlag = GrabDouble(position, &buffer[0] );
+				printf("Tlag %f\n",*Tcv);
 
 
 
@@ -1812,6 +1920,17 @@ int PFset_ZFermiA(ParameterFrame PF,double ZFermiA ){
 	}
 
 	PF->ZFermiA = ZFermiA;
+
+	return 0;
+}
+
+int PFset_ImageCharge(ParameterFrame PF,int ImageCharge ){
+
+	if(PF==NULL){
+		return -1;
+	}
+
+	PF->ImageCharge = ImageCharge;
 
 	return 0;
 }
@@ -2168,6 +2287,17 @@ int PFset_lambda(ParameterFrame PF,double lambda ){
 	return 0;
 }
 
+int PFset_ScaleAfterCorr(ParameterFrame PF,int ScaleAfterCorr ){
+
+	if(PF==NULL){
+		return -1;
+	}
+
+	PF->ScaleAfterCorr = ScaleAfterCorr;
+
+	return 0;
+}
+
 int PFset_SeedProt(ParameterFrame PF,int SeedProt ){
 
 	if(PF==NULL){
@@ -2360,6 +2490,14 @@ int PFset_Tcv(ParameterFrame PF, double Tcv){
 	return 0;
 }
 
+int PFset_Tlag(ParameterFrame PF, double Tlag){
+	if(PF==NULL || Tlag<0){
+		return -1;
+	}
+	PF->Tlag=Tlag;
+	return 0;
+}
+
 int PFget_method(ParameterFrame PF){
 	if(PF==NULL){
 		return -1;
@@ -2531,6 +2669,15 @@ double PFget_ZFermiA(ParameterFrame PF){
 	}
 
 	return PF->ZFermiA;
+}
+
+double PFget_ImageCharge(ParameterFrame PF){
+
+	if(PF==NULL){
+		return -1;
+	}
+
+	return PF->ImageCharge;
 }
 
 double PFget_IntrFermi(ParameterFrame PF){
@@ -2821,6 +2968,15 @@ double PFget_lambda(ParameterFrame PF){
 	return PF->lambda;
 }
 
+int PFget_ScaleAfterCorr(ParameterFrame PF){
+
+	if(PF==NULL){
+		return -1;
+	}
+
+	return PF->ScaleAfterCorr;
+}
+
 int PFget_SeedProt(ParameterFrame PF){
 
 	if(PF==NULL){
@@ -2975,4 +3131,11 @@ double PFget_Tcv(ParameterFrame PF){
 		return -1;
 	}
 	return PF->Tcv;
+}
+
+double PFget_Tlag(ParameterFrame PF){
+	if(PF==NULL){
+		return -1;
+	}
+	return PF->Tlag;
 }

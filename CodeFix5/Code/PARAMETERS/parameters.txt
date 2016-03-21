@@ -4,8 +4,8 @@
 method 1 
 
 //Number of nodes along the x-axis, y-axis and z-axis
-SLength 100
-SWidth 30
+SLength 130
+SWidth 40
 SHeight 30
 
 //Defines whether sides are periodic or not
@@ -68,11 +68,14 @@ YFermiR 0
 ZFermiB 0
 ZFermiA 0
 
+//Image charge effect (On-1 Off-0)
+ImageCharge 0
+
 //Define intrinsic Fermi Energy level of the material 
 //must be defined for CELIV method where charges are
 //present as a result of thermal equilibirum. [eV]
 //We are assuming the carrier is an electron
-IntrinsicFermi -5.3
+IntrinsicFermi -5.45
 
 //Voltage across a single system in x, y and z [V]
 VoltageX 0.0
@@ -125,6 +128,11 @@ ClusterAlg 0
 CutOff 4 
 lambda 5E-9
 
+//Scale if this is on (ScaleAfterCorr-1) then after the energies
+//are correlated they will be scaled so that they have the same
+//Full width half maximum value of the original gaussian
+ScaleAfterCorr 1
+
 //Seed Protocol is used to determine how the energies are
 //spead out between the sites. 
 // 0 - means averaged by surrounding seeds
@@ -138,9 +146,9 @@ SeedProt 2
 Attempts 15
 
 //What fraction of sites act as seeds
-fracSeed 1.00
+fracSeed 0.001
 //Average site energy [eV]
-E0 -5.2
+E0 -5.3
 //Standard deviation of the site energy
 sigma 0.07
 
@@ -172,8 +180,12 @@ MovieFrames 10
 
 //***********if CELIV***************
 
-//final time [s] after the final time the voltage is cut off
-Tcv 10E-9  
+//Final time [s]. After the final time the voltage is cut off
+Tcv 5.0E-9 
 
-//final voltage
-Vcv 0.00001
+//Final voltage
+Vcv 0.0001
+
+//Lag Time [s]. How much longer does the simulation run after 
+//the voltage is cut
+Tlag 1E-9

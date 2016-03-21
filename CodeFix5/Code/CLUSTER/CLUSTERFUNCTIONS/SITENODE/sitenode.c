@@ -495,6 +495,7 @@ int getIndex( const_SNarray snA, int i, int j, int k) {
 	if (snA!=NULL && i<snA->length && j<snA->width && k<snA->height && i>-1 && j>-1 && k>-1){
 		return ((snA->width*snA->height)*i+(snA->height)*j+k);
 	}
+	
 	return -1;
 }
 
