@@ -4756,8 +4756,8 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 								getE(Xelec_Source,i,1),getE(Xelec_Drain,i,1),getE(System,i,1),getE(Xvelocity,i,1),getE(Xvelocity,i,1)/ElectricFieldX*10000);
 					}else{
 						//Time [s] Xcurrent [Amps] Source [unitless] Drain [unitless] System [unitless] DriftVelocity [m/s] 
-						fprintf(Xout,"%g \t %g \t %g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Xcurrent,i,1),\
-								getE(Xelec_Source,i,1),getE(Xelec_Drain,i,1),getE(System,i,1),getE(Xvelocity,i,1));
+						fprintf(Xout,"%g \t %g \t %g \t %g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Xcurrent,i,1),\
+								getE(Xelec_Source,i,1),getE(Xelec_Drain,i,1),getE(System,i,1),getE(Xvelocity,i,1),0.0);
 					}
 				}
 			}
@@ -4769,7 +4769,7 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 						fprintf(Xout,"%g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Xcurrent,i,1),getE(Xvelocity,i,1),getE(Xvelocity,i,1)/ElectricFieldX*1000);
 					}else{
 						//Time [s] Xcurrent [Amps]  DriftVelocity [m/s]
-						fprintf(Xout,"%g \t %g \t %g\n",getE(timeArray,i,1),getE(Xcurrent,i,1),getE(Xvelocity,i,1));
+						fprintf(Xout,"%g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Xcurrent,i,1),getE(Xvelocity,i,1),0.0);
 					}
 				}
 			}
@@ -4789,8 +4789,8 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 								getE(Yelec_Source,i,1),getE(Yelec_Drain,i,1),getE(System,i,1),getE(Yvelocity,i,1),getE(Yvelocity,i,1)/ElectricFieldY*1000);
 					}else{
 						//Time [s] Xcurrent [Amps] Source [unitless] Drain [unitless] System [unitless] DriftVelocity [m/s]
-						fprintf(Yout,"%g \t %g \t %g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Ycurrent,i,1),\
-								getE(Yelec_Source,i,1),getE(Yelec_Drain,i,1),getE(System,i,1),getE(Yvelocity,i,1));
+						fprintf(Yout,"%g \t %g \t %g \t %g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Ycurrent,i,1),\
+								getE(Yelec_Source,i,1),getE(Yelec_Drain,i,1),getE(System,i,1),getE(Yvelocity,i,1),0.0);
 					}
 
 				}
@@ -4803,7 +4803,7 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 						fprintf(Yout,"%g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Ycurrent,i,1),getE(Yvelocity,i,1),getE(Yvelocity,i,1)/ElectricFieldY*1000);
 					}else{
 						//Time [s] Ycurrent [Amps]  DriftVelocity [m/s]
-						fprintf(Yout,"%g \t %g \t %g\n",getE(timeArray,i,1),getE(Ycurrent,i,1),getE(Yvelocity,i,1));
+						fprintf(Yout,"%g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Ycurrent,i,1),getE(Yvelocity,i,1),0.0);
 					}
 				}
 			}
@@ -4823,8 +4823,8 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 								getE(Zelec_Source,i,1),getE(Zelec_Drain,i,1),getE(System,i,1),getE(Zvelocity,i,1),getE(Zvelocity,i,1)/ElectricFieldZ*1000);
 					}else{
 						//Time [s] Zcurrent [Amps] Source [unitless] Drain [unitless] System [unitless] DriftVelocity [m/s] 
-						fprintf(Zout,"%g \t %g \t %g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Zcurrent,i,1),\
-								getE(Zelec_Source,i,1),getE(Zelec_Drain,i,1),getE(System,i,1),getE(Zvelocity,i,1));
+						fprintf(Zout,"%g \t %g \t %g \t %g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Zcurrent,i,1),\
+								getE(Zelec_Source,i,1),getE(Zelec_Drain,i,1),getE(System,i,1),getE(Zvelocity,i,1),0.0);
 					}
 				}
 			}
@@ -4836,7 +4836,7 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 						fprintf(Zout,"%g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Zcurrent,i,1),getE(Zvelocity,i,1),getE(Zvelocity,i,1)/ElectricFieldZ*1000);
 					}else{
 						//Time [s] Zcurrent [Amps]  DriftVelocity [m/s]
-						fprintf(Zout,"%g \t %g \t %g\n",getE(timeArray,i,1),getE(Zcurrent,i,1),getE(Zvelocity,i,1));
+						fprintf(Zout,"%g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Zcurrent,i,1),getE(Zvelocity,i,1),0.0);
 					}
 				}
 			}
