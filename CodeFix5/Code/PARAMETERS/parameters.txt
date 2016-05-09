@@ -1,12 +1,12 @@
 //defines whether the method 
-// 0 - means not CELIV
+// 0 - Time of Flight ToF
 // 1 - CELIV
-method 1 
+method 0 
 
 //Number of nodes along the x-axis, y-axis and z-axis
-SLength 130
-SWidth 40
-SHeight 30
+SLength 15
+SWidth 15
+SHeight 15
 
 //Defines whether sides are periodic or not
 // 0 - means non-periodic
@@ -75,10 +75,10 @@ ImageCharge 0
 //must be defined for CELIV method where charges are
 //present as a result of thermal equilibirum. [eV]
 //We are assuming the carrier is an electron
-IntrinsicFermi -5.45
+IntrinsicFermi -5.3
 
 //Voltage across a single system in x, y and z [V]
-VoltageX 0.0
+VoltageX 0.1
 VoltageY 0.0
 VoltageZ 0.0
 
@@ -102,7 +102,7 @@ D 20E14
 TCount 1
 
 //Number of charges injected per time step
-NCh 0
+NCh 10
 
 //Total number of charges passed through the system
 Ntot TCount*NCh
@@ -146,9 +146,9 @@ SeedProt 2
 Attempts 15
 
 //What fraction of sites act as seeds
-fracSeed 0.001
+fracSeed 0.4
 //Average site energy [eV]
-E0 -5.3
+E0 -5.2
 //Standard deviation of the site energy
 sigma 0.07
 
@@ -181,11 +181,11 @@ MovieFrames 10
 //***********if CELIV***************
 
 //Final time [s]. After the final time the voltage is cut off
-Tcv 5.0E-9 
+Tcv 0.0 
 
 //Final voltage
-Vcv 0.0001
+Vcv 0.0
 
 //Lag Time [s]. How much longer does the simulation run after 
 //the voltage is cut
-Tlag 1E-9
+Tlag 0.0 

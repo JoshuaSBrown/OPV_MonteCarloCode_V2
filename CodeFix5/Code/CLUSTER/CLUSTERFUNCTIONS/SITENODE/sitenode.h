@@ -62,10 +62,10 @@ int printPoint(void* vpt);
 
 /* This function prints the id of each site followed by
 	 the frequency the site was visited by a charge, whether
-	 the site was visited or not and the energy of the site
-	 in eV:
+	 the site was visited or not and the time the site
+	 was occupied:
 	 col 1	col 2		col 3 col 4 	col 5				col 6
-	 i			j				k			Freq		(0 or 1)		Energy [eV]
+	 i			j				k			Freq		(0 or 1)		Time [s]
 	
 	 e.g.
 

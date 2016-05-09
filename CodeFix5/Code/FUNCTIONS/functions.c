@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <assert.h>
+#include <time.h>
 
 #include "../PARAMETERS/read.h"
 //#include "../MEM/mem.h"
@@ -22,6 +23,18 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	if(snA==NULL ){
 		return -1;
 	}
+
+	//Track time of correlation
+	time_t start;
+	time_t finish;
+
+	clock_t begin;
+	clock_t end;
+	double time_spent;
+	begin = clock();
+	time(&start);
+
+	srand(time(NULL));
 
 	//Grabbing parameters from parameter frame
 	int method = PFget_method(PF);
@@ -66,7 +79,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	double percent;
 	double maxEnergy;
 	double minEnergy;
-
+	double ratio;
 	//double SiteDistanceNM;
 
 	//Converting to [nm]
@@ -89,6 +102,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	//Calculating full Marcus Coefficient;
 	MarcusCoeff = pow(MarcusJ0,2)/hbar * pow(M_PI/(4*reOrgEnergy*KT),1/2)*exp(-2*gamma*SiteDistance);
 
+	ratio = ((double)seeds)/((double)sites);
 
 	if (CorRad < SiteDistance) {
 		printf("WARNING CorRad is less than SiteDistance!!!\n");
@@ -225,7 +239,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 						//assert(As!=NULL);
 						//Accounting for correlation from seeds
 						CorrCal(As, i,j,k, CorRadtemp, SiteEnergy, SiteDistance,snA, &SumCor, &SumEcor, &seed_dist,\
-										SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda);
+										SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
 							
 						//Accounting for correlation from traps
 						if (traps!=0){
@@ -234,7 +248,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 							}
 								
 							CorrCal(AsTr, i,j,k, CorRadtemp, SiteEnergy, SiteDistance, snA, &SumCor2, &SumEcor2, &trap_dist,\
-										SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda);
+										SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
 						
 							if(trap_dist<seed_dist && SumEcor2!=0){
 								SumCor = SumCor2;
@@ -245,7 +259,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 							CorRadtemp=CorRadtemp*2;
 						}else{
 							setEnergy(getSN(snA,i,j,k),SiteEnergy+SumEcor/SumCor);
-							setInitE(getSN(snA,i,j,k),1);
+							setInitE(getSN(snA,i,j,k),2);
 							if ( ((double)m)/((double)sites-(seeds+traps))>percent){
 								printf("Percent Complete %ld\n",(int long)(percent*100));
 								percent+=0.1;
@@ -308,7 +322,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 					setE(UnAs,i+1,1,(double)ii);
 					setE(UnAs,i+1,2,(double)jj);
 					setE(UnAs,i+1,3,(double)kk);
-					setInitE(pN,1);
+					setInitE(pN,2);
 					i++;
 				}
 			}
@@ -383,12 +397,12 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 
 					//Accounting for correlation from seeds
 					CorrCal(As, i, j, k, CorRadtemp, SiteEnergy, SiteDistance, snA, &SumCor, &SumEcor, &seed_dist,\
-							SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda);
+							SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
 
 					//Accounting for correlation from traps
 					if (traps!=0) {
 						CorrCal(AsTr, i,j,k , CorRadtemp, SiteEnergy, SiteDistance, snA, &SumCor, &SumEcor, &trap_dist,\
-								SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda);
+								SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
 						if(trap_dist<seed_dist && SumEcor2!=0){
 							SumEcor=SumEcor2;
 							SumCor=SumCor2;
@@ -398,7 +412,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 						CorRadtemp=CorRadtemp*2;
 					}else {
 						setEnergy(getSN(snA,i,j,k),SiteEnergy+SumEcor/SumCor);
-						setInitE(getSN(snA,i,j,k),1);
+						setInitE(getSN(snA,i,j,k),2);
 					}
 				}
 			}
@@ -421,6 +435,13 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	initJumPossibility(electricEnergyX, electricEnergyY, electricEnergyZ,\
 			  MarcusCoeff, KT,reOrgEnergy, snA,\
 				PeriodicX, PeriodicY, PeriodicZ, XElecOn, YElecOn, ZElecOn);
+
+	end = clock();
+	time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
+	time(&finish);
+	//second = CPU_TIME;
+	printf("Run Time of Correlation Process %g seconds\n",time_spent);
+	printf("user : %d secs\n", (int)(finish-start));
 
 	return 0;
 }
@@ -505,7 +526,8 @@ int ScaleAfterCorrFunc(double maxEnergy, double minEnergy, ParameterFrame PF,\
 								maxbin=quantity;
 							}
 						}else{
-							printf("minEnergy %g maxEnergy %g edge %g\n",minEnergy,maxEnergy,edge);
+							printf("minEnergy %g maxEnergy %g edge %g SiteEnergy %g\n",\
+										 minEnergy,maxEnergy,edge,SiteEnergy);
 							printf("ERROR in sorting energies into bins we have exceeded the number of bins\n");
 							exit(1);
 						}
@@ -1082,12 +1104,12 @@ int initJumPossibility_ElecX( const double electricEnergyX,\
 		printf("ERROR mtx or snA NULL in initJumPossibility_ElecX\n");
 		exit(1);
 	}
-	printf("Attaching mtX and snAX to elX\n");
-	printf("Printing Hop Rates matrix\n");
-	printMatrix(mtxX);
+	//printf("Attaching mtX and snAX to elX\n");
+	//printf("Printing Hop Rates matrix\n");
+	//printMatrix(mtxX);
 	setElectrode_HopRates(elX, (void *) mtxX);
 	setElectrode_AdjacentSites(elX, (void *) snAX);
-	printf("End of Init ElectrodeX\n");
+	//printf("End of Init ElectrodeX\n");
 	return 0;
 }
 
@@ -1339,7 +1361,7 @@ int Update_initJumPossibility_ElecX( const double electricEnergyX,\
 	}
 	setElectrode_HopRates(elX, (void *) mtxX);
 	setElectrode_AdjacentSites(elX, (void *) snAX);
-	printf("End of Update ElectrodeX\n");
+	//printf("End of Update ElectrodeX\n");
 	//printMatrix(mtxX);
 	return 0;
 }
@@ -1538,7 +1560,7 @@ int initJumPossibility_ElecY( const double electricEnergyX,\
 	}
 	setElectrode_HopRates(elY, (void *) mtxY);
 	setElectrode_AdjacentSites(elY, (void *) snAY);
-	printf("End of Init ElectrodeY\n");
+	//printf("End of Init ElectrodeY\n");
 	return 0;
 }
 
@@ -1733,7 +1755,7 @@ int initJumPossibility_ElecZ( const double electricEnergyX,\
 	}
 	setElectrode_HopRates(elZ, (void *) mtxZ);
 	setElectrode_AdjacentSites(elZ, (void *) snAZ);
-	printf("End of Init ElectrodeZ\n");
+	//printf("End of Init ElectrodeZ\n");
 	return 0;
 }
 
@@ -1839,7 +1861,7 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 
 		}
 	}
-	printf("End of Init\n");
+	//printf("End of Init\n");
 	return 0;
 }
 

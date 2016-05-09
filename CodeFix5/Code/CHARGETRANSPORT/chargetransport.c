@@ -31,7 +31,7 @@ int HopToElecX(SNarray snA, Electrode elXb, Charge * one, int * future, int EndY
 	//	getAtotal(snA) + 4 - (-z)
 	//	getAtotal(snA) + 5 - (+z)
 
-	printf("Hop To ElecX\n");
+	//printf("Hop To ElecX\n");
 	if(elXb==NULL){
 		printf("elXb is NULL\n");
 		return -1;
@@ -1315,13 +1315,13 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 		
 		*Sequence = newMatrix(Ntot,1);
 		(*FutureSite) = newMatrix(Ntot,1);
-		int rv = printMatrix(*FutureSite);
+		/*int rv = printMatrix(*FutureSite);
 		printf("Value of Ntot %d\n",Ntot);
 		if(rv==-1){
 			printf("ERROR FutureSite problem!\n");
 			exit(1);
 		}
-
+		*/
 		if(FutureSite==NULL){
 			printf("ERROR FutureSite NULL\n");
 			exit(1);
@@ -1401,7 +1401,7 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 						electricEnergyY, electricEnergyZ,PF);
 
 				PrintNeighFile_xyz(OrderL, (*snA), ClArLL, &FileName[0]);
-				printMatrix(*FutureSite);
+				//printMatrix(*FutureSite);
 
 			}else{
 				printFileEnergy((*snA), &FileName[0], electricEnergyX,\
@@ -1534,7 +1534,7 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 
 			printFileEnergy((*snA), &FileName[0], electricEnergyX,\
 					electricEnergyY, electricEnergyZ,PF);
-			printMatrix(*FutureSite);
+			//printMatrix(*FutureSite);
 
 		}else if(CheckPtStatus!=1) {
 			printf("CELIV method has not been setup to run from a chkpt file\n");
@@ -1545,13 +1545,17 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 
 	}
 
-	printf("Printing Future site matrix at end of Pre_randomWalk\n");
+	/*printf("Printing Future site matrix at end of Pre_randomWalk\n");
 	int rv = printMatrix(*FutureSite);
 	if(FutureSite==NULL || rv==-1){
 		printf("FutureSite is NULL\n");
 		exit(1);
 	}
-
+	*/
+	if(FutureSite==NULL){
+		printf("ERROR FutureSite is NULL\n");
+		exit(1);
+	}
 	return 0;
 
 }
@@ -1638,7 +1642,7 @@ int Post_randomWalk(ArbArray ClArLL, SNarray snA, Electrode elXb, Electrode elXf
 int initFutureSite( SNarray * snA, matrix * FutureSite,ChargeArray * chA, ParameterFrame PF,\
 		Electrode elXb, Electrode elYl, Electrode elZb ){
 
-	printf("Initializing Future sites\n");
+	//printf("Initializing Future sites\n");
 	//Declaring Parameter frame variables
 	int SLength;
 	int SWidth;
@@ -1724,7 +1728,7 @@ int initFutureSite( SNarray * snA, matrix * FutureSite,ChargeArray * chA, Parame
 		setE(*FutureSite,loop+1,1,future);
 	}
 
-	printMatrix(*FutureSite);
+	//printMatrix(*FutureSite);
 
 	return 0;
 }
@@ -1803,7 +1807,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	printf("Starting Random Walk\n");
 	//Declaring Variables
 	int Ntot = NCh*TCount;
-	printf("NTot %d NCh %d\n",Ntot,NCh);
+	//printf("NTot %d NCh %d\n",Ntot,NCh);
 	int flag;
 	int SaveCount;
 	//Movie start point
@@ -2018,7 +2022,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 		//If no charges have been inserted in the system we will
 		//simply increment the time
 
-		printf("nca %d nc %d elXb %d elXf %d\n",nca,nc,getElectrode_Charges(elXb),getElectrode_Charges(elXf));
+		//printf("nca %d nc %d elXb %d elXf %d\n",nca,nc,getElectrode_Charges(elXb),getElectrode_Charges(elXf));
 		ChargeCheck = nc;
 		if(XElecOn==1){
 			ChargeCheck = ChargeCheck+getElectrode_Charges(elXb);
@@ -2099,7 +2103,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 				SaveCount++;
 
-				printf("SaveTime %Lg TStep %g SaveCount %d Nstep_av %d Movie %d MovieFrames %d\n",SaveTime,TStep,SaveCount,Nstep_av,Movie,MovieFrames);
+				//printf("SaveTime %Lg TStep %g SaveCount %d Nstep_av %d Movie %d MovieFrames %d\n",SaveTime,TStep,SaveCount,Nstep_av,Movie,MovieFrames);
 
 				if((SaveCount%Nstep_av)==0 ){
 					SaveCount = 1;
@@ -2116,7 +2120,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 							ElectricFieldX, ElectricFieldY, ElectricFieldZ,\
 							FileName);
 					if(Movie<MovieFrames){
-						printf("Should have entered the printMovie Routine\n");
+						//printf("Should have entered the printMovie Routine\n");
 						printMovie(&Movie,t,FileName,snA,PF);
 						
 						
@@ -2148,7 +2152,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 			//printf("Number of charges in sample %d active charges %d time %Lg\n",nc,nca, t);
 			//printf("Grabbing Charge %d Value of nca %d\n",ChargeID, nca);
-			printf("ID of charge %d Position of Charge %d %d %d\n",ChargeID,getCx(one),getCy(one),getCz(one));
+			//printf("ID of charge %d Position of Charge %d %d %d\n",ChargeID,getCx(one),getCy(one),getCz(one));
 			if(getCx(one)<-1 || getCx(one)>SLength){
 				printf("Charge position less than -1 or greater than SLength %d\n",SLength);
 				exit(1);
@@ -2281,7 +2285,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			// calculate current
 
 			//printf("SaveTime %Lg TStep %g\n",SaveTime, TStep);
-			printf("SaveTime %Lg TStep %g SaveCount %d Nstep_av %d Movie %d MovieFrames %d\n",SaveTime,TStep,SaveCount,Nstep_av,Movie,MovieFrames);
+			//printf("SaveTime %Lg TStep %g SaveCount %d Nstep_av %d Movie %d MovieFrames %d\n",SaveTime,TStep,SaveCount,Nstep_av,Movie,MovieFrames);
 
 
 			if(SaveTime >= (long double)TStep){
@@ -2324,7 +2328,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 				if((SaveCount%Nstep_av)==0){
 					//Saving Data
-					printf("Saving Data\n");
+					//printf("Saving Data\n");
 					SaveCount = 1;
 					SaveTime = fmod(SaveTime,(long double)TStep);
 
@@ -2341,7 +2345,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 							FileName);
 
 					if(Movie<MovieFrames){
-						printf("Should have entered the printMovie Routine\n");
+						//printf("Should have entered the printMovie Routine\n");
 						printMovie(&Movie,t,FileName,snA,PF);
 					}
 					//printMatrix(System);
@@ -2389,13 +2393,13 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				if(JumpFromElec==1){
 					//Determine which electrode hopped from
 					if(PrevX == -1 && EndX!=0){
-						printf("Hopping back into system current x %d\n",getCx(one));
+						//printf("Hopping back into system current x %d\n",getCx(one));
 						ChargeSystem( &nc, elXb, nca, Sequence, *chA);
 					}else if(PrevY == -1 && EndY!=0){
-						printf("Hopping back into system current y %d\n",getCy(one));
+						//printf("Hopping back into system current y %d\n",getCy(one));
 						ChargeSystem( &nc, elYl, nca, Sequence, *chA);
 					}else if(PrevZ == -1 && EndZ!=0){
-						printf("Hopping back into system current z %d\n",getCz(one));
+						//printf("Hopping back into system current z %d\n",getCz(one));
 						ChargeSystem( &nc, elZb, nca, Sequence, *chA);
 					}
 					//Hopped from site
@@ -2427,7 +2431,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			//printf("Before CheckIfElecHop of t %Lg\n",t);
 			//printf("TotalVelX %Lg\n",TotalVelX);
 
-			printf("t %g TimeTrack1 %g\n",(double)t,(double)TimeTrack1);
+			//printf("t %g TimeTrack1 %g\n",(double)t,(double)TimeTrack1);
 			CheckIfElecHop(xx, yy, zz,\
 					&Xsource, &Ysource, &Zsource,\
 					&Xdrain, &Ydrain, &Zdrain,\
@@ -2559,7 +2563,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					//Updating dwell time of charge
 					ElecHopOffX(elXb, &future, snA);
 					setE(FutureSite,ChargeID+1,1,future);
-					printf("Hopped to X Source x position %d flag %d\n",xx, flag);
+					//printf("Hopped to X Source x position %d flag %d\n",xx, flag);
 					ChargeElectrode(elXb, &one, &Sequence, *chA, &nc, nca, flag);
 					//printf("ChargeElectrode value of t %Lg\n",t);
 					//printf("Grabbing dwel %g\n",getDwel(one));
@@ -2567,7 +2571,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				}else if(xx == EndX*SLength && EndX!=0){
 					//Hopped to front electrode
 					//Setting dwell time to large number removing charge from system
-					printf("Hopped to X Drain x position %d\n",xx);
+					//printf("Hopped to X Drain x position %d\n",xx);
 					ChargeClosure(elXf, &one, &Sequence, &nc, &nca, &TotalCollected, Ntot);
 					rv = getE(Sequence,1,1);
 					
@@ -2585,11 +2589,11 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					//Hopping from left Electrode
 					ElecHopOffY(elYl, &future, snA);
 					setE(FutureSite,ChargeID+1,1,future);
-					printf("Hopped to Y Source y position %d\n",yy);
+					//printf("Hopped to Y Source y position %d\n",yy);
 					ChargeElectrode(elYl, &one, &Sequence, *chA, &nc, nca, flag);
 				}else if(yy == EndY*SWidth && EndY!=0 ){
 					//Hopped to right electrode
-					printf("Hopped to Y Drain y position %d\n",yy);
+					//printf("Hopped to Y Drain y position %d\n",yy);
 					ChargeClosure(elYr, &one, &Sequence, &nc, &nca, &TotalCollected, Ntot);
 					ID2 = getE(Sequence,1,1);
 
@@ -2606,11 +2610,11 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					//Hopping from bottom Electrode
 					ElecHopOffZ(elZb, &future, snA);
 					setE(FutureSite,ChargeID+1,1,future);
-					printf("Hopped to Z Source z position %d\n",zz);
+					//printf("Hopped to Z Source z position %d\n",zz);
 					ChargeElectrode(elZb, &one, &Sequence, *chA, &nc, nca, flag);
 				}else if(zz == EndZ*SHeight && EndZ!=0){
 					//Hopped to top electrode
-					printf("Hopped to Z Drain z position %d\n",zz);
+					//printf("Hopped to Z Drain z position %d\n",zz);
 					ChargeClosure(elZa, &one, &Sequence, &nc, &nca, &TotalCollected, Ntot);
 					//Sequence contains the ids of the charges which go
 					//from 0 to Ntot-1;
@@ -2643,7 +2647,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			if( (long double)n*TStep<=t || ((n+1)*(long int)NCh)<Ntot){
 				n++;
 			}
-			printf("n %d NCh %d Ntot %d\n",n,NCh,Ntot);	
+			//printf("n %d NCh %d Ntot %d\n",n,NCh,Ntot);	
 			//Initialize new charges that are inserted
 			initCharge( nca, n, chA, Sequence, snA,\
 					Ntot, NCh, D,\
@@ -2664,7 +2668,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			TrackY = 0;
 			TrackZ = 0;
 			NumAvgVel++;
-			printf("TimeTrack1 set to t\n");
+			//printf("TimeTrack1 set to t\n");
 			TimeTrack1 = t;
 			nc = nc+NCh;
 			nca = nca+NCh;
@@ -2672,9 +2676,9 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 	}
 
-	printf("Printing Transport Data\n");
+	//printf("Printing Transport Data\n");
 
-	printf("Length of rows of System %d\n",getRows(System));
+	//printf("Length of rows of System %d\n",getRows(System));
 	
 	Movie = Movie+1;
 
@@ -2685,7 +2689,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			XElecOn, YElecOn, ZElecOn, FileName,\
 			ElectricFieldX, ElectricFieldY, ElectricFieldZ);
 
-	printf("Deleting matrices\n");
+	//printf("Deleting matrices\n");
 	if(method==1){
 		deleteMatrix(&Xb1);
 		deleteMatrix(&Xb2);
@@ -4740,13 +4744,13 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 		printf("Error! unable to open X.txt\n");
 	}else{
 		if(XElecOn == 1){
-			printf("Number of Rows of timeArray %d\n",getRows(timeArray));
+			/*printf("Number of Rows of timeArray %d\n",getRows(timeArray));
 			printf("Number of Rows of Xcurrent %d\n",getRows(Xcurrent));
 			printf("Number of Rows of Xvelocity %d\n",getRows(Xvelocity));
 			printf("Number of Rows of System %d\n",getRows(System));
 			printf("Number of Rows of Xelec_Drain %d\n",getRows(Xelec_Drain));
 			printf("Number of Rows of Xelec_Source %d\n",getRows(Xelec_Source));
-
+	*/
 			for(i=1;i<=getRows(timeArray);i++){
 				if(getE(timeArray,i,1)!=0){
 
@@ -4841,11 +4845,11 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 				}
 			}
 		}
-		printf("Closing Z file identifier\n");
+		//printf("Closing Z file identifier\n");
 		fclose(Zout);
 	}
 
-	printf("Returning with a value of 0\n");
+	//printf("Returning with a value of 0\n");
 	return 0;
 }
 
@@ -4859,11 +4863,11 @@ int ChargeClosure(Electrode el, Charge * one, matrix * Sequence, int * nc, int *
 	*nc= *nc-1;
 	*nca = *nca-1;
 	Electrode_addCharge(el);
-	printf("Charge reached electrode value of nc now %d\n",*nc);
+	//printf("Charge reached electrode value of nc now %d\n",*nc);
 	//Total number of collected charges increases
 	*TotalCollected = *TotalCollected+1;
 	//Set Dwell time to finished state
-	printf("Set Dwel exit\n");
+	//printf("Set Dwel exit\n");
 	setDwel(*one,1E6);
 
 	int rv;
@@ -4900,7 +4904,7 @@ int ChargeElectrode(Electrode el, Charge * one, matrix * Sequence, ChargeArray c
 		*nc = *nc-1;
 		//Increase number of charges on electrode
 		Electrode_addCharge(el);
-		printf("Charge reached electrode value of nc now %d\n",*nc);
+		//printf("Charge reached electrode value of nc now %d\n",*nc);
 	}
 	//Set Dwell time to that of the electrode
 	double tim = 1/getElectrode_Sum(el); 
@@ -5082,7 +5086,7 @@ int SaveDataPoint(int * CurrentInc, int * NumAvgVel, int nc, int XElecOn, int YE
 		}
 	}
 
-	printf("Saving Data \n\n");
+	//printf("Saving Data \n\n");
 
 	rv = setE(*timeArray,(*CurrentInc),1,(double)t);
 	assert(rv==0);
@@ -5117,10 +5121,10 @@ int SaveDataPoint(int * CurrentInc, int * NumAvgVel, int nc, int XElecOn, int YE
 	}
 	//Number of charges still in the system
 	rv = setE(*System,(*CurrentInc),1,(double)nc);
-	printf("System %d \t",nc);
+	//printf("System %d \t",nc);
 
 	if(XElecOn==1){
-		printf("Drain %d Source %d \n",*Xdrain,*Xsource);
+		//printf("Drain %d Source %d \n",*Xdrain,*Xsource);
 		rv = setE(*Xelec_Drain,(*CurrentInc),1,(double)(*Xdrain));
 		rv = setE(*Xelec_Source,(*CurrentInc),1,(double)(*Xsource));
 	}
@@ -5177,7 +5181,7 @@ int CheckIfElecHop(int xx, int yy, int zz,\
 	long double nc2 = (long double)(*nc);
 	long double SiteDistance2 = (long double)SiteDistance;
 	
-	printf("t %g TimeTrack1 %g\n",(double)t,(double)*TimeTrack1);
+	//printf("t %g TimeTrack1 %g\n",(double)t,(double)*TimeTrack1);
 	
 	if(xx == -1 && PeriodicX!=1){
 		//Arrived at back electrode

@@ -21,7 +21,8 @@ double Rfind( int i1, int j1, int k1, int i2, int j2, int k2, const double SiteD
 	*/
 int CorrCal(const_matrix A,const int i,const int j,const int k,const double Rad,const double SiteEnergy,\
 		 const double SiteDistance, const_SNarray snA, double * SumCor, double * SumEcor,double * distanceij, \
-		 const int SeedProt, const int PeriodicX, const int PeriodicY, const int PeriodicZ, const double lambda); 
+		 const int SeedProt, const int PeriodicX, const int PeriodicY, const int PeriodicZ, const double lambda,\
+		 const double ratio); 
 
 /* Returns the correlation value given the distance
    between two sites. Calculates it using an exponential 

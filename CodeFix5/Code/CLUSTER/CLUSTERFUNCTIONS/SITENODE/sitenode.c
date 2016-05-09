@@ -249,8 +249,8 @@ int printVisitFreq(const_SNarray snA, char * FileName) {
 				kd=0;
 				for(k=0;k<snA->height;k++){
 					sn=getSN(snA,i,j,k);
-					fprintf(FreqOut,"C \t %f \t %f \t %f \t %f \t %f \t %f\n",\
-							id,jd,kd,getVisFreq(sn),getVis(sn),getEnergy(sn));
+					fprintf(FreqOut,"C \t %f \t %f \t %f \t %f \t %f \t %g\n",\
+							id,jd,kd,getVisFreq(sn),getVis(sn),getTime(sn));
 					kd++;
 				}
 				jd++;
