@@ -47,8 +47,9 @@ int ReadParameter(int * method,\
 		double * TempStart, int * TemperatureStep,\
 		double * TemperatureInc, double * reOrgEnergy,\
 		double * AttemptToHop, double * gamma,\
-		double * RelativePerm, int * MovieFrames,\
-		double * Tcv, double * Vcv, double * Tlag);
+		double * RelativePerm, int * MovieFrames, double * CutOffTime,\
+		double * Tcv, double * Vcv, double * Tlag, int * EndPtFile,\
+		int * NumChargesTrack, int * PathFile, int * LogFile);
 
 int deleteParamFrame(ParameterFrame * PF);
 
@@ -125,9 +126,14 @@ int PFset_AttemptToHop(ParameterFrame PF,double AttemptHop);
 int PFset_gamma(ParameterFrame PF,double gamma);
 int PFset_RelativePerm(ParameterFrame PF,double RelativePerm);
 int PFset_MovieFrames(ParameterFrame PF, int MovieFrames);
+int PFset_CutOffTime(ParameterFrame PF, double CutOffTime);
 int PFset_Vcv(ParameterFrame PF, double Vcv);
 int PFset_Tcv(ParameterFrame PF, double Tcv);
 int PFset_Tlag(ParameterFrame PF, double Tlag);
+int PFset_EndPtFile(ParameterFrame PF, int EndPtFile);
+int PFset_NumChargesTrack(ParameterFrame PF, int NumChargesTrack);
+int PFset_PathFile(ParameterFrame PF, int PathFile);
+int PFset_LogFile(ParameterFrame PF, int LogFile);
 
 
 int PFget_method(ParameterFrame PF);
@@ -199,7 +205,12 @@ double PFget_AttemptToHop(ParameterFrame PF);
 double PFget_gamma(ParameterFrame PF);
 double PFget_RelativePerm(ParameterFrame PF);
 int PFget_MovieFrames(ParameterFrame PF);
+double PFget_CutOffTime(ParameterFrame PF);
 double PFget_Tcv(ParameterFrame PF);
 double PFget_Vcv(ParameterFrame PF);
 double PFget_Tlag(ParameterFrame PF);
+int PFget_EndPtFile(ParameterFrame PF);
+int PFget_NumChargesTrack(ParameterFrame PF);
+int PFget_PathFile(ParameterFrame PF);
+int PFget_LogFile(ParameterFrame PF);
 #endif

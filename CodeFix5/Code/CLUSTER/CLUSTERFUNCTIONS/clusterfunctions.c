@@ -579,7 +579,7 @@ int FilterCluster(const int TotalOrders,const int orderLow,const_matrix MasterM,
 	ClusterLL TempClLL, holder, brief;
 	Node tempNode, tempNode2;
 	int count;
-	int rv;
+	//int rv;
 
 	//Verify that hops exist that are within two orders of magnitude 
 	for(element=0;element<TotalOrders;element++){
@@ -793,11 +793,11 @@ int FilterCluster(const int TotalOrders,const int orderLow,const_matrix MasterM,
 					if (getNextClusterLL(TempClLL)==NULL){
 						NullArbElement(*ClArLL, element);
 					}else{
-						rv = setArbElement(*ClArLL, element, getNextClusterLL(TempClLL));	
+						setArbElement(*ClArLL, element, getNextClusterLL(TempClLL));	
 						//Delete TempClLL Cluster and all nodes within the cluster
 					}
 					//printf("Deleting Cluster\n");
-					rv = deleteClusterLLNodes( TempClLL );
+					deleteClusterLLNodes( TempClLL );
 
 					//Start over with TempClLL reinitialized
 
@@ -2173,13 +2173,13 @@ int CalculateNeighNodes(int TotalOrders, int orderLow, ArbArray * ClArLL, SNarra
 	int Elec_Fro, Elec_Beh, Elec_Lef, Elec_Rig, Elec_Abo, Elec_Bel;
 	int i, j, k;
 	//int rv;
-	int order;
+	//int order;
 	Node tempNode;
 	ClusterLL TempClLL;
 
 	for(element=0;element<TotalOrders;element++){
 		TempClLL=(ClusterLL) getArbElement((*ClArLL),element);
-		order=element+orderLow;
+		//order=element+orderLow;
 		//printf("Order %d\n",order);
 
 		if(TempClLL==NULL) {
@@ -3140,8 +3140,8 @@ int CalculateSumAndP(const int TotalOrders, const_SNarray snA, ArbArray * ClArLL
 	//Individual hoprates off the cluster will determine 
 	//the probability a charge will hop to a given site
 	int element;
-	double count;//, count2;
-	double sum;//, sum2;
+	//double count;//, count2;
+	//double sum;//, sum2;
 	ClusterLL TempClLL;
 	Node tempNode;
 	matrix mtxHopOpt;
@@ -3165,9 +3165,9 @@ int CalculateSumAndP(const int TotalOrders, const_SNarray snA, ArbArray * ClArLL
 
 			while (TempClLL!=NULL){
 
-				count=0.0;
+				//count=0.0;
 				//count2=0.0;
-				sum=0.0;
+				//sum=0.0;
 				//sum2=0.0;
 				tempNode= getStartNode(TempClLL);
 

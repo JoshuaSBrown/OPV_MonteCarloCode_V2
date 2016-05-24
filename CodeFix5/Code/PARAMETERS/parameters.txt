@@ -39,6 +39,9 @@ alphaYr 2
 alphaZb 2
 alphaZa 2
 
+//Relative Permittivity (PCBM 3.9)
+RelativePermittivity 3.9
+
 //Define the work function of the electrodes [eV]
 workX 2 
 workY 2
@@ -48,9 +51,6 @@ workZ 2
 electronAffin 1.2
 //Define the ionization energy of medium [eV]
 ionizationEnergy 0.9
-
-//Relative permittivity of medium
-RelativePermittivity 3
 
 //Define the attempt to hop rate from the electrode [1/s]
 vX 1E13
@@ -78,7 +78,7 @@ ImageCharge 0
 IntrinsicFermi -5.3
 
 //Voltage across a single system in x, y and z [V]
-VoltageX 0.1
+VoltageX 0.3
 VoltageY 0.0
 VoltageZ 0.0
 
@@ -172,11 +172,12 @@ reOrgEnergy 0.1
 //Tunneling constant [1/nm]
 gamma 2
 
-//Relative permittivity (PCBM Er 3.9)
-Er 3.9
-
 //Movie Frames 
 MovieFrames 10
+
+//Cutoff Time of Simulation [s]
+//value of 0 means there is no cut off time
+CutOffTime 1E-6
 
 //***********if CELIV***************
 
@@ -189,3 +190,30 @@ Vcv 0.0
 //Lag Time [s]. How much longer does the simulation run after 
 //the voltage is cut
 Tlag 0.0 
+
+//*****File Generation Options*****
+
+//Charge End point File .endpt file
+//File prints out the time it takes a charge
+//to reach the electrode or the position it is
+//at when the simulation ends, it is a more 
+//accurate way to measure the mobility if not all
+//the charges reach the electrode by the cut off time
+//1 Generate File
+//2 Do not generate File
+EndPtFile 1
+
+//Charge path file .path file
+//File prints out the position of a chosen number of
+//charges as they move through the system
+//File format is as follows
+//xposition yposition zposition chargeid TimeSpentOnSite GlobalTime
+NumChargesTrack 2
+PathFile 1
+
+//Log File .log
+//File contains information of interest of the simulation
+//1 Generate File
+//0 Do not generate file
+LogFile 1
+

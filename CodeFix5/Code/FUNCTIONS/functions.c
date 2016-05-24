@@ -37,7 +37,6 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	srand(time(NULL));
 
 	//Grabbing parameters from parameter frame
-	int method = PFget_method(PF);
 	double reOrgEnergy = PFget_reOrg(PF);
 	double AttemptToHop = PFget_AttemptToHop(PF);
 	double gamma = PFget_gamma(PF);
@@ -58,12 +57,11 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	int XElecOn = PFget_XElecOn(PF);
 	int YElecOn = PFget_YElecOn(PF);
 	int ZElecOn = PFget_ZElecOn(PF);
-	double IntrFermi = PFget_IntrFermi(PF);
 
 	int SLength = getAlen(snA);
 	int SWidth = getAwid(snA);
 	int SHeight = getAhei(snA);
-	int traps, seeds, sites;
+	int traps, seeds, seeds2, sites;
 	int i, j, k, m;
 	int ii, jj, kk;
 	int index;
@@ -120,10 +118,10 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	printf("Value of Traps %d.\n",traps);
 
 	if (seeds+traps > (sites) ){
-		seeds=(sites) - traps;
+		seeds2=(sites) - traps;
 		printf("Total Sites %d.\n",sites);
 		printf("Traps %d.\n",traps);
-		printf("Sites to be Seeded %d.\n",seeds);
+		printf("Sites to be Seeded %d.\n",seeds2);
 	}
 
 	matrix AsTr=newMatrix(traps,3);
@@ -269,10 +267,6 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 
 						}
 						
-						if(CorRadtemp>1){
-							exit(1);
-						}
-					
 					}
 					
 				}
@@ -341,7 +335,12 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 							printf("Percent Complete %ld\n",(long int)(percent*100));
 							percent+=0.1;
 						}
-						SiteEnergy  = grn(E0, sigma);  
+						if(SeedProt<2){
+							SiteEnergy = grn(E0, sigma);
+						}else if(SeedProt==2){
+							SiteEnergy = E0;
+						}
+						
 						if(i==0 && j==0 && k==0){
 							minEnergy = SiteEnergy;
 							maxEnergy = SiteEnergy;
@@ -401,6 +400,9 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 
 					//Accounting for correlation from traps
 					if (traps!=0) {
+						printf("Accounting for correlation from traps might be redundant\nCheck this out before you run it\n");
+						printf("functions.c file\n");
+						exit(1);
 						CorrCal(AsTr, i,j,k , CorRadtemp, SiteEnergy, SiteDistance, snA, &SumCor, &SumEcor, &trap_dist,\
 								SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
 						if(trap_dist<seed_dist && SumEcor2!=0){
@@ -1147,7 +1149,6 @@ int Update_initJumPossibility_ElecX( const double electricEnergyX,\
 	int PeriodicZ;
 	int YElecOn;
 	int ZElecOn;
-	int rv;
 	//Constants
 	//Units of Coulombs
 	const double q = 1.601E-19;	
@@ -1329,7 +1330,7 @@ int Update_initJumPossibility_ElecX( const double electricEnergyX,\
 				 sum = sum + v[l];
 			 }
 
-			 rv=setsum(sn, sum);
+			 setsum(sn, sum);
 			
 			 pval=0;
 			 for(l=0; l< 6;l++){
@@ -1994,7 +1995,7 @@ ChargeArray initCharget0_Thermal( const_SNarray snA,\
 
 
 ChargeArray initCharget0( matrix Sequence, const_SNarray snA,const int Ntot,const int NCh,\
-					const double D,const int XElecOn,const int YElecOn,const int ZElecOn, \
+					const int XElecOn,const int YElecOn,const int ZElecOn, \
 					const int EndX, const int EndY, const int EndZ){
 
 	//D is the dimension to fit the real data
@@ -2002,7 +2003,7 @@ ChargeArray initCharget0( matrix Sequence, const_SNarray snA,const int Ntot,cons
 	//Ntot is the total number of charges that will be injected
 
 
-	if(snA==NULL || NCh>Ntot || D<0 || Sequence==NULL ||\
+	if(snA==NULL || NCh>Ntot || Sequence==NULL ||\
 		 XElecOn<0 || YElecOn<0 || ZElecOn<0 ||\
 		 XElecOn>1 || YElecOn>1 || ZElecOn>1 ){
 		return NULL;
@@ -2222,7 +2223,7 @@ ChargeArray initCharget0( matrix Sequence, const_SNarray snA,const int Ntot,cons
 ////////////////////////////////////////////////////////////////////
 
 int initCharge(int nca,long int n, ChargeArray *chA, matrix Sequence, SNarray  snA, \
-			const int Ntot, const int NCh, const double D,\
+			const int Ntot, const int NCh,\
 			const int XElecOn, const int YElecOn, const int ZElecOn,\
 			const int EndX, const int EndY, const int EndZ){
 

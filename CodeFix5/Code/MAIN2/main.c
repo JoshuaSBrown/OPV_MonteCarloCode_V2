@@ -14,6 +14,7 @@
 #include "../CLUSTER/CLUSTERFUNCTIONS/SITENODE/sitenode.h"
 #include "../CLUSTER/CLUSTERFUNCTIONS/MATRIX/matrix.h"
 #include "../CLUSTER/CLUSTERFUNCTIONS/DATASTRUCT/cluster.h"
+#include "../IO/io.h"
 
 int main(void){
 
@@ -33,7 +34,7 @@ int main(void){
 	
 	//Constants
 	//Boltzmann constant Units of [eV/K]
-	static const double kB = 8.6173324E-5;
+	//static const double kB = 8.6173324E-5;
 
 	//Variables from ParameterFrame
 	int method;
@@ -58,7 +59,7 @@ int main(void){
 	double Vx;
 	double Vy;
 	double Vz;
-	double KT;
+	//double KT;
 	double Temperature;
 
 	//Local Variables
@@ -66,7 +67,7 @@ int main(void){
 	int CheckFileExist;
 	int CheckPointNum;
 	int count;
-	int OrderL;
+	//int OrderL;
 	double electricFieldX;
 	double electricFieldY;
 	double electricFieldZ;
@@ -100,7 +101,6 @@ int main(void){
 	FileNameSize = 256;
 
 	char FileName[FileNameSize];
-	char FileNameFull[FileNameSize];
 	char FileNameCheckPt[FileNameSize];
 	char FileNameCheckPtVersion[FileNameSize];
 
@@ -108,10 +108,10 @@ int main(void){
 	nc = 0;
 	nca = 0;
 	t = 0;
+	//KT = 0;
 
 	PF = NULL;
 	FileName[0] = '\0';
-	FileNameFull[0] = '\0';
 	FileNameCheckPt[0] = '\0';
 	FileNameCheckPtVersion[0] = '\0';
 
@@ -151,6 +151,9 @@ int main(void){
 	TemperatureInc = PFget_TempInc(PF);
 
 	Vx = VoltageX;
+	Vy = VoltageY;
+	Vz = VoltageZ;
+
 	Vxcount = 0;
 
 	//TOF method
@@ -172,7 +175,7 @@ int main(void){
 					for(count=0;count<TemperatureStep;count++){
 
 						Temperature = TempStart;
-						KT = kB*Temperature; 
+						//KT = kB*Temperature; 
 
 						for(r=1;r<Rcount+1;r++){
 
@@ -203,8 +206,7 @@ int main(void){
 								exit(1);
 							}
 
-							printFileEnergy(snA, &FileName[0],\
-									electricEnergyX, electricEnergyY, electricEnergyZ, PF);
+							printFileEnergy(snA, &FileName[0],electricEnergyX, electricEnergyY, electricEnergyZ, PF);
 							printMatrix(FutureSite);
 
 							randomWalk(snA, CheckPointNum, &FileName[0],\
@@ -235,7 +237,7 @@ int main(void){
 		for(count=0;count<TemperatureStep;count++){
 
 			Temperature = TempStart;
-			KT = kB*Temperature; 
+			//KT = kB*Temperature; 
 
 			for(r=1;r<Rcount+1;r++){
 
@@ -266,10 +268,6 @@ int main(void){
 					exit(1);
 				}
 
-				//printFileEnergy(snA, &FileName[0],\
-						electricEnergyX, electricEnergyY, electricEnergyZ, PF);
-				//printMatrix(FutureSite);
-
 				randomWalk(snA, CheckPointNum, &FileName[0],\
 						electricFieldX,	electricFieldY, electricFieldZ,\
 						elXb, elXf, elYl, elYr, elZb, elZa, PF, t, Sequence,\
@@ -295,6 +293,15 @@ int main(void){
 	printf("Run Time %g seconds\n",time_spent);
 	//printf("cpu : %.2f secs\n", second-first);
 	printf("user : %d secs\n", (int)(finish-start));
+
+	FILE * LogFile;
+
+	if(PFget_LogFile(PF)==1){
+		LogFile = appendLogFile(FileName);			
+		LogFile_printTime(LogFile, time_spent, (int)(finish-start));
+		closeLogFile(LogFile);
+	}
+	
 	deleteParamFrame(&PF);
 
 	//atexit(mem_term);

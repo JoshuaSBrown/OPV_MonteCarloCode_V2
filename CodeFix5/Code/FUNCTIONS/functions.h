@@ -81,7 +81,7 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 	 It returns the charge data structure
  */
 ChargeArray initCharget0( matrix Sequence, const_SNarray snA,  const int Ntot, const int NCh,\
-		const double D, const int XElecOn, const int YElecOn, const int ZElecOn,\
+		const int XElecOn, const int YElecOn, const int ZElecOn,\
 		const int EndX, const int EndY, const int EndZ);
 
 /* InitCharget0 initializes the chargte data structure
@@ -102,7 +102,7 @@ ChargeArray initCharget0_Thermal( const_SNarray snA, ParameterFrame PF, const do
 	 n			is the time step iterating over. 
  */
 int initCharge(int nca, long int n, ChargeArray *chA, matrix Sequence, SNarray snA,\
-		const int Ntot, const int NCh, const double D,\
+		const int Ntot, const int NCh,\
 		const int XElecOn, const int YElecOn, const int ZElecOn,\
 		const int EndX, const int EndY, const int EndZ);
 

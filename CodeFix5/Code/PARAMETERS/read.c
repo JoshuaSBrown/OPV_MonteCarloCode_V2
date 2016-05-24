@@ -77,9 +77,14 @@ struct _ParameterFrame{
 	double gamma;
 	double RelativePerm;
 	int MovieFrames;
+	double CutOffTime;
 	double Tcv;
 	double Vcv;
 	double Tlag;
+	int EndPtFile;
+	int NumChargesTrack;
+	int PathFile;
+	int LogFile;
 };
 
 int deleteParamFrame(ParameterFrame * PF){
@@ -155,7 +160,7 @@ ParameterFrame newParamFrame(void){
 	PF->ClusterAlg=0;
 	PF->CutOff=0;
 	PF->lambda=0;
-	PF->ScaleAfterCorr;
+	PF->ScaleAfterCorr=0;
 	PF->SeedProt=0;
 	PF->Attempts=0;
 	PF->fracSeed=0;
@@ -172,9 +177,14 @@ ParameterFrame newParamFrame(void){
 	PF->gamma=0;
 	PF->RelativePerm=0;
 	PF->MovieFrames=0;
+	PF->CutOffTime=0;
 	PF->Tcv=0;
 	PF->Vcv=0;
 	PF->Tlag=0;
+	PF->EndPtFile=0;
+	PF->NumChargesTrack=0;
+	PF->PathFile=0;
+	PF->LogFile=0;
 	return PF;
 }
 
@@ -453,7 +463,7 @@ ParameterFrame newParamFrame_File(void){
 		if(check!=-1){
 			position = (unsigned int)check;
 			intval = GrabInt(position, &buffer[0] );
-			printf("ImageCharge %g\n",intval);
+			printf("ImageCharge %d\n",intval);
 			PF->ImageCharge = intval;
 			if (intval<0 || intval>1){
 				printf("ERROR ImageCharge is set either above 1 or\n");
@@ -1139,6 +1149,30 @@ ParameterFrame newParamFrame_File(void){
 			exit(1);
 		}
 
+		check = match(buffer,"\nCutOffTime");
+		if(check!=-1){
+			position = (unsigned int)check;
+			doubleval = GrabDouble(position, &buffer[0] );
+			printf("CutOffTime %g\n",doubleval);
+			PF->CutOffTime = doubleval;
+			
+			if(PF->CutOffTime<0){
+				printf("ERROR CutOffTime assigned a value less than 0\n");
+				printf("CutOffTime must be positive or 0");
+				exit(1);
+			}
+			if((PF->CutOffTime)<(PF->TStep*PF->TCount)){
+				printf("ERROR you have setup the simulation to end before\n");
+				printf("all the charges have been inserted\n");
+				printf("TCount*TStep is greater than CutOffTime\n");
+				exit(1);
+			}
+
+		}else{
+			printf("ERROR when reading file can not find CutOffTime!\n");
+			exit(1);
+		}
+		
 		check = match(buffer,"\nVcv");
 		if(check!=-1){
 			position = (unsigned int)check;
@@ -1200,6 +1234,69 @@ ParameterFrame newParamFrame_File(void){
 			exit(1);
 		}			
 
+		check = match(buffer,"\nEndPtFile");
+		if(check!=-1){
+			position = (unsigned int)check;
+			intval = GrabInt(position, &buffer[0]);
+			printf("EndPtFile %d\n",intval);
+			PF->EndPtFile = intval;
+			if(PF->EndPtFile<0 || PF->EndPtFile>1){
+				printf("ERROR EndPtFile can only be set to 0 for off\n");
+				printf("or set to 1 for on\n");
+				exit(1);
+			}
+		}else{
+			printf("ERROR when reading file can not find EndPtFile!\n");
+			exit(1);
+		}
+
+		check = match(buffer,"\nNumChargesTrack");
+		if(check!=-1){
+			position = (unsigned int)check;
+			intval = GrabInt(position, &buffer[0]);
+			printf("NumChargesTrack %d\n",intval);
+			PF->EndPtFile = intval;
+			if(PF->NumChargesTrack<0 ){
+				printf("ERROR NumChargesTrack can only be set to 0 or a positive integer\n");
+				exit(1);
+			}
+		
+		}else{
+			printf("ERROR when reading file can not find NumChargesTrack!\n");
+			exit(1);
+		}
+
+		check = match(buffer,"\nPathFile");
+		if(check!=-1){
+			position = (unsigned int)check;
+			intval = GrabInt(position, &buffer[0]);
+			printf("PathFile %d\n",intval);
+			PF->PathFile = intval;
+			if(PF->PathFile<0 || PF->PathFile>1){
+				printf("ERROR PathFile can only be set to 0 for off\n");
+				printf("or set to 1 for on\n");
+				exit(1);
+			}
+		}else{
+			printf("ERROR when reading file can not find PathFile!\n");
+			exit(1);
+		}
+		
+		check = match(buffer,"\nLogFile");
+		if(check!=-1){
+			position = (unsigned int)check;
+			intval = GrabInt(position, &buffer[0]);
+			printf("LogFile %d\n",intval);
+			PF->LogFile = intval;
+			if(PF->LogFile<0 || PF->LogFile>1){
+				printf("ERROR LogFile can only be set to 0 for off\n");
+				printf("or set to 1 for on\n");
+				exit(1);
+			}
+		}else{
+			printf("ERROR when reading file can not find LogFile!\n");
+			exit(1);
+		}
 		free(buffer);
 		fclose(handler);
 		return PF;
@@ -1231,8 +1328,9 @@ int ReadParameter(int * method,\
 		double * TempStart, int * TemperatureStep,\
 		double * TemperatureInc, double * reOrgEnergy,\
 		double * AttemptToHop, double * gamma,\
-		double * RelativePerm, int * MovieFrames,\
-		double * Vcv, double * Tcv, double * Tlag){
+		double * RelativePerm, int * MovieFrames, double * CutOffTime,\
+		double * Vcv, double * Tcv, double * Tlag, int * EndPtFile,\
+		int * NumChargesTrack, int * PathFile, int * LogFile){
 
 			char *buffer = NULL;
 			int position;
@@ -1367,7 +1465,7 @@ int ReadParameter(int * method,\
 
 				position = match(buffer, "\nImageCharge");
 				*ImageCharge = GrabDouble(position, &buffer[0] );
-				printf("ImageCharge %g\n",*ImageCharge);
+				printf("ImageCharge %d\n",*ImageCharge);
 
 				position = match(buffer, "\nIntrinsicFermi");
 				*IntrFermi = GrabDouble(position, &buffer[0] );
@@ -1590,6 +1688,10 @@ int ReadParameter(int * method,\
 				*MovieFrames = GrabInt(position, & buffer[0]);
 				printf("MovieFrames %d\n",*MovieFrames);
 
+				position = match(buffer, "\nCutOffTime");
+				*CutOffTime = GrabDouble(position, &buffer[0]);
+				printf("CutOffTime %g\n",*CutOffTime);
+
 				position = match(buffer, "\nTcv");
 				*Tcv = GrabDouble(position, &buffer[0] );
 				printf("Tcv %f\n",*Tcv);
@@ -1602,7 +1704,21 @@ int ReadParameter(int * method,\
 				*Tlag = GrabDouble(position, &buffer[0] );
 				printf("Tlag %f\n",*Tcv);
 
+				position = match(buffer, "\nEndPtFile");
+				*EndPtFile = GrabInt(position, &buffer[0] );
+				printf("EndPtFile %d\n",*EndPtFile);
 
+				position = match(buffer, "\nNumChargesTrack");
+				*NumChargesTrack = GrabInt(position, &buffer[0] );
+				printf("NumChargesTrack %d\n",*NumChargesTrack);
+
+				position = match(buffer, "\nPathFile");
+				*PathFile = GrabInt(position, &buffer[0] );
+				printf("PathFile %d\n",*PathFile);
+
+				position = match(buffer, "\nLogFile");
+				*LogFile = GrabInt(position, &buffer[0] );
+				printf("LogFile %d\n",*LogFile);
 
 				//converting gamma from [1/nm] to [1/m]
 				(*gamma) = (*gamma)*1E9;
@@ -2474,6 +2590,14 @@ int PFset_MovieFrames(ParameterFrame PF, int MovieFrames){
 
 }
 
+int PFset_CutOffTime(ParameterFrame PF, double CutOffTime){
+	if(PF==NULL || CutOffTime<0){
+		return -1;
+	}
+	PF->CutOffTime = CutOffTime;
+	return 0;
+}
+
 int PFset_Vcv(ParameterFrame PF, double Vcv){
 	if(PF==NULL){
 		return -1;
@@ -2498,12 +2622,45 @@ int PFset_Tlag(ParameterFrame PF, double Tlag){
 	return 0;
 }
 
+int PFset_EndPtFile(ParameterFrame PF, int EndPtFile){
+	if(PF==NULL || EndPtFile<0 || EndPtFile>1){
+		return -1;
+	}
+	PF->EndPtFile=EndPtFile;
+	return 0;
+}
+
+int PFset_NumChargesTrack(ParameterFrame PF, int NumChargesTrack){
+	if(PF==NULL || NumChargesTrack<0 ){
+		return -1;
+	}
+	PF->NumChargesTrack=NumChargesTrack;
+	return 0;
+}
+
+int PFset_PathFile(ParameterFrame PF, int PathFile){
+	if(PF==NULL || PathFile<0 || PathFile>1){
+		return -1;
+	}
+	PF->PathFile=PathFile;
+	return 0;
+}
+
+int PFset_LogFile(ParameterFrame PF, int LogFile){
+	if(PF==NULL || LogFile<0 || LogFile>1){
+		return -1;
+	}
+	PF->LogFile=LogFile;
+	return 0;
+}
+
 int PFget_method(ParameterFrame PF){
 	if(PF==NULL){
 		return -1;
 	}
 	return PF->method; 
 }
+
 int PFget_Len(ParameterFrame PF){
 
 	if(PF==NULL ){
@@ -3119,6 +3276,13 @@ int PFget_MovieFrames(ParameterFrame PF){
 	return PF->MovieFrames;
 }
 
+double PFget_CutOffTime(ParameterFrame PF){
+	if(PF==NULL){
+		return -1;
+	}
+	return PF->CutOffTime;
+}
+
 double PFget_Vcv(ParameterFrame PF){
 	if(PF==NULL){
 		return -1;
@@ -3138,4 +3302,32 @@ double PFget_Tlag(ParameterFrame PF){
 		return -1;
 	}
 	return PF->Tlag;
+}
+
+int PFget_EndPtFile(ParameterFrame PF){
+	if(PF==NULL){
+		return -1;
+	}
+	return PF->EndPtFile;
+}
+
+int PFget_NumChargesTrack(ParameterFrame PF){
+	if(PF==NULL){
+		return -1;
+	}
+	return PF->NumChargesTrack;
+}
+
+int PFget_PathFile(ParameterFrame PF){
+	if(PF==NULL){
+		return -1;
+	}
+	return PF->PathFile;
+}
+
+int PFget_LogFile(ParameterFrame PF){
+	if(PF==NULL){
+		return -1;
+	}
+	return PF->LogFile;
 }

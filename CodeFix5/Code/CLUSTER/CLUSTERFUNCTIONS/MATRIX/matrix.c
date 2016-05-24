@@ -339,6 +339,7 @@ int resizeRow(matrix * mtx, int Row){
 	int rowResize = Row;
 	matrix * mtxtemp;
 	matrix * mtxprev;
+	mtxprev = NULL;
 	mtxtemp = mtx;
 
 	if(Row>((*mtx)->rows+currentRow)){
