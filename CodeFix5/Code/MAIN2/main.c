@@ -94,7 +94,7 @@ int main(void){
 	matrix Sequence;
 	matrix FutureSite;
 	SNarray snA;
-	ArbArray ClArLL;
+	ArbArray ClArLL = NULL;
 	ChargeArray chA;
 	ParameterFrame PF;
 	
@@ -294,12 +294,12 @@ int main(void){
 	//printf("cpu : %.2f secs\n", second-first);
 	printf("user : %d secs\n", (int)(finish-start));
 
-	FILE * LogFile;
+	//FILE * LogFile;
 
 	if(PFget_LogFile(PF)==1){
-		LogFile = appendLogFile(FileName);			
-		LogFile_printTime(LogFile, time_spent, (int)(finish-start));
-		closeLogFile(LogFile);
+		//LogFile = appendLogFile(FileName);			
+		LogFile_printTime(FileName, time_spent, (int)(finish-start));
+		//closeLogFile(LogFile);
 	}
 	
 	deleteParamFrame(&PF);

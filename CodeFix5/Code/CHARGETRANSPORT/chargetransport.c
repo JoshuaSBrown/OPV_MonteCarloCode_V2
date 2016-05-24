@@ -1784,11 +1784,11 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	int MovieFrames = PFget_MovieFrames(PF);
 	long double CutOffTime = (long double) PFget_CutOffTime(PF);
 
-	FILE * EndPtFile = NULL;
-	FILE * PathFile = NULL;
-	FILE * LogFile = NULL;
+	//FILE * EndPtFile = NULL;
+	//FILE * PathFile = NULL;
+	//FILE * LogFile = NULL;
 
-	if(PFget_EndPtFile(PF)==1){
+	/*if(PFget_EndPtFile(PF)==1){
 		EndPtFile = openEndPtFile(FileName);
 		printf("Opening End Pt File\n");
 		if(EndPtFile == NULL){
@@ -1799,7 +1799,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	if(PFget_PathFile(PF)==1 && PFget_NumChargesTrack(PF)!=0){
 		PathFile = openPathFile(FileName);
 	}
-
+	*/
 	printf("will crash here if MovieFrames is 0\n");
 	assert(MovieFrames!=0);
 
@@ -1964,7 +1964,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	matrix timeArray = newMatrix(8,1);
 
 	printf("Initialization Complete!\n");
-	printf("Value of nca %d\n",nca);
+	//printf("Value of nca %d\n",nca);
 	//Initilize number of charges reaching source
 	//and drian to 0
 	Xdrain = 0;
@@ -2047,7 +2047,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 		//If no charges have been inserted in the system we will
 		//simply increment the time
 
-		printf("nca %d nc %d elXb %d elXf %d\n",nca,nc,getElectrode_Charges(elXb),getElectrode_Charges(elXf));
+		//printf("nca %d nc %d elXb %d elXf %d\n",nca,nc,getElectrode_Charges(elXb),getElectrode_Charges(elXf));
 		ChargeCheck = nc;
 		if(XElecOn==1){
 			ChargeCheck = ChargeCheck+getElectrode_Charges(elXb);
@@ -2272,8 +2272,8 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				
 				//If tracking charges and charge id is one of the ones that is being 
 				//tracked record information in the .path file
-				if((ChargeID+1)<PFget_NumChargesTrack(PF) && PFget_PathFile(PF)!=0){
-					printToPathFile( PathFile,getCx(one),getCy(one),getCz(one),ChargeID,tim,t);
+				if((ChargeID+1)<(PFget_NumChargesTrack(PF)) && (PFget_PathFile(PF))!=0){
+					printToPathFile( FileName,getCx(one),getCy(one),getCz(one),ChargeID,tim,t);
 				}
 				//Calculate the velocity
 				if (TotalX!=TotalXtemp){
@@ -2317,7 +2317,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			// If the global time has reached the next time step 
 			// calculate current
 
-			printf("SaveTime %Lg TStep %g\n",SaveTime, TStep);
+			//printf("SaveTime %Lg TStep %g\n",SaveTime, TStep);
 			//printf("SaveTime %Lg TStep %g SaveCount %d Nstep_av %d Movie %d MovieFrames %d\n",SaveTime,TStep,SaveCount,Nstep_av,Movie,MovieFrames);
 
 
@@ -2446,7 +2446,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 			////////////////////////////////////////////////////////////////////////
 			//Determining if Charge left system
-			printf("Determining if Charge left system\n");
 			//Current position of charge
 			xx = getCx(one);
 			yy = getCy(one);
@@ -2499,14 +2498,14 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 			////////////////////////////////////////////////////////////////////////
 			//Determining Next hop
-			printf("Determining Next Hop\n");
+			//printf("Determining Next Hop\n");
 			//Before future hop has been determined, tim of hop is 0
 			tim=0;
 			//printf("Middle Value of t %Lg\n",t);
 
 			//Did not hop to electrode
 			if(ElecExit==0){
-				printf("No hop\n");
+				//printf("No hop\n");
 				//Site jumped too
 				site = getSN(snA, x,y,z);
 				//Set the DwelStat of new site with the id of 
@@ -2584,7 +2583,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				//The location of the charge in the sequence is updated
 				insertDwelltimePos(nca, *chA, &Sequence);
 			}else{
-				printf("Yes Hopped to Electrode\n");
+				//printf("Yes Hopped to Electrode\n");
 				//If the charge jumped to an electrode it will now have to jump
 				//from the electrode back into the system
 				if(xx == -1 && EndX!=0){
@@ -2604,13 +2603,13 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					//Saving information to EndPtFile for later calculating the charge
 					//mobility
 					if(PFget_EndPtFile(PF)!=0){
-						printf("Print to end Pt file X\n");
-						if(EndPtFile==NULL){
+						//printf("Print to end Pt file X\n");
+						/*if(EndPtFile==NULL){
 							printf("End pt file is found to be NULL\n");
 							exit(1);
-						}
-						printToEndPtFile( EndPtFile, xx, yy, zz, ChargeID, t);
-						printf("Finished Printing to end pt file\n");
+						}*/
+						printToEndPtFile( FileName, xx, yy, zz, ChargeID, t);
+						//printf("Finished Printing to end pt file\n");
 					}
 					ChargeClosure(elXf, &one, &Sequence, &nc, &nca, &TotalCollected, Ntot);
 					rv = getE(Sequence,1,1);
@@ -2637,9 +2636,9 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					//Saving information to EndPtFile for later calculating the charge
 					//mobility
 					if(PFget_EndPtFile(PF)!=0){
-						printf("Print to end Pt file Y\n");
-						printToEndPtFile( EndPtFile, xx, yy, zz, ChargeID, t);
-						printf("Finished Printing to end pt file\n");
+						//printf("Print to end Pt file Y\n");
+						printToEndPtFile( FileName, xx, yy, zz, ChargeID, t);
+						//printf("Finished Printing to end pt file\n");
 					}
 					ChargeClosure(elYr, &one, &Sequence, &nc, &nca, &TotalCollected, Ntot);
 					ID2 = getE(Sequence,1,1);
@@ -2665,9 +2664,9 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					//Saving information to EndPtFile for later calculating the charge
 					//mobility
 					if(PFget_EndPtFile(PF)!=0){
-						printf("Print to end Pt file Z\n");
-						printToEndPtFile( EndPtFile, xx, yy, zz, ChargeID, t);
-						printf("Finished Printing to end pt file\n");
+						//printf("Print to end Pt file Z\n");
+						printToEndPtFile( FileName, xx, yy, zz, ChargeID, t);
+						//printf("Finished Printing to end pt file\n");
 					}
 					
 					ChargeClosure(elZa, &one, &Sequence, &nc, &nca, &TotalCollected, Ntot);
@@ -2693,7 +2692,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 		////////////////////////////////////////////////////////////////////////
 		//Regardless of whether a charge hopped or not need to 
 		//see if new charges need to be injected
-		printf("Regardless of whether a charge hopped or not\n");
+		//printf("Regardless of whether a charge hopped or not\n");
 
 		//printf("Bottom Value of t %Lg\n",t);
 		if(t >= ((long double)n)*(long double)TStep && ((n+1)*(long int)NCh)<=Ntot){
@@ -2746,24 +2745,24 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			if((xx < EndX*SLength && EndX!=0) || EndX==0){
 				if((yy < EndY*SWidth && EndY!=0) || EndY==0){
 					if((zz < EndZ*SHeight && EndZ!=0) || EndZ==0){
-						printToEndPtFile( EndPtFile, xx,yy,zz,loop,t);
+						printToEndPtFile( FileName, xx,yy,zz,loop,t);
 					}
 				}
 			}
 		}
-		closeEndPtFile(EndPtFile);
+		//closeEndPtFile(EndPtFile);
 	}
 
 	//Close PathFile
-	if(PFget_PathFile(PF)!=0){
-		closePathFile( PathFile);
-	}
+	//if(PFget_PathFile(PF)!=0){
+	//		closePathFile( PathFile);
+	//}
 
-	if(PFget_LogFile(PF)!=0){
-		LogFile = openLogFile(FileName);
-		LogFile_printHops( LogFile, TotalHopAttempt,FailedHop);
-		closeLogFile( LogFile);
-	}
+	//if(PFget_LogFile(PF)!=0){
+	//	LogFile = openLogFile(FileName);
+		LogFile_printHops( FileName, TotalHopAttempt,FailedHop);
+	//	closeLogFile( LogFile);
+	//}
 
 	Movie = Movie+1;
 
@@ -3643,7 +3642,7 @@ int Load_CheckPt(long double * t, SNarray * snA, ChargeArray * chA, matrix * Seq
 			*n = intvar0;
 			*nc = intvar;
 			*nca = intvar2;
-			printf("nc %d nca %d\n",*nc, *nca);
+			//printf("nc %d nca %d\n",*nc, *nca);
 			fgets(bufRead,256,CheckIn);
 			fgets(bufRead,256,CheckIn);
 			//Scan in total number of sites
@@ -4053,7 +4052,7 @@ int Load_CheckPt_Data_TOF(long double * t, SNarray * snA, ChargeArray * chA, mat
 			*n = intvar0;
 			*nc = intvar;
 			*nca = intvar2;
-			printf("nc %d nca %d\n",*nc, *nca);
+			//printf("nc %d nca %d\n",*nc, *nca);
 			fgets(bufRead,256,CheckIn);
 			fgets(bufRead,256,CheckIn);
 			//Scan in total number of sites

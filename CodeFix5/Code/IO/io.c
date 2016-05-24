@@ -3,7 +3,7 @@
 
 #include "io.h"
 
-FILE *openEndPtFile(char *FileName){
+/*FILE **openEndPtFile(char *FileName){
 	
 	char buf[256];
 	snprintf(buf,sizeof buf, "%s%s",FileName,".endpt");
@@ -12,27 +12,35 @@ FILE *openEndPtFile(char *FileName){
 		printf("ERROR! unable to write .endpt file!\n");
 		exit(1);
 	}
-	return (EndPtOut);
+	return &(EndPtOut);
 }
+*/
 
-int printToEndPtFile(FILE *EndPtOut,int x, int y, int z, int ChargeId, long double GlobalTime){
+int printToEndPtFile(char *FileName,int x, int y, int z, int ChargeId, long double GlobalTime){
+	
 
-	if(EndPtOut==NULL){
-		printf("ERROR File identifier is NULL!\n");
+	char buf[256];
+	snprintf(buf,sizeof buf, "%s%s",FileName,".endpt");
+	FILE * EndPtOut;
+
+	if((EndPtOut=fopen(buf,"a"))==NULL){
+		printf("ERROR unable to open file!\n");
 		exit(1);
 	}
-	printf("%d %d %d %d %Le\n",x,y,z,ChargeId,GlobalTime);
+	//printf("%d %d %d %d %Le\n",x,y,z,ChargeId,GlobalTime);
 	fprintf(EndPtOut,"%d %d %d %d %Le\n",x,y,z,ChargeId,GlobalTime);
+	fclose(EndPtOut);
 	return 0;
 }
-
+/*
 int closeEndPtFile(FILE *EndPtOut){
 
 	fclose(EndPtOut);
 	free(EndPtOut);
 	return 0;
 }
-
+*/
+/*
 FILE *openPathFile(char *FileName){
 	
 	char buf[256];
@@ -45,20 +53,29 @@ FILE *openPathFile(char *FileName){
 	return PathFile;
 
 }
-
-int printToPathFile(FILE *PathFile,int x, int y, int z, int ChargeId, double Time,long double GlobalTime){
+*/
+int printToPathFile(char *FileName,int x, int y, int z, int ChargeId, double Time,long double GlobalTime){
 	
+	char buf[256];
+	snprintf(buf,sizeof buf, "%s%s",FileName,".path");
+	FILE * PathFile;
+	if((PathFile=fopen(buf,"a"))==NULL){
+		printf("ERROR! unable to write .path file!\n");
+		exit(1);
+	}
 	fprintf(PathFile,"%d %d %d %d %g %Le\n",x,y,z,ChargeId,Time,GlobalTime);
+	fclose(PathFile);
 	return 0;
 }
-
+/*
 int closePathFile(FILE *PathFile){
 	
 	fclose(PathFile);
 	free(PathFile);
 	return 0;
 }
-
+*/
+/*
 FILE *openLogFile(char *FileName){
 	
 	char buf[256];
@@ -83,24 +100,42 @@ FILE *appendLogFile(char *FileName){
 	}
 	return LogFile;
 }
+*/
+int LogFile_printHops( char *FileName, long int TotalHopAttempt, long int FailedHop){
 
-int LogFile_printHops( FILE *LogFile, long int TotalHopAttempt, long int FailedHop){
-
-		fprintf(LogFile,"Total Hop Attempts  %ld\n",TotalHopAttempt);
-		fprintf(LogFile,"Total Failed Hops   %ld\n",FailedHop);
-		return 0;
+	char buf[256];
+	snprintf(buf,sizeof buf, "%s%s",FileName,".log");
+	FILE * LogFile;
+	if((LogFile = fopen(buf,"a"))==NULL){
+		printf("ERROR! unable to open .log file!\n");
+		exit(1);
+	}
+	fprintf(LogFile,"Total Hop Attempts  %ld\n",TotalHopAttempt);
+	fprintf(LogFile,"Total Failed Hops   %ld\n",FailedHop);
+	fclose(LogFile);
+	return 0;
 }
 
-int LogFile_printTime( FILE * LogFile, double time_spent, int seconds){
-		fprintf(LogFile,"Run Time %g seconds\n",time_spent);
-		fprintf(LogFile,"user : %d secs\n", seconds);
-		return 0;
-}
+int LogFile_printTime( char *FileName, double time_spent, int seconds){
+	
+	char buf[256];
+	snprintf(buf,sizeof buf, "%s%s",FileName,".log");
+	FILE * LogFile;
+	if((LogFile = fopen(buf,"a"))==NULL){
+		printf("ERROR! unable to open .log file!\n");
+		exit(1);
+	}
 
+	fprintf(LogFile,"Run Time %g seconds\n",time_spent);
+	fprintf(LogFile,"user : %d secs\n", seconds);
+	fclose(LogFile);
+	return 0;
+}
+/*
 int closeLogFile(FILE *LogFile){
 	fclose(LogFile);
 	free(LogFile);
 	return 0;
 }
 
-
+*/

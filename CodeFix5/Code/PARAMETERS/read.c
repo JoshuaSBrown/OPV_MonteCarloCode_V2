@@ -1255,8 +1255,8 @@ ParameterFrame newParamFrame_File(void){
 			position = (unsigned int)check;
 			intval = GrabInt(position, &buffer[0]);
 			printf("NumChargesTrack %d\n",intval);
-			PF->EndPtFile = intval;
-			if(PF->NumChargesTrack<0 ){
+			PF->NumChargesTrack = intval;
+			if((PF->NumChargesTrack)<0 ){
 				printf("ERROR NumChargesTrack can only be set to 0 or a positive integer\n");
 				exit(1);
 			}
