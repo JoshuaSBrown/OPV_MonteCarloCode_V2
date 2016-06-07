@@ -208,7 +208,7 @@ EndPtFile 1
 //charges as they move through the system
 //File format is as follows
 //xposition yposition zposition chargeid TimeSpentOnSite GlobalTime
-NumChargesTrack 2
+NumChargesTrack 3
 PathFile 1
 
 //Log File .log

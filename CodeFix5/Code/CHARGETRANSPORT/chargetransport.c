@@ -2272,7 +2272,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				
 				//If tracking charges and charge id is one of the ones that is being 
 				//tracked record information in the .path file
-				if((ChargeID+1)<(PFget_NumChargesTrack(PF)) && (PFget_PathFile(PF))!=0){
+				if((ChargeID)<(PFget_NumChargesTrack(PF)) && (PFget_PathFile(PF))!=0){
 					printToPathFile( FileName,getCx(one),getCy(one),getCz(one),ChargeID,tim,t);
 				}
 				//Calculate the velocity
