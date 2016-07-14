@@ -342,6 +342,8 @@ int resizeRow(matrix * mtx, int Row){
 	mtxprev = NULL;
 	mtxtemp = mtx;
 
+  printf("Row %d row of current mtx %d\n",Row,(*mtx)->rows);
+
 	if(Row>((*mtx)->rows+currentRow)){
 		while((*mtxtemp)->Extra!=NULL && flag==0){
 			currentRow+=(*mtxtemp)->rows;
@@ -357,6 +359,7 @@ int resizeRow(matrix * mtx, int Row){
 	}
 
 	if(flag==0){
+    printf("Increasing Rows\n");
 		//Increasing
 		//If we are increasing mtxtemp->Extra should be NULL
 		if((*mtxtemp)->Extra!=NULL){
@@ -368,7 +371,7 @@ int resizeRow(matrix * mtx, int Row){
 		if((*mtx)->Extra==NULL){
 			//First matrix in the list
 			matrix temp = duplicateMatrix((*mtx));
-			matrix mtxnew = newMatrix(rowResize,12);
+			matrix mtxnew = newMatrix(rowResize,cols);
 			
 			for(i=1;i<=rowResize;i++){
 				for(j=1;j<=cols;j++){
@@ -406,39 +409,43 @@ int resizeRow(matrix * mtx, int Row){
 		}
 
 	}else{
-		//Decreasing
+		printf("Decreasing Rows\n");
+    //Decreasing
 		//mtxtemp is the matrix that is being reduced in size
 		//All matrices linked after mtxtemp are to be deleted
-		if((*mtxtemp)->Extra!=NULL){
+		
+    if((*mtxtemp)->Extra!=NULL){
 			matrix mtxRemove = (*mtxtemp)->Extra;
 			deleteMatrix(&mtxRemove);
 			(*mtxtemp)->Extra=NULL;
+      printf("Part 1\n");
 		}
+    
 
 		//Now we just need to resize mtxtemp
-		matrix temp = duplicateMatrix((*mtxtemp)); 
-		matrix mtxnew = (matrix) realloc((*mtxtemp), sizeof(struct _matrix)+sizeof(double)*rowResize*cols);
+	  printf("Creating new matrix full of zeros\n");
+    matrix mtxnew = newMatrix(rowResize,cols);
 		if(!mtxnew) {
-			printf("ERROR unable to realloc matrix returned NULL\n");
+			printf("ERROR unable to create new matrix returned NULL\n");
 			return -1;
 		}
 		mtxnew->rows=rowResize;
 		mtxnew->cols=cols;
 		mtxnew->Extra=NULL;
-
+      
 		for (i=1;i<=rowResize;i++){
 			for (j=1;j<=cols;j++){
-				if(i<=temp->rows){
-					setE(mtxnew,i,j,getE(temp,i,j));
+				if(i<=mtxnew->rows){
+					setE(mtxnew,i,j,getE(*mtx,i,j));
 				}else{
 					printf("ERROR should not have a value in the new matrix that is greater than the old one\n");
 					return -1;
 				}
 			}
 		}
-
-		deleteMatrix(&temp);
-		(*mtxtemp) = mtxnew;
+    printf("Finished setting values equal\n");
+		deleteMatrix(mtx);
+		(*mtx) = mtxnew;
 
 
 	}
