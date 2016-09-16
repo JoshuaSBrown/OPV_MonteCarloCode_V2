@@ -53,6 +53,8 @@ int main(void){
 	double VincY;
 	double VincZ;
 
+  int ImageCharge;
+  double IntrFermi;
 	double SiteDistance;
 	double D;
 	int TCount;
@@ -66,6 +68,10 @@ int main(void){
 
 	double CutOff;
 	double lambda;
+
+  int ClusterAlg;
+  int ClusterAlgRec;
+  int ClusterAlgTrigger;
 
 	int SeedProt;
 	int Attempts;
@@ -91,6 +97,16 @@ int main(void){
 
 	double Vcv;
 	double Tcv;
+
+  double Tlag;
+  double CutOffTime;
+
+  int ScaleAfterCorr;
+
+  int EndPtFile;
+  int NumChargesTrack;
+  int PathFile;
+  int LogFile;
 
 	ParameterFrame PF = newParamFrame();
 
@@ -224,33 +240,36 @@ int main(void){
 	printf("Testing: PFget_RelativePerm\n");
 	printf("RelativePerm %f\n",PFget_RelativePerm(PF));
 	printf("MovieFrames %d\n",PFget_MovieFrames(PF));
-	printf("Vcv %d\n",PFget_Vcv(PF));
-	printf("Tcv %d\n",PFget_Tcv(PF));
+	printf("Vcv %g\n",PFget_Vcv(PF));
+	printf("Tcv %g\n",PFget_Tcv(PF));
 
 	ReadParameter(&method,\
-			&SLength, &SWidth, &SHeight,\
-			&PeriodicX, &PeriodicY, &PeriodicZ,\
-			&EndX, &EndY, &EndZ,\
-			&XElecOn, &YElecOn, &ZElecOn,\
-			&XFermiB, &XFermiF, &YFermiL,\
-			&YFermiR, &ZFermiB, &ZFermiA,\
-			&alphaxb, &alphaxf, &alphayl,\
-			&alphayr, &alphazb, &alphaza,\
-			&vX, &vY, &vZ,\
-			&VoltageX, &VoltageY, &VoltageZ,\
-			&VStepX, &VStepY, &VStepZ,\
-			&VincX, &VincY, &VincZ,\
-			&SiteDistance, &D, &TCount,\
-			&NCh, &Ntot, &TStep, &N_av,\
-			&Nstep_av, &Nstep_check, &Rcount, &CutOff,\
-			&lambda, &SeedProt, &Attempts,\
-			&fracSeed, &E0, &sigma,\
-			&fracTrap, &Etrap, &Tsigma,\
-			&TempStart, &TemperatureStep,\
-			&TemperatureInc, &reOrgEnergy,\
-			&AttemptToHop, &gamma,\
-			&RelativePerm, &MovieFrames,\
-			&Tcv, &Vcv);
+			&SLength        , &SWidth        , &SHeight          ,\
+			&PeriodicX      , &PeriodicY     , &PeriodicZ        ,\
+			&EndX           , &EndY          , &EndZ             ,\
+			&XElecOn        , &YElecOn       , &ZElecOn          ,\
+			&XFermiB        , &XFermiF       , &YFermiL          ,\
+			&YFermiR        , &ZFermiB       , &ZFermiA          ,\
+			&ImageCharge    , &IntrFermi     , &alphaxb          ,\
+      &alphaxf        , &alphayl       , &alphayr          ,\
+      &alphazb        , &alphaza       , &vX               ,\
+      &vY             , &vZ            , &VoltageX         ,\
+      &VoltageY       , &VoltageZ      , &VStepX           ,\
+      &VStepY         , &VStepZ        , &VincX            ,\
+      &VincY          , &VincZ         , &SiteDistance     ,\
+      &D              , &TCount        , &NCh              ,\
+      &Ntot           , &TStep         , &N_av             ,\
+			&Nstep_av       , &Nstep_check   , &Rcount           ,\
+      &ClusterAlg     , &ClusterAlgRec , &ClusterAlgTrigger,\
+      &CutOff         ,	&lambda        , &ScaleAfterCorr   ,\
+      &SeedProt       , &Attempts      , &fracSeed         ,\
+      &E0             , &sigma         , &fracTrap         ,\
+      &Etrap          , &Tsigma        , &TempStart        ,\
+      &TemperatureStep, &TemperatureInc, &reOrgEnergy      ,\
+      &AttemptToHop   , &gamma         , &RelativePerm     ,\
+      &MovieFrames    ,	&CutOffTime    , &Tcv              ,\
+      &Vcv            , &Tlag          , &EndPtFile        ,\
+      &NumChargesTrack, &PathFile      , &LogFile          );
 	printf("\nTesting: ReadParameter\n\n");
 
 	printf("Method %d\n",method);
@@ -389,8 +408,8 @@ int main(void){
 	printf("gamma %f\n",PFget_gamma(PF2));
 	printf("RelativePerm %f\n",PFget_RelativePerm(PF2));
 	printf("MovieFrames %d\n",PFget_MovieFrames(PF2));
-	printf("Vcv %d\n",PFget_Vcv(PF2));
-	printf("Tcv %d\n",PFget_Tcv(PF2));
+	printf("Vcv %g\n",PFget_Vcv(PF2));
+	printf("Tcv %g\n",PFget_Tcv(PF2));
 
 	deleteParamFrame(&PF2);
 	return 0;

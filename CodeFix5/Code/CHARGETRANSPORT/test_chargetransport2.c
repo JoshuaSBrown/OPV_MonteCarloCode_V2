@@ -4,16 +4,16 @@
 #include <math.h>
 #include <assert.h>
 
+#include "chargetransport.h"
 #include "../CHARGE/charge.h"
 #include "../PARAMETERS/read.h"
-//#include "../MEM/mem.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/SITENODE/sitenode.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/MATRIX/matrix.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/clusterfunctions.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/DATASTRUCT/cluster.h"
-#include "../CLUSTER/CLUSTERSITENODE/clustersitenode.h"
+#include "..//SITENODE/sitenode.h"
+#include "../MATRIX/matrix.h"
+#include "../CLUSTERFUNCTIONS/clusterfunctions.h"
+#include "../CLUSTER/cluster.h"
+#include "../CLUSTERSITENODE/clustersitenode.h"
 #include "../FUNCTIONS/functions.h"
-#include "chargetransport.h"
+#include "../ELECTRODE/electrode.h"
 
 int main(void){
 
@@ -32,7 +32,7 @@ int main(void){
 	int Num_elZb;
 	int Num_elZa;
 
-/*	SiteNode sn;
+	SiteNode sn;
 	int future;
 
 	int SLength;
@@ -138,7 +138,7 @@ int main(void){
 	MarcusJ0 = pow( AttemptToHop*hbar*pow(4*reOrgEnergy*kB*300/M_PI,1/2),1/2);
 	//Calculating full Marcus Coefficient;
 	MarcusCoeff = pow(MarcusJ0,2)/hbar * pow(M_PI/(4*reOrgEnergy*KT),1/2)*exp(-2*gamma*SiteDistanceNM);
-*/
+
 	long double t;
 	int Total;
 	SNarray snA;
@@ -163,7 +163,7 @@ int main(void){
 	deleteMatrix(&FutureSite);
 	deleteChargeA(chA);
 	deleteParamFrame(&PF);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	printf("Testing: CheckPt_exist\n");
 	char FileName2[256];
@@ -174,12 +174,12 @@ int main(void){
 
 	char FileName3[256];
 	FileName3[0]='\0';
-	rv = CheckPt_Latest(FileName3,sizeof(FileName3), 0.5,0,0,300);
+	rv = CheckPt_Latest_TOF(FileName3,sizeof(FileName3), 0.5,0,0,300);
 	printf("Value of rv %d\n",rv);
 	assert(rv>0);
 	printf("Lastest version found %s\n",FileName3);
 	
-	rv = CheckPt_Latest(FileName3,sizeof(FileName3), 1, 0,0,300);
+	rv = CheckPt_Latest_TOF(FileName3,sizeof(FileName3), 1, 0,0,300);
 	assert(rv==0);
 	printf(".ckpt file exist but it is not the one you want \n");
 	
@@ -196,7 +196,7 @@ int main(void){
 	deleteMatrix(FutureSite);
 	deleteChargeA(chA);
 	deleteParamFrame(PF);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 	*/
 	//atexit(mem_term);
 

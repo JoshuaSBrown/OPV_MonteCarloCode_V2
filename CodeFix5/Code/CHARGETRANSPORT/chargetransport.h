@@ -1,11 +1,13 @@
 #ifndef _CHARGETRANSPORT_H_
 #define _CHARGETRANSPORT_H_
 
-#include "../CLUSTER/CLUSTERFUNCTIONS/SITENODE/sitenode.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/DATASTRUCT/cluster.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/MATRIX/matrix.h"
+#include "../SITENODE/sitenode.h"
+#include "../CLUSTER/cluster.h"
+#include "../MATRIX/matrix.h"
 #include "../CHARGE/charge.h"
 #include "../PARAMETERS/read.h"
+#include "../ELECTRODE/electrode.h"
+#include "../ARBARRAY/arbarray.h"
 
 /* Function designed to take care of hops from site neighboring an electrode. Determines
 	 if the future site a charge will hop too if the site is still available when the 
@@ -32,7 +34,7 @@ int ElecHopOffZ(Electrode el, int * future, SNarray snA);
 /* This function is used in the case that the charge is not 
 	 attached to a cluster and therefore will only move to 
 	 sites neighboring it.
-
+   future - this contains the id of the site the charge will hop too
 	 EndX, EndY, EndZ defines at what site the sample ends this 
 	 is important when using periodic conditions.	
 	 A value of:
@@ -42,12 +44,17 @@ int ElecHopOffZ(Electrode el, int * future, SNarray snA);
 	 the end electrode. (Periodic for 1 sample is the same as non-periodic)
 	 2 - and above how many samples periodic for
  */
-int SiteHop(SNarray snA, Charge * ch, SiteNode site, int * future, const int EndX, const int EndY, const int EndZ, const int XElecOn, const int YElecOn, const int ZElecOn, const int PeriodicX, const int PeriodicY, const int PeriodicZ);
+int SiteHop(SNarray snA  , Charge * ch       , SiteNode site       , int * future       ,\
+const int EndX           , const int EndY    , const int EndZ      , const int XElecOn  ,\
+const int YElecOn        , const int ZElecOn , const int PeriodicX , const int PeriodicY,\
+const int PeriodicZ);
 
 /* This function is used in the case that a charge is part of a cluster
 	 Determines whether chooses a site for the charge to hop to
 	 WARNING does not change the DwelStat of the site the charge hopped to
 	 or from
+   newID - contains the id of the neighboring site the charge has chosen 
+           to hop to
 	 Will return a value of:
 	 -1 - if malformed input
 	 0 - if charge hopped to new location
@@ -100,7 +107,8 @@ int randomWalk( SNarray snA, int CheckPointNum,\
 		Electrode elYr, Electrode elZb, Electrode elZa,\
 		ParameterFrame PF, long double t, matrix Sequence,\
 		matrix FutureSite, ChargeArray * chA,\
-		long int n, int nc, int nca,double Temperature);
+		long int n, int nc, int nca,double Temperature,\
+    ArbArray * ClArLL);
 
 int UpdateOccTime(SNarray * snA, Charge * ch,double tim, ParameterFrame PF);
 
@@ -246,17 +254,19 @@ int ClusterHopCheck(const int PeriodicX, const int PeriodicY, const int Periodic
 
 /* Saves Data point
  */
-int SaveDataPoint(int * CurrentInc, int * NumAvgVel, int nc, int XElecOn, int YElecOn, int ZElecOn,\
-		matrix * Xcurrent, matrix * Ycurrent, matrix * Zcurrent, matrix *timeArray,\
-		matrix * Xvelocity, matrix * Yvelocity, matrix * Zvelocity,matrix * System,\
-		matrix * Xelec_Drain, matrix * Yelec_Drain, matrix * Zelec_Drain,\
-		matrix * Xelec_Source, matrix * Yelec_Source, matrix * Zelec_Source,\
-		int * TotalX, int * TotalY, int * TotalZ, int * TrackX, int * TrackY,\
-		int * TrackZ, long double t, long double * TimeTrack1, double TStep, double SiteDistance,\
-		long double * TotalVelX,long double * TotalVelY,long double * TotalVelZ,\
-		int * Xdrain, int * Ydrain, int * Zdrain, int * Xsource, int * Ysource, int * Zsource,\
-	  const double ElectricFieldX, const double ElectricFieldY, const double ElectricFieldZ,\
-	  char * FileName);
+int SaveDataPoint(int * CurrentInc, int * NumAvgVel      , int nc               , int XElecOn,\
+     int YElecOn                , int ZElecOn           , matrix * Xcurrent     , matrix * Ycurrent,\
+     matrix * Zcurrent          , matrix *timeArray     , matrix * Xvelocity    , matrix * Yvelocity,\
+     matrix * Zvelocity         , matrix * System       , matrix * Xelec_Drain  , matrix * Yelec_Drain,\
+     matrix * Zelec_Drain       , matrix * Xelec_Source , matrix * Yelec_Source , matrix * Zelec_Source,\
+		 int * TotalX               , int * TotalY          , int * TotalZ          , int * TrackX         ,\
+     int * TrackY               , int * TrackZ          , long double t         ,\
+     long double * TimeTrack1   , double TStep          , double SiteDistance   ,\
+     long double * TotalVelX    ,long double * TotalVelY,long double * TotalVelZ,\
+		 int * Xdrain               , int * Ydrain          , int * Zdrain          , int * Xsource,\
+     int * Ysource              , int * Zsource         ,\
+     const double ElectricFieldX, const double ElectricFieldY, const double ElectricFieldZ,\
+	   char * FileName);
 
 
 /* For a SiteNode which has surrouding sites determines which of the 8 
@@ -270,5 +280,22 @@ int HoppingToSurroundingSites(SiteNode site, int codeX, int codeY, int codeZ);
 int printFileEnergy(const_SNarray snA, char * FileName,\
 		double ElectricEnergyX, double ElectricEnergyY, double ElectricEnergyZ,\
 		ParameterFrame PF);
+
+/* Function Checks to ensure that the total number of charges in the system
+ * is conserved.
+ */
+int CheckConservationCharges(Electrode elXb ,Electrode elYl,Electrode elZb,\
+                             int nca        ,int XElecOn   ,int YElecOn   ,int ZElecOn   ,\
+                             int nc);
+
+/* This function determines where the charge exists withing the SiteNode system
+ * if the charge has a position less than 0 in either dimension or over the length,
+ * width or height of the box (which can happen if periodic conditions are enabled)
+ * a subsequent duplicate position between 0 and the length, width and height also
+ * exists which is returned. 
+ */
+int ProjectChargePositionOntoSiteNodeReferenceFrame(int *x     , int *y    , int *z     ,\
+                                                    int xx     , int yy    , int zz     ,\
+                                                    int SLength, int SWidth, int SHeight);
 
 #endif

@@ -3,15 +3,25 @@
 #include <math.h>
 
 #include "charge.h"
-//#include "../MEM/mem.h"
+#include "../ERROR/error.h"
+#include "../MATRIX_LINKLIST/matrix_linklist.h"
+#include "../MATRIX/matrix.h"
+#include "../SITENODE/sitenode.h"
+#include "../CLUSTERSITENODE/clustersitenode.h"
 
 struct _Charge {
-	int x, y, z; //current position
-	int tot_x; //the distance run by the charge in the x direction
-	double t;  //total time the electron uses
-	double dwelltime; //the time the electron will dwell on current site
-};
-
+	int x, y, z; 		    //current position
+	int tot_x; 		      //the distance run by the charge in the x direction
+	double t;  		      //total time the electron uses
+	double dwelltime; 	//the time the electron will dwell on current site
+  
+  //path is used to keep track of where charges have hopped
+  //The first column stores the id of the site the second 
+	//column stores the number of times the charge has hopped
+	//to the site
+	matrix_linklist path;		
+};				
+  
 struct _ChargeArray {
 	int length;
 	Charge C[0];
@@ -19,8 +29,17 @@ struct _ChargeArray {
 
 Charge newCharge(void) {
 	Charge ch = (Charge) malloc( sizeof(struct _Charge ));
-	if(ch==NULL)	//can't check
-		return NULL;
+	#ifdef _ERROR_CHECKING_ON_
+  if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR malloc returns NULL in newCharge\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return NULL;
+  }
+  #endif
 	//By default set values to 0
 	ch->x=0;
 	ch->y=0;
@@ -28,15 +47,123 @@ Charge newCharge(void) {
 	ch->t=0;
 	ch->tot_x=0;
 	ch->dwelltime=0;
+  ch->path=NULL;
 	return ch;
 }
 
+int initChargePath(Charge * ch, int NumNodes){
+	#ifdef _ERROR_CHECKING_ON_
+  if(*ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR charge is NULL in setChargePath\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
+  if(NumNodes<2){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR NumNodes is less than two in setChargePath ");
+    fprintf(stderr,"Path must have a length of at least 2\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
+  if((*ch)->path!=NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR charge path has already been initiated ");
+    fprintf(stderr,"cannot create a new one\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
+  #endif
+
+  int i;
+  //Default setting is for a linklist nodes with three elements
+  double data[3];
+  //First element stores the id of the site
+  data[0] = -1;
+  //Second element stores the number of times the charge
+  //has visited that particular site. 
+  data[1] = 0;
+  //Third element stores the id of the cluster if it is part of 
+  //one
+  data[2] = -1;
+
+  //Creating first node
+	matrix_linklist path = newMatrix_LinkList( data, 3);
+  //Append the rest of the nodes
+  for(i=1;i<NumNodes;i++){
+    addLL_MNode( &path, data, 3);
+  }
+  (*ch)->path = path;
+
+  return 0;
+}
+
+int initChargeArrayPath(ChargeArray chA, int NumNodes){
+	#ifdef _ERROR_CHECKING_ON_
+  if(chA==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR charge array is NULL in initChargeArrayPath\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
+  if(NumNodes<2){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR NumNodes is less than two in initChargeArrayPath ");
+    fprintf(stderr,"Path must have a length of at least 2\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
+  #endif
+  int i;
+  int len;
+  len = chA->length;
+  Charge ch; 
+  for(i=0;i<len;i++){
+    ch = chA->C[i];
+    initChargePath(&ch,NumNodes);
+  }
+  return 0;
+}
+
 ChargeArray newChargeA(int len) {
-	if(len < 0)
+	#ifdef _ERROR_CHECKING_ON_
+	if(len < 0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR len is less than 0 in newCharge\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return NULL;
+  }
+  #endif
 	ChargeArray chA=(ChargeArray) malloc( sizeof(struct _ChargeArray)+sizeof(Charge)*(len));
-	if(chA==NULL)	//can't check on test script because created within function
+	#ifdef _ERROR_CHECKING_ON_
+	if(chA==NULL){	//can't check on test script because created within function
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR malloc returned NULL in newChargeA\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return NULL; 
+  }
+  #endif
 	chA->length=len;
 	for(int i=0;i<len;i++){ 
 		chA->C[i]=newCharge();
@@ -47,49 +174,129 @@ ChargeArray newChargeA(int len) {
 }
 
 int deleteCharge(Charge ch) {
-	if(ch==NULL)
-		return -1; 
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL indeleteCharge\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1;
+  }
+  #endif
+  if(ch->path!=NULL){
+	  deleteMatrixLL(&(ch->path)); 
+  }
 	free(ch);
 	return 0; 
 }
 
 int deleteChargeA(ChargeArray chA) {
-	if(chA==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(chA==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR chA is NULL in deleteChargeA\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	int i;
 	for(i=0;i<chA->length;i++){
-		free(chA->C[i]);
+		deleteCharge(chA->C[i]);
 	}
 	free(chA);
 	return 0;
 }
 
 int getChargeA_len(ChargeArray chA){
+	#ifdef _ERROR_CHECKING_ON_
 	if(chA==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR chA is NULL in deleteChargeA_len\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1;
 	}
+  #endif
 	return chA->length;
 }
 
 Charge getCharge(const_ChargeArray chA, int i){
-	if(chA==NULL || i>= chA->length || i < 0)
+	#ifdef _ERROR_CHECKING_ON_
+	if(chA==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR chA is NULL in getCharge\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return NULL; 
+  }
+	if(i>= chA->length ){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR i is greater or equal to chA->length in getCharge\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return NULL; 
+  }
+	if(i < 0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR i is less than 0 in getCharge\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return NULL; 
+  }
+  #endif
 	return chA->C[i];
 }
 
 int printCharge(const_Charge ch) {
-	if(ch==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in printCharge\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	printf("\nx: %d y: %d z: %d\n",ch->x,ch->y,ch->z);
 	printf("tot_x: %d\n",ch->tot_x);
 	printf("t: %g\n",ch->t);
 	printf("dwelltime: %g\n",ch->dwelltime);
+  if(ch->path!=NULL){
+    printMatrixLL(ch->path);
+  }else{
+    printf("ch->path is NULL\n");
+  }
+  printf("Finished with printCharge\n");
 	return 0; 
 }
 
 int printChargeA(const_ChargeArray chA){
-	if(chA==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(chA==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR chA is NULL in printChargeA\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 		printf("\nCharge Array\n");
 	printf("Length: %d\n",chA->length);
 	for(int i=0;i<(chA->length);i++){
@@ -100,95 +307,266 @@ int printChargeA(const_ChargeArray chA){
 }
 
 double getDwel(const_Charge ch) {
-	if(ch==NULL)
-		return -1; 
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in getDwel\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1;
+  }
+  #endif
 	return ch->dwelltime;
 }
 
 int getCx(const_Charge ch) {
-	if(ch==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in getCx\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	return ch->x;
 }
 
 int getCy(const_Charge ch) {
-	if(ch==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in getCy\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	return ch->y;
 }
 
 int getCz(const_Charge ch) {
-	if(ch==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in getCz\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	return ch->z;
 }
 
 int setDwel(Charge ch, double dw) {
-	if(ch==NULL || dw < 0)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in setDwel\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+	if(dw < 0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR dw is less than 0 in setDwel\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1; 
+  }
+  #endif
 	ch->dwelltime=dw;
 	return 0;
 }
 
 int MinusDwel(Charge ch, double dw){
-	if(ch==NULL || dw < 0)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in MinusDwel\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+	if(dw < 0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR dw is less than 0 in MinusDwel\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1; 
+  }
+  #endif
 	ch->dwelltime-=dw;
 	return 0; 
 }
 
 int sett(Charge ch, long double t) {
-	if(ch==NULL || t<= 0)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in sett\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+	if(t<= 0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR t is less than or equal to 0 in sett\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1; 
+  }
+  #endif
 	ch->t=t;
 	return 0; 
 }
 
 int Plust(Charge ch, long double t){
-	if(ch==NULL || t<=0)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in Plust\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+	if(t<=0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR t is less than or equal to 0 in Plust\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1; 
+  }
+  #endif
 	ch->t+=t;
 	return 0; 
 }
 
 double gett(const_Charge ch) {
-	if(ch==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in gett\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	return ch->t;
 }
 int CxPlus(Charge ch){
-	if(ch==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in CxPlus\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	ch->x++;
 	ch->tot_x++;
 	return 0; 
 }
 
 int CxMinus(Charge ch){
-	if(ch==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in CxMinus\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	ch->x--;
 	ch->tot_x--;
 	return 0; 
 }
 
 int CyPlus(Charge ch){
-	if(ch==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in CyPlus\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	ch->y++;
 	return 0;
 }
 
 int CyMinus(Charge ch){
-	if(ch==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in CyMinus\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	ch->y--;
 	return 0;
 }
 
 int CyPlusPeriodic(Charge ch,int w){
-	if(ch==NULL || w <=0)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in CyPlusPeriodic\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+	if(w <=0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR w is less than or equal to 0 in CyPlusPeriodic\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1; 
+  }
+  #endif
 	ch->y++;
 	ch->y=(ch->y%w);
 	if(ch->y>=w) //can't check
@@ -197,8 +575,26 @@ int CyPlusPeriodic(Charge ch,int w){
 }
 
 int CyMinusPeriodic(Charge ch, int w) {
-	if(ch==NULL || w <= 0)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in CyMinusPeriodic\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+	if(w <= 0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR w is less than or equal to 0 in CyMinusPeriodic\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1; 
+  }
+  #endif
 	ch->y--;
 	ch->y=(ch->y+w)%w;
 	if( ch->y >= w || ch->y<=-1) //can't check
@@ -207,8 +603,26 @@ int CyMinusPeriodic(Charge ch, int w) {
 }
 
 int CzPlusPeriodic(Charge ch,int h){
-	if(ch==NULL || h <= 0)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in CzPlusPeriodic\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+	if(h <= 0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR h is less than or equal to 0 in CzPlusPeriodic\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1; 
+  }
+  #endif
 	ch->z++;
 	ch->z=(ch->z%h);
 	if(ch->z>=h) //can't check
@@ -217,8 +631,26 @@ int CzPlusPeriodic(Charge ch,int h){
 }
 
 int CzMinusPeriodic(Charge ch, int h) {
-	if(ch==NULL || h <=0)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in CzMinusPeriodic\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+	if(h <=0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR h is less than or equal to 0 in CzMinusPeriodic\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1; 
+  }
+  #endif
 	ch->z--;
 	ch->z=(ch->z+h)%h;
 	if(ch->z>=h || ch->z==-1) //can't check
@@ -227,8 +659,26 @@ int CzMinusPeriodic(Charge ch, int h) {
 }
 
 int CxPlusPeriodic(Charge ch,int l){
-	if(ch==NULL || l <= 0)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in CxPlusPeriodic\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+	if(l <= 0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR l is less than or equal to 0 in CxPlusPeriodic\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1; 
+  }
+  #endif
 	ch->x++;
 	ch->tot_x++;
 	ch->x=(ch->x%l);
@@ -238,8 +688,26 @@ int CxPlusPeriodic(Charge ch,int l){
 }
 
 int CxMinusPeriodic(Charge ch, int l) {
-	if(ch==NULL || l <=0)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in CxMinusPeriodic\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+	if(l <=0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR l is less than or equal to 0 in CxMinusPeriodic\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1; 
+  }
+  #endif
 	ch->x--;
 	ch->tot_x--;
 	ch->x=(ch->x+l)%l;
@@ -249,40 +717,382 @@ int CxMinusPeriodic(Charge ch, int l) {
 }
 
 int CzPlus(Charge ch){
-	if(ch==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in CzPlus\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	ch->z++;
 	return 0;
 }
 
 int CzMinus(Charge ch){
-	if(ch==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in CzMinus\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	ch->z--;
 	return 0;
 }
 
 int setCx(Charge ch, int cx) {
-	if(ch==NULL )
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL ){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in setCx\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	ch->x=cx;
 	ch->tot_x = cx;
 	return 0;
 }
 int setCy(Charge ch, int cy) {
-	if(ch==NULL )
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL ){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in setCy\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 	
+  }
+  #endif
 	ch->y=cy;
 	return 0;
 }
 int setCz(Charge ch, int cz) {
-	if(ch==NULL )
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL ){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in setCz\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	ch->z=cz;
 	return 0;
 }
 int getXdist(const_Charge ch) {
-	if(ch==NULL)
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR ch is NULL in getXdist\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1; 
+  }
+  #endif
 	return ch->tot_x;
+}
+
+double getChargePathVisits(Charge ch, int seq){
+	#ifdef _ERROR_CHECKING_ON_
+  if(ch==NULL){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR can not getChargePathVisits "); 
+		fprintf(stderr,"charge is NULL\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1;
+  }
+  if(seq<1){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR can not getChargePathVisits ");
+    fprintf(stderr,"sequence value is less than 1\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
+  #endif
+
+  double visits = getMatrixLLNodeElem(ch->path,seq,2);
+  return visits;
+}
+
+int resetChargePathVisit(Charge ch, int visit){
+ 
+	#ifdef _ERROR_CHECKING_ON_
+ if(ch==NULL){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR can not getChargePathVisitsForSite "); 
+		fprintf(stderr,"charge is NULL\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1;
+  }
+  #endif
+  
+  setMatrixLLValueAtRow(ch->path,2,visit);
+  return 0;
+}
+
+double getChargePathVisitsForSite(Charge ch, int SiteID){
+ 
+	#ifdef _ERROR_CHECKING_ON_
+ if(ch==NULL){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR can not getChargePathVisitsForSite "); 
+		fprintf(stderr,"charge is NULL\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1;
+  }
+  if(SiteID<0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR can not getChargePathVisits for  ");
+    fprintf(stderr,"SiteID value is less than 0\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
+  #endif
+  int seq;
+  seq = getMatrixLLLastMatchAtRow(ch->path, SiteID, 1);
+  if(seq==-1){
+    return -1;
+  }else{
+    double visits = getMatrixLLNodeElem(ch->path,seq,2);
+    return visits;
+  }
+}
+
+int updatePath(SNarray snA, Charge ch, int SiteID, int ClusterID){
+	#ifdef _ERROR_CHECKING_ON_
+	if(ch==NULL){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR can not update charge path "); 
+		fprintf(stderr,"charge is NULL.\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1;
+  }
+  if(SiteID<0){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR SiteID is less than 0 cannot updatePath\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
+  if(ch->path==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR can not update charge path ");
+    fprintf(stderr,"because path does not exist\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1; 
+  }
+  #endif
+  printf("Entering Update Path\n");
+  //Step 1 Determine if site is already recorded path list 
+  double siteID = (double) SiteID;
+  int position;
+  int inc;
+  int SiteID2;
+  int ClusterID2;
+  int numMatches;
+  double visits;
+  matrix_linklist mtxll;
+  //The first row in the path matrix is reserved for the id
+  //of the site
+ 
+  position = getMatrixLLLastMatchAtRow(ch->path,siteID,1);
+  
+  if(ClusterID==-1){
+    //This means that the site of interest is not connected 
+    //to a cluster
+    if(position==-1){
+      double path[3];
+      path[0] = siteID;
+      path[1] = 1;
+      path[2] = -1;
+      mtxll = ch->path;
+
+      addLL_MNodeBegin(&mtxll,path,3);
+      removeLL_MNodeEnd(&mtxll);
+    }else{
+      moveMatrixLLNodeToStart(ch->path,position);
+      //Increment the number of times the site has been visited
+      incMatrixLLElem(ch->path,1,2);
+    }
+  }else{
+    printf("Cluster Exists\n");
+    //This means that the site is part of a cluster
+    //Returns a matrix with a list of where in ch->path sequence 
+    //the matches occur 
+    matrix matches = getMatrixLLMatchAtRow(ch->path,ClusterID,3, &numMatches);
+    
+    //This means we need to update the sites listed
+    //in the ChargePath so they show which clusters
+    //they are associated with
+    if(numMatches==0){
+      //Cycle through the path
+      for(inc = 1; inc<=getMatrixLLlength(ch->path);inc++){
+        SiteID2 = getMatrixLLNodeElem(ch->path,inc,1);
+        //Check if part of a cluster
+        if (checkSNconnectedCluster(getSNwithInd(snA,SiteID2))==1){
+          //Determine the Cluster ID
+          ClusterID2 = getCluster_id(getClusterList(getSNwithInd(snA,SiteID)));
+          //Update the Elem in the path to 
+          //show it is attached to the ClusterID2
+          setMatrixLLElem(ch->path,inc,3,ClusterID2); 
+        }
+      }
+    }
+
+    printCharge(ch);
+
+    //If some of the sites the charge has been hopping
+    //to belong to the same cluster we will increment
+    //these sites
+    for(inc=1;inc<=numMatches;inc++){
+      incMatrixLLElem(ch->path,getE(matches,inc,1),2);
+    }
+    //If position returns -1 there is no match for the site
+    //this mean that the charge has not recently hopped to
+    //this particular site even if it is in the same cluster
+    if(position==-1){
+      //The sites are unique but more than one site
+      //is part of the same cluster, here the number
+      //of times the cluster has been visited is used
+      //to initialize the new site that is being placed
+      //at the front of the ch->path
+      if(numMatches>0){
+        printf("matches(1,1) %g\n",getE(matches,1,1));
+        visits = getMatrixLLNodeElem(ch->path,(int)getE(matches,1,1),2);
+      }else{
+        visits = 1;
+      }
+      double path[3];
+      path[0] = siteID;
+      path[1] = visits;
+      path[2] = ClusterID;
+      mtxll = ch->path;
+      addLL_MNodeBegin(&mtxll,path,3);
+      removeLL_MNodeEnd(&mtxll);
+    }else{
+      moveMatrixLLNodeToStart(ch->path,position);
+    }
+    if(numMatches>0){
+      deleteMatrix(&matches);
+    }
+  }
+  printf("Leaving UpdatePath\n");
+  printCharge(ch);
+	return 0; 
+}
+
+int triggerMatch(Charge ch, double match){
+	#ifdef _ERROR_CHECKING_ON_
+  if(ch==NULL){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR can not update charge path "); 
+		fprintf(stderr,"charge is NULL.\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1;
+  }
+  #endif
+
+  return getMatrixLLNumberElemGreaterThanMatchAtRow(ch->path,match,2);
+}
+
+int getIDsOfTwoOfMostFrequentlyVisitedSites(Charge ch, int * ID_1, int * ID_2){
+
+	#ifdef _ERROR_CHECKING_ON_
+  if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR in getIDsOfTwoOfMostFrequentlyVisitedSites ");
+    fprintf(stderr,"ch is NULL\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
+  #endif
+  int max_visits1;
+  int max_visits2;
+  int ID1;
+  int ID2;
+  int seq;
+  int flag;
+
+  max_visits1 = 0;
+  max_visits2 = 0;
+  ID1 = -1;
+  ID2 = -1;
+
+  max_visits1 = getMatrixLLNodeElem(ch->path,1,2);
+  max_visits1 = getMatrixLLNodeElem(ch->path,1,2);
+  ID1         = getMatrixLLNodeElem(ch->path,1,1);
+  ID2         = getMatrixLLNodeElem(ch->path,1,1);
+ 
+  if( getMatrixLLNodeElem(ch->path,2,2) >= max_visits1){
+    max_visits1 = getMatrixLLNodeElem(ch->path,2,2); 
+    ID1         = getMatrixLLNodeElem(ch->path,2,1); 
+  }else{
+    max_visits2 = getMatrixLLNodeElem(ch->path,2,2); 
+    ID2         = getMatrixLLNodeElem(ch->path,2,1); 
+  }
+  
+  flag = 0;
+
+  for(seq=3;seq<=getMatrixLLlength(ch->path);seq++){ 
+    if( getMatrixLLNodeElem(ch->path,seq,2)>max_visits1){
+      max_visits2 = max_visits1;
+      ID2         = ID1;
+      max_visits1 = getMatrixLLNodeElem(ch->path,seq,2); 
+      ID1         = getMatrixLLNodeElem(ch->path,seq,2);
+      flag        = 1; 
+    }else if( getMatrixLLNodeElem(ch->path,seq,2)>max_visits2){
+      max_visits2 = getMatrixLLNodeElem(ch->path,seq,2); 
+      ID2         = getMatrixLLNodeElem(ch->path,seq,2); 
+      flag        = 1;
+    }
+  }
+  *ID_1 = ID1;
+  *ID_2 = ID2;
+  return flag;
 }

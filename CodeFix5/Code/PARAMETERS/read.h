@@ -25,31 +25,32 @@ double GrabDouble(unsigned int position, char * buf);
 //
 //variable 33
 int ReadParameter(int * method,\
-		int * SLength, int * SWidth, int * SHeight,\
-		int * PeriodicX, int * PeriodicY, int * PeriodicZ,\
-		int * EndX, int * EndY, int * EndZ,\
-		int * XElecOn, int * YElecOn, int *ZElecOn,\
-		double * XFermiB, double * XFermiF, double * YFermiL,\
-		double * YFermiR, double * ZFermiB, double * ZFermiA,\
-		int * ImageCharge, double * IntrFermi,\
-		double * alphaxb, double * alphaxf, double * alphayl,\
-		double * alphayr, double * alphazb, double * alphaza,\
-		double * vX, double * vY, double * vZ,\
-		double * VoltageX, double * VoltageY, double * VoltageZ,\
-		int * VStepX, int * VStepY, int * VStepZ,\
-		double * VincX, double * VincY, double * VincZ,\
-		double * SiteDistance, double * D, int * TCount,\
-		int * NCh, int * Ntot, double * TStep, int * N_av,\
-		int * Nstep_av, int * Time_check, int * Rcount,int * ClusterAlg, double * CutOff,\
-		double * lambda,int * ScaleAfterCorr, int * SeedProt, int * Attempts,\
-		double * fracSeed, double * E0, double * sigma,\
-		double * fracTrap, double * Etrap, double * Tsigma,\
-		double * TempStart, int * TemperatureStep,\
-		double * TemperatureInc, double * reOrgEnergy,\
-		double * AttemptToHop, double * gamma,\
-		double * RelativePerm, int * MovieFrames, double * CutOffTime,\
-		double * Tcv, double * Vcv, double * Tlag, int * EndPtFile,\
-		int * NumChargesTrack, int * PathFile, int * LogFile);
+		int * SLength          , int * SWidth           , int * SHeight          ,\
+		int * PeriodicX        , int * PeriodicY        , int * PeriodicZ        ,\
+		int * EndX             , int * EndY             , int * EndZ             ,\
+		int * XElecOn          , int * YElecOn          , int *ZElecOn           ,\
+		double * XFermiB       , double * XFermiF       , double * YFermiL       ,\
+		double * YFermiR       , double * ZFermiB       , double * ZFermiA       ,\
+		int * ImageCharge      , double * IntrFermi     ,	double * alphaxb       ,\
+    double * alphaxf       , double * alphayl       ,	double * alphayr       ,\
+    double * alphazb       , double * alphaza       ,	double * vX            ,\
+    double * vY            , double * vZ            ,	double * VoltageX      ,\
+    double * VoltageY      , double * VoltageZ      ,	int * VStepX           ,\
+    int * VStepY           , int * VStepZ           ,	double * VincX         ,\
+    double * VincY         , double * VincZ         ,	double * SiteDistance  ,\
+    double * D             , int * TCount           ,	int * NCh              ,\
+    int * Ntot             , double * TStep         , int * N_av             ,\
+		int * Nstep_av         , int * Time_check       , int * Rcount           ,\
+    int * ClusterAlg       , int * ClusterAlgRec    , int * ClusterAlgTrigger,\
+    double * CutOff        , double * lambda        , int * ScaleAfterCorr   ,\
+    int * SeedProt         , int * Attempts         , double * fracSeed      ,\
+    double * E0            , double * sigma         ,	double * fracTrap      ,\
+    double * Etrap         , double * Tsigma        ,	double * TempStart     ,\
+    int * TemperatureStep  , double * TemperatureInc, double * reOrgEnergy   ,\
+		double * AttemptToHop  , double * gamma         ,	double * RelativePerm  ,\
+    int * MovieFrames      , double * CutOffTime    ,	double * Tcv           ,\
+    double * Vcv           , double * Tlag          , int * EndPtFile        ,\
+		int * NumChargesTrack  , int * PathFile         , int * LogFile          );
 
 int deleteParamFrame(ParameterFrame * PF);
 
@@ -107,6 +108,8 @@ int PFset_Nstep_av(ParameterFrame PF,int Nstep_av);
 int PFset_Time_check(ParameterFrame PF,int Time_check);
 int PFset_Rcount(ParameterFrame PF,int Rcount);
 int PFset_ClusterAlg(ParameterFrame PF,int ClusterAlg);
+int PFset_ClusterAlgRec(ParameterFrame PF,int ClusterAlgRec);
+int PFset_ClusterAlgTrigger(ParameterFrame PF,int ClusterAlgTrigger);
 int PFset_CutOff(ParameterFrame PF,double CutOff);
 int PFset_lambda(ParameterFrame PF,double lambda);
 int PFset_ScaleAfterCorr(ParameterFrame PF,int ScaleAfterCorr);
@@ -186,6 +189,8 @@ int PFget_Nstep_av(ParameterFrame PF);
 int PFget_Time_check(ParameterFrame PF);
 int PFget_Rcount(ParameterFrame PF);
 int PFget_ClusterAlg(ParameterFrame PF);
+int PFget_ClusterAlgRec(ParameterFrame PF);
+int PFget_ClusterAlgTrigger(ParameterFrame PF);
 double PFget_CutOff(ParameterFrame PF);
 double PFget_lambda(ParameterFrame PF);
 int PFget_ScaleAfterCorr(ParameterFrame PF);

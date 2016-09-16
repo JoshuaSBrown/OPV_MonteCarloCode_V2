@@ -1,16 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../CLUSTER/CLUSTERFUNCTIONS/SITENODE/sitenode.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/MONTECARLO/montecarlo.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/MATRIX/matrix.h"
-#include "../PARAMETERS/read.h"
-//#include "../MEM/mem.h"
 #include "functions.h"
+#include "../SITENODE/sitenode.h"
+#include "../MONTECARLO/montecarlo.h"
+#include "../MATRIX/matrix.h"
+#include "../PARAMETERS/read.h"
 
 int main(void){
 
-	//mem_init();
 	//Parameter List
 	//
 	ParameterFrame PF = newParamFrame();
@@ -128,7 +126,7 @@ int main(void){
 */
 
 	//Non - periodic 
-	int rv = initSite(electricEnergyX,electricEnergyY,\
+	initSite(electricEnergyX,electricEnergyY,\
 			  electricEnergyZ, KT, snA, PF);
 	
 
@@ -150,12 +148,12 @@ int main(void){
 		setE(sequence,i+1,1,i);
 	}
 	ChargeArray chA = initCharget0( sequence, snA, Ntot, NCh,\
-																	D, XElecOn, YElecOn, ZElecOn,\
+																	XElecOn, YElecOn, ZElecOn,\
 																	EndX, EndY, EndZ);
 	printChargeA(chA);
 
-	rv = initCharge( 20, 2, &chA, sequence, snA,\
-					Ntot, NCh, D, XElecOn, YElecOn, ZElecOn,\
+	initCharge( 20, 2, &chA, sequence, snA,\
+					Ntot, NCh, XElecOn, YElecOn, ZElecOn,\
 					EndX, EndY, EndZ);
 
 	printChargeA(chA);
@@ -163,72 +161,71 @@ int main(void){
 
 	printf("Testing initElec\n");
 
-	rv = initElec(electricEnergyX, electricEnergyY, electricEnergyZ,\
+	initElec(electricEnergyX, electricEnergyY, electricEnergyZ,\
 		      MarcusCoeff, KT, snA,\
 		      &elXb, &elXf, &elYl, &elYr,&elZb,&elZa,\
 		      PF);
 	
 	
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 	deleteChargeA(chA);
-	deleteMatrix(sequence);
+	deleteMatrix(&sequence);
 	
 	SNarray snAmini;
 	matrix mtxmini;
 
 	if (elXb!=NULL){
 		snAmini = (SNarray) getElectrode_AdjacentSites(elXb);
-		deleteSNarray(snAmini);
+		deleteSNarray(&snAmini);
 		mtxmini = (matrix) getElectrode_HopRates(elXb);
-		deleteMatrix(mtxmini);
+		deleteMatrix(&mtxmini);
 		deleteElectrode(&elXb);	
 	
 	}
 	if (elXf!=NULL){
 		snAmini = (SNarray) getElectrode_AdjacentSites(elXf);
-		deleteSNarray(snAmini);
+		deleteSNarray(&snAmini);
 		mtxmini = (matrix) getElectrode_HopRates(elXf);
-		deleteMatrix(mtxmini);
+		deleteMatrix(&mtxmini);
 		deleteElectrode(&elXf);	
 	}
 
 	if (elYl!=NULL){
 		snAmini = (SNarray) getElectrode_AdjacentSites(elYl);
-		deleteSNarray(snAmini);
+		deleteSNarray(&snAmini);
 		mtxmini = (matrix) getElectrode_HopRates(elYl);
-		deleteMatrix(mtxmini);
+		deleteMatrix(&mtxmini);
 		deleteElectrode(&elYl);	
 	}
 	if (elYr!=NULL){
 		snAmini = (SNarray) getElectrode_AdjacentSites(elYr);
-		deleteSNarray(snAmini);
+		deleteSNarray(&snAmini);
 		mtxmini = (matrix) getElectrode_HopRates(elYr);
-		deleteMatrix(mtxmini);
+		deleteMatrix(&mtxmini);
 		deleteElectrode(&elYr);	
 	}
 	if (elZb!=NULL){
 		snAmini = (SNarray) getElectrode_AdjacentSites(elZb);
-		deleteSNarray(snAmini);
+		deleteSNarray(&snAmini);
 		mtxmini = (matrix) getElectrode_HopRates(elZb);
-		deleteMatrix(mtxmini);
+		deleteMatrix(&mtxmini);
 		deleteElectrode(&elZb);	
 	}
 
 	if (elZa!=NULL){
 		snAmini = (SNarray) getElectrode_AdjacentSites(elZa);
-		deleteSNarray(snAmini);
+		deleteSNarray(&snAmini);
 		mtxmini = (matrix) getElectrode_HopRates(elZa);
-		deleteMatrix(mtxmini);
+		deleteMatrix(&mtxmini);
 		deleteElectrode(&elZa);	
 	}
-	//atexit(mem_term);
 	
 	
 	/*
 	//Fully Periodic
 	SNarray snA2 = newSNarray(SLength,SWidth,SHeight);
 	
-	rv = initSite(electricEnergy, KT, reOrgEnergy,\
+	initSite(electricEnergy, KT, reOrgEnergy,\
 							lambda, CutOff,\
 							fracSeed, fraction, SiteDistance,\
 							Etrap, Tsigma, E0, sigma,\
@@ -242,7 +239,7 @@ int main(void){
 	//Periodic Only in the x
 	SNarray snA3 = newSNarray(SLength, SWidth, SHeight);
 
-	rv = initSite(electricEnergy, KT, reOrgEnergy,\
+	initSite(electricEnergy, KT, reOrgEnergy,\
 							lambda, CutOff,\
 							fracSeed, fraction, SiteDistance,\
 							Etrap, Tsigma, E0, sigma,\

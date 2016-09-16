@@ -1,9 +1,9 @@
 #ifndef _FUNCTIONS_H_
 #define _FUNCTIONS_H_
 
-#include "../CLUSTER/CLUSTERFUNCTIONS/SITENODE/sitenode.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/MATRIX/matrix.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/DATASTRUCT/cluster.h"
+#include "../SITENODE/sitenode.h"
+#include "../MATRIX/matrix.h"
+#include "../CLUSTER/cluster.h"
 #include "../PARAMETERS/read.h"
 #include "../CHARGE/charge.h"
 

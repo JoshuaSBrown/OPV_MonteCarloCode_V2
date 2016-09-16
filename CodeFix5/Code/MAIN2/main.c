@@ -5,15 +5,14 @@
 #include <math.h>
 
 #include "../CHARGE/charge.h"
-//#include "../MEM/mem.h"
 #include "../FUNCTIONS/functions.h"
 #include "../PARAMETERS/read.h"
 #include "../CHARGETRANSPORT/chargetransport.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/clusterfunctions.h"
-#include "../CLUSTER/CLUSTERSITENODE/clustersitenode.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/SITENODE/sitenode.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/MATRIX/matrix.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/DATASTRUCT/cluster.h"
+#include "../CLUSTERFUNCTIONS/clusterfunctions.h"
+#include "../CLUSTERSITENODE/clustersitenode.h"
+#include "../SITENODE/sitenode.h"
+#include "../MATRIX/matrix.h"
+#include "../CLUSTER/cluster.h"
 #include "../IO/io.h"
 
 int main(void){
@@ -212,7 +211,7 @@ int main(void){
 							randomWalk(snA, CheckPointNum, &FileName[0],\
 									electricFieldX,	electricFieldY, electricFieldZ,\
 									elXb, elXf, elYl, elYr, elZb, elZa, PF, t, Sequence,\
-									FutureSite, &chA, n, nc, nca, Temperature); 
+									FutureSite, &chA, n, nc, nca, Temperature,&ClArLL); 
 
 							printf("Printing Visit Freq files\n");
 							printVisitFreq(snA,&FileName[0]);
@@ -253,15 +252,22 @@ int main(void){
 
 				printf("Calculating .ckpt status\n");
 				CheckPtStatus = -1;
-				CheckPtStatus = CheckPt_Test_CELIV( &CheckPointNum, CheckFileExist, FileNameCheckPtVersion,\
-						FileNameSize,Temperature);
+				CheckPtStatus = CheckPt_Test_CELIV( &CheckPointNum,\
+          CheckFileExist          , FileNameCheckPtVersion,\
+					FileNameSize            , Temperature           );
 
 				sprintf(FileName,"DataT%gR%d",Temperature,r);
 
-				Pre_randomWalk(CheckPtStatus, FileNameCheckPtVersion,FileName, &t, &Sequence, &chA,\
-						&FutureSite,&ClArLL, &snA, PF,\
-						electricEnergyX, electricEnergyY, electricEnergyZ,r,Vx,Vy,Vz, Temperature,\
-						&n, &nc, &nca, &elXb, &elXf, &elYl, &elYr, &elZb, &elZa);	
+				Pre_randomWalk(CheckPtStatus       , FileNameCheckPtVersion,\
+          FileName       , &t              , &Sequence             ,\
+          &chA           , &FutureSite     , &ClArLL               ,\
+          &snA           , PF              , electricEnergyX       ,\
+          electricEnergyY, electricEnergyZ , r                     ,\
+          Vx             , Vy              , Vz                    ,\
+          Temperature    , &n              , &nc                   ,\
+          &nca           , &elXb           , &elXf                 ,\
+          &elYl          , &elYr           , &elZb                 ,\
+          &elZa          );	
 
 				if(FutureSite==NULL){
 					printf("FutureSite matrix NULL\n");
@@ -271,7 +277,7 @@ int main(void){
 				randomWalk(snA, CheckPointNum, &FileName[0],\
 						electricFieldX,	electricFieldY, electricFieldZ,\
 						elXb, elXf, elYl, elYr, elZb, elZa, PF, t, Sequence,\
-						FutureSite, &chA, n, nc, nca, Temperature); 
+						FutureSite, &chA, n, nc, nca, Temperature,&ClArLL); 
 
 				printf("Printing Visit Freq files\n");
 				printVisitFreq(snA,&FileName[0]);

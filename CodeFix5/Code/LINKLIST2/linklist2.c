@@ -11,7 +11,7 @@ struct _linklist2 {
 
 struct _LLNode2 {
 	int id;
-  LLNode2 next;
+	LLNode2 next;
 };
 
 LLNode2 newLLNode2( int id){

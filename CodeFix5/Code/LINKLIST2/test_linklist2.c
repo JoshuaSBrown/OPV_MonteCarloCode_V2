@@ -12,12 +12,15 @@ int main(){ //couldn't test blankLLlist
 	printf("Testing: newLLNode\n");
 	LLNode2 LLrv=newLLNode2(-5);
 	assert(LLrv!=NULL);
+  deleteLLNode2(LLrv);  
 	LLrv=newLLNode2(4);
 	assert(LLrv!=NULL);
+  deleteLLNode2(LLrv);
 	
 	printf("Testing: newLinkList\n");
 	linklist2 LL = newLinkList2(-1);
-	assert(LL!=NULL);
+  assert(LL!=NULL);
+  deleteLL2(&LL);
 	LL = newLinkList2(0);
 	assert(LL!=NULL);
 
@@ -107,6 +110,7 @@ int main(){ //couldn't test blankLLlist
 	rv=getLLstartID2(LL2);
 	assert(rv==25);
 
+  deleteLL2(&LL2);
 	printf("End");
 
 	return 0;

@@ -5,12 +5,12 @@
 #include <time.h>
 
 #include "../PARAMETERS/read.h"
-//#include "../MEM/mem.h"
 #include "../CHARGE/charge.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/DATASTRUCT/cluster.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/SITENODE/sitenode.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/MONTECARLO/montecarlo.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/MATRIX/matrix.h"
+#include "../CLUSTER/cluster.h"
+#include "../ELECTRODE/electrode.h"
+#include "../SITENODE/sitenode.h"
+#include "../MONTECARLO/montecarlo.h"
+#include "../MATRIX/matrix.h"
 #include "functions.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,19 +124,11 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 		printf("Sites to be Seeded %d.\n",seeds2);
 	}
 
-	matrix AsTr=newMatrix(traps,3);
-
-	printf("Created Array\n");
-
-	if (AsTr==NULL) {
-		printf("WARNING AsTr returned NULL\n");
-		//assert(AsTr!=NULL);
-	}
-
+  matrix AsTr = NULL;
 	setDefaultSNa(snA);
 
-
 	if(traps!=0){
+    AsTr=newMatrix(traps,3);
 		printf("Randomly determining which sites are traps & assigning energies.\n");
 		percent=0;
 		i=0;
@@ -222,6 +214,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 					SumEcor=0;
 					SumCor=0;
 					CorRadtemp=CorRad;
+
 					//printf("Initial ID %d initE %d\n",getIndex(snA,i,j,k), getInitE(getSN(snA,i,j,k)));
 					while (SumEcor==0 && getInitE(getSN(snA,i,j,k))==0){
 
@@ -425,7 +418,9 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 		deleteMatrix(&UnAs);
 	}
 
-	deleteMatrix(&AsTr);
+  if(AsTr!=NULL){
+	  deleteMatrix(&AsTr);
+  }
 	//Final filter to normalize energies after applying correlation
 	if(ScaleAfterCorr==1){
 		ScaleAfterCorrFunc(maxEnergy,minEnergy, PF, &snA);

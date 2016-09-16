@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 
 #include "charge.h"
@@ -210,7 +211,8 @@ int main(void){
 	assert(rv==-1);
 	rv= getCz(ch);
 	assert(rv==12);
-	printf("Testing: deleteCharge\n");
+  
+   printf("Testing: deleteCharge\n");
 	rv= deleteCharge(chNull);
 	assert(rv==-1); 
 	rv= deleteCharge(ch);
@@ -220,6 +222,73 @@ int main(void){
 	assert(rv==-1); 
 	rv= deleteChargeA(chA);
 	assert(rv==0);
+
+  
+  printf("Testing: initChargePath\n");
+  Charge ch2 = newCharge();
+  assert(ch2!=NULL);
+  fprintf(stderr,"Should print ERROR message: ");
+  rv = initChargePath(NULL, 3);
+  assert(rv==-1);
+  fprintf(stderr,"Should print ERROR message: ");
+  rv = initChargePath(ch2,1);
+  assert(rv==-1);
+  rv = initChargePath(ch2,2);
+  assert(rv==0);
+  printCharge(ch2);
+  fprintf(stderr,"Should print ERROR message: ");
+  rv = initChargePath(ch2,2);
+  assert(rv==-1);
+
+  printf("Testing: updatePath\n");
+  fprintf(stderr,"Should print ERROR message: ");
+  rv = updatePath(NULL,0,-1);
+  assert(rv==-1);
+  fprintf(stderr,"Should print ERROR message: ");
+  rv = updatePath(ch2,-1,-1);
+  assert(rv==-1);
+  rv = updatePath(ch2,3,-1);
+  assert(rv==0);
+	printf("Testing: getChargePathVisitsForSite\n");
+  drv = getChargePathVisitsForSite(ch2,2);
+  assert(drv==-1);
+  fprintf(stderr,"Should print ERROR message: ");
+  drv = getChargePathVisitsForSite(NULL,3);
+  assert(drv==-1);
+  fprintf(stderr,"Should print ERROR message: ");
+  drv = getChargePathVisitsForSite(ch2,-1);
+  assert(drv==-1);
+  drv = getChargePathVisitsForSite(ch2,3);
+  assert(drv==1);
+  printCharge(ch2);
+  rv = updatePath(ch2, 2,-1);
+  printCharge(ch2);
+  assert(rv==0);
+  rv = updatePath(ch2, 3,-1);
+  assert(rv==0);
+  printCharge(ch2);
+  drv = getChargePathVisitsForSite(ch2,3);
+  assert(drv==2);
+  rv= deleteCharge(ch2);
+  assert(rv==0);
+  printf("Testing: initChargeArrayPath\n");
+  ChargeArray cha2 = newChargeA(3);
+  fprintf(stderr,"Should print ERROR message: ");
+  rv = initChargeArrayPath(NULL, 2);
+  assert(rv==-1);
+  fprintf(stderr,"Should print ERROR message: ");
+  rv = initChargeArrayPath(cha2,1);
+  assert(rv==-1);
+  rv = initChargeArrayPath(cha2,2);
+  assert(rv==0);
+  Charge ch3 = getCharge(cha2,2);
+  assert(ch3!=NULL);
+  rv = updatePath(ch3,4,-1);
+  assert(rv==0);
+  drv = getChargePathVisitsForSite(ch3,4);
+  assert(drv==1);
+  rv= deleteChargeA(cha2);
+  assert(rv==0);
 
 	printf("Mission Completed\n");
 	return 0;

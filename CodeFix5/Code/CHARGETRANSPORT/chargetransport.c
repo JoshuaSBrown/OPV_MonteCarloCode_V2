@@ -9,160 +9,156 @@
 #include <unistd.h>
 #include <dirent.h>
 
-#include "../PARAMETERS/read.h"
 #include "chargetransport.h"
+#include "../PARAMETERS/read.h"
 #include "../CHARGE/charge.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/SITENODE/sitenode.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/DATASTRUCT/cluster.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/clusterfunctions.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/MATRIX/matrix.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/MONTECARLO/montecarlo.h"
-#include "../CLUSTER/CLUSTERSITENODE/clustersitenode.h"
+#include "../SITENODE/sitenode.h"
+#include "../CLUSTER/cluster.h"
+#include "../CLUSTERFUNCTIONS/clusterfunctions.h"
+#include "../MATRIX/matrix.h"
+#include "../MONTECARLO/montecarlo.h"
+#include "../CLUSTERSITENODE/clustersitenode.h"
 #include "../FUNCTIONS/functions.h"
+#include "../ELECTRODE/electrode.h"
 #include "../IO/io.h"
-#include "../MEM/mem.h"
+#include "../ERROR/error.h"
 
 int HopToElecX(SNarray snA, Electrode elXb, Charge * one, int * future, int EndY, int EndZ){
-	//Elecid defines which electrode could be hopping too
-	//where:
-	//	getAtotal(snA) + 0 - (-x)
-	//	getAtotal(snA) + 1 - (+x)
-	//	getAtotal(snA) + 2 - (-y)
-	// 	getAtotal(snA) + 3 - (+y)
-	//	getAtotal(snA) + 4 - (-z)
-	//	getAtotal(snA) + 5 - (+z)
+  //Elecid defines which electrode could be hopping too
+  //where:
+  //	getAtotal(snA) + 0 - (-x)
+  //	getAtotal(snA) + 1 - (+x)
+  //	getAtotal(snA) + 2 - (-y)
+  // 	getAtotal(snA) + 3 - (+y)
+  //	getAtotal(snA) + 4 - (-z)
+  //	getAtotal(snA) + 5 - (+z)
 
-	//printf("Hop To ElecX\n");
-	if(elXb==NULL){
-		printf("elXb is NULL\n");
-		return -1;
-	}
- 	if( snA==NULL){
-		printf("snA is NULL\n");
-		return -1;
-	}
-	if(*one == NULL ){
-		printf("Charge is NULL\n");
-		return -1;
-	}	
-	if( EndY<0 || EndZ<0){
-		return -1;
-	}
+  if(elXb==NULL){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR elXb is NULL in HopToElecX\n");
+    #endif 
+    return -1;
+  }
+  
+  if( snA==NULL){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR snA is NULL in HopToElecX\n");
+    #endif 
+    return -1;
+  }
+  
+  if(*one == NULL ){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR Charge *one is NULL in HopToElecX\n");
+    #endif 
+    return -1;
+  }	
+  
+  if( EndY<0){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR EndY is less than 0 in HopToElecX\n");
+    #endif 
+    return -1;
+  }
+  
+  if(EndZ<0){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR EndZ is less than 0 in HopToElecX\n");
+    #endif 
+    return -1;
+  }
 
-	SNarray snAelec = (SNarray) getElectrode_AdjacentSites(elXb);
+  SNarray snAelec = (SNarray) getElectrode_AdjacentSites(elXb);
 
-	int SLength = getAlen(snA);
-	int SWidth = getAwid(snA);
-	int SHeight = getAhei(snA);
-	//First Check is to see if all the neighboring sites are occupied. 
-	//If the site is not located at a boundary
-	//If they are all occupied set the flag to 1
-	int xx = getCx(*one);
-	int yy = getCy(*one);
-	int zz = getCz(*one);
+  int SLength = getAlen(snA);
+  int SWidth  = getAwid(snA);
+  int SHeight = getAhei(snA);
+  //First Check is to see if all the neighboring sites are occupied. 
+  //If the site is not located at a boundary
+  //If they are all occupied set the flag to 1
+  int xx = getCx(*one);
+  int yy = getCy(*one);
+  int zz = getCz(*one);
 
-	int factorX;
-	int factorY;
-	int factorZ;
+  int l;
+  int i;
+  int j;
+  int k;
 
-	int l;
-	int i;
-	int j;
-	int k;
+  ProjectChargePositionOntoSiteNodeReferenceFrame(&i,&j,&k,xx,yy,zz,SLength,SWidth,SHeight);
 
-	if(xx<0){
-		factorX = -xx/SLength+1;
-		i = (xx+SLength*factorX)%SLength;
-	}else{
-		i = (xx+SLength)%SLength;
-	}
+  //   codeY = 1 exclude left hop
+  //				 = 2 exclude right hop
+  //   codeZ = 1 exclude bottom hop
+  //				 = 2 exclude top hop
 
-	if(yy<0){
-		factorY = -yy/SWidth+1;
-		j = (yy+SWidth*factorY)%SWidth;
-	}else{
-		j = (yy+SWidth)%SWidth;
-	}
+  int codeX = 0;
+  int codeY = 0;
+  int codeZ = 0;
 
-	if(zz<0){
-		factorZ = -zz/SHeight+1;
-		k = (zz+SHeight*factorZ)%SHeight;
-	}else{
-		k = (zz+SHeight)%SHeight;
-	}
+  if(xx==0){
+    //Posibility to jump to (-x) electrode
 
-	//   codeY = 1 exclude left hop
-	//				 = 2 exclude right hop
-	//   codeZ = 1 exclude bottom hop
-	//				 = 2 exclude top hop
+    //Have to ensure that charge is not at the edge of the system in the y and z directon
+    if(yy == 0 && zz == 0){
+      //Next to the bottom left corner
+      codeY = 1;
+      codeZ = 1;
+    }else if(yy == 0 && zz == EndZ*SHeight-1){
+      //Next to the left and top corner
+      codeY = 1;
+      codeZ = 2;
+    }else if(zz == 0 && yy == EndY*SWidth-1){
+      //Next to the right and bottom corner
+      codeY = 2;
+      codeZ = 1;
+    }else if(zz == EndZ*SHeight-1 && EndY*SWidth-1){
+      //Next to the right and top corner
+      codeY = 2;
+      codeZ = 2;
+    }else if(yy == 0){
+      //Next to the left side
+      codeY = 1;
+    }else if(zz == 0){
+      //Next to the bottom edge
+      codeZ = 1;
+    }else if(zz == EndZ*SHeight-1){
+      codeZ = 2;
+    }else if(yy == EndZ*SWidth-1){ 
+      codeY = 2;
+    }
 
-	int codeX = 0;
-	int codeY = 0;
-	int codeZ = 0;
+  }
 
-	if(xx==0){
-		//Posibility to jump to (-x) electrode
+  //l value
+  //0 - backward 	x-
+  //1 - forward 	x+
+  //2 - left 			y-
+  //3 - right 		y+
+  //4 - below 		z-
+  //5 - above	 		z+
 
-		//Have to ensure that charge is not at the edge of the system in the y and z directon
-		if(yy == 0 && zz == 0){
-			//Next to the bottom left corner
-			codeY = 1;
-			codeZ = 1;
-		}else if(yy == 0 && zz == EndZ*SHeight-1){
-			//Next to the left and top corner
-			codeY = 1;
-			codeZ = 2;
-		}else if(zz == 0 && yy == EndY*SWidth-1){
-			//Next to the right and bottom corner
-			codeY = 2;
-			codeZ = 1;
-		}else if(zz == EndZ*SHeight-1 && EndY*SWidth-1){
-			//Next to the right and top corner
-			codeY = 2;
-			codeZ = 2;
-		}else if(yy == 0){
-			//Next to the left side
-			codeY = 1;
-		}else if(zz == 0){
-			//Next to the bottom edge
-			codeZ = 1;
-		}else if(zz == EndZ*SHeight-1){
-			codeZ = 2;
-		}else if(yy == EndZ*SWidth-1){ 
-			codeY = 2;
-		}
+  //Need to grab the correct site
+  snAelec       = (SNarray) getElectrode_AdjacentSites(elXb);
+  SiteNode site = getSN(snAelec,0,j,k);
+  l             = HoppingToSurroundingSites(site,codeX,codeY,codeZ);
 
-	}
+  if(l==0){
+    //Hopped to electrode behind
+    *future = getAtotal(snA) + 0;
+  }else if(l==1){
+    *future = getIndFroP(snA,i,j,k);
+  }else if(l==2){
+    *future = getIndLefP(snA,i,j,k);
+  }else if(l==3){
+    *future = getIndRigP(snA,i,j,k);
+  }else if(l==4){
+    *future = getIndBelP(snA,i,j,k);
+  }else{
+    *future = getIndAboP(snA,i,j,k);
+  }
 
-	//l value
-	//0 - backward 	x-
-	//1 - forward 	x+
-	//2 - left 			y-
-	//3 - right 		y+
-	//4 - below 		z-
-	//5 - above	 		z+
-
-	//Need to grab the correct site
-	snAelec = (SNarray) getElectrode_AdjacentSites(elXb);
-	SiteNode site = getSN(snAelec,0,j,k);
-	l = HoppingToSurroundingSites(site,codeX,codeY,codeZ);
-
-	if(l==0){
-		//Hopped to electrode behind
-		*future = getAtotal(snA) + 0;
-	}else if(l==1){
-		*future = getIndFroP(snA,i,j,k);
-	}else if(l==2){
-		*future = getIndLefP(snA,i,j,k);
-	}else if(l==3){
-		*future = getIndRigP(snA,i,j,k);
-	}else if(l==4){
-		*future = getIndBelP(snA,i,j,k);
-	}else{
-		*future = getIndAboP(snA,i,j,k);
-	}
-
-	return 0;
+  return 0;
 }
 
 int HopToElecY(SNarray snA, Electrode elYl, Charge * one, int * future, int EndX, int EndZ){
@@ -176,11 +172,14 @@ int HopToElecY(SNarray snA, Electrode elYl, Charge * one, int * future, int EndX
 	//	getAtotal(snA) + 5 - (+z)
 
 	if(elYl==NULL){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR elYl is NULL in HopToElecY\n");
+    #endif
 		return -1;
 	}
 
 	int SLength = getAlen(snA);
-	int SWidth = getAwid(snA);
+	int SWidth  = getAwid(snA);
 	int SHeight = getAhei(snA);
 	//First Check is to see if all the neighboring sites are occupied. 
 	//If the site is not located at a boundary
@@ -189,35 +188,12 @@ int HopToElecY(SNarray snA, Electrode elYl, Charge * one, int * future, int EndX
 	int yy = getCy(*one);
 	int zz = getCz(*one);
 
-	int factorX;
-	int factorY;
-	int factorZ;
-
 	int l;
 	int i;
 	int j;
 	int k;
 
-	if(xx<0){
-		factorX = -xx/SLength+1;
-		i = (xx+SLength*factorX)%SLength;
-	}else{
-		i = (xx+SLength)%SLength;
-	}
-
-	if(yy<0){
-		factorY = -yy/SWidth+1;
-		j = (yy+SWidth*factorY)%SWidth;
-	}else{
-		j = (yy+SWidth)%SWidth;
-	}
-
-	if(zz<0){
-		factorZ = -zz/SHeight+1;
-		k = (zz+SHeight*factorZ)%SHeight;
-	}else{
-		k = (zz+SHeight)%SHeight;
-	}
+  ProjectChargePositionOntoSiteNodeReferenceFrame(&i,&j,&k,xx,yy,zz,SLength,SWidth,SHeight);
 
 	//   codeX = 1 exclude beh hop
 	//				 = 2 exclude front hop
@@ -273,8 +249,8 @@ int HopToElecY(SNarray snA, Electrode elYl, Charge * one, int * future, int EndX
 
 	//Need to grab the correct site
 	SNarray snAelec = (SNarray) getElectrode_AdjacentSites(elYl);
-	SiteNode site = getSN(snAelec,i,0,k);
-	l = HoppingToSurroundingSites(site, codeX,codeY,codeZ);
+	SiteNode site   = getSN(snAelec,i,0,k);
+	l               = HoppingToSurroundingSites(site, codeX,codeY,codeZ);
 
 	if(l==0){
 		*future = getIndBehP(snA,i,j,k);
@@ -305,11 +281,14 @@ int HopToElecZ(SNarray snA, Electrode elZb, Charge * one, int * future, int EndX
 	//	getAtotal(snA) + 5 - (+z)
 
 	if(elZb==NULL){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR elZb is NULL in HopToElecZ\n");
+    #endif
 		return -1;
 	}
 
-	int SLength = getAlen(snA);
-	int SWidth = getAwid(snA);
+  int SLength = getAlen(snA);
+  int SWidth  = getAwid(snA);
 	int SHeight = getAhei(snA);
 	//First Check is to see if all the neighboring sites are occupied. 
 	//If the site is not located at a boundary
@@ -318,35 +297,12 @@ int HopToElecZ(SNarray snA, Electrode elZb, Charge * one, int * future, int EndX
 	int yy = getCy(*one);
 	int zz = getCz(*one);
 
-	int factorX;
-	int factorY;
-	int factorZ;
-
 	int l;
 	int i;
 	int j;
 	int k;	
 
-	if(xx<0){
-		factorX = -xx/SLength+1;
-		i = (xx+SLength*factorX)%SLength;
-	}else{
-		i = (xx+SLength)%SLength;
-	}
-
-	if(yy<0){
-		factorY = -yy/SWidth+1;
-		j = (yy+SWidth*factorY)%SWidth;
-	}else{
-		j = (yy+SWidth)%SWidth;
-	}
-
-	if(zz<0){
-		factorZ = -zz/SHeight+1;
-		k = (zz+SHeight*factorZ)%SHeight;
-	}else{
-		k = (zz+SHeight)%SHeight;
-	}
+  ProjectChargePositionOntoSiteNodeReferenceFrame(&i,&j,&k,xx,yy,zz,SLength,SWidth,SHeight);
 
 	//   codeX = 1 exclude beh hop
 	//				 = 2 exclude front hop
@@ -402,8 +358,8 @@ int HopToElecZ(SNarray snA, Electrode elZb, Charge * one, int * future, int EndX
 
 	//Need to grab the correct site
 	SNarray snAelec = (SNarray) getElectrode_AdjacentSites(elZb);
-	SiteNode site = getSN(snAelec,i,j,0);
-	l = HoppingToSurroundingSites(site,codeX,codeY,codeZ);
+	SiteNode site   = getSN(snAelec,i,j,0);
+	l               = HoppingToSurroundingSites(site,codeX,codeY,codeZ);
 
 	if(l==0){
 		*future = getIndBehP(snA,i,j,k);
@@ -425,48 +381,54 @@ int HopToElecZ(SNarray snA, Electrode elZb, Charge * one, int * future, int EndX
 
 int ElecHopOffX(Electrode el, int * future, SNarray snA){
 
-	int row;
-	int col;
+	int    row;
+	int    col;
 	double position;
+  int    flag;
 
 	//Cycle through the hops off the electrode
 
 	//This is the random number used to determine which direction a charge hops
-	position = (double)rand() / RAND_MAX;
+	position   = (double)rand() / RAND_MAX;
 	matrix mtx = (matrix) getElectrode_HopRates(el);
 	
 	//Cycle through the pvals until the pval
 	//is equal or above the random number
 
 	if(mtx==NULL){
-		printf("ERROR matrix mtx does not exist in ElecHopOFFX\n");
-		exit(1);
+    #ifdef _ERROR_
+		fprintf(stderr,"ERROR matrix mtx does not exist in ElecHopOffX\n");
+		#endif
+    exit(1);
 	}
+  
+  flag = 0;
 
 	for(row=1;row<=getRows(mtx);row++){
 		for(col=1;col<=getCols(mtx);col++){
 			if( getE(mtx,row,col)>=position){
-				break;
+				flag=1;
+        break;
 			}
 		}
-		if( getE(mtx,row,col)>=position){
-			break;
-		}
+    if(flag==1){
+      break;
+    }
 	}
 
 	//The site the charge has chosen to hop to is located on rows (row) and
 	//cols (col)
 	//The next step is to grab the id of the site the charge has just hopped to
 	//and assign it to future
-
 	*future = getIndex(snA,0,row-1,col-1); 
 
 	if(*future==-1){
-
-		printf("Value or row %d Value of col %d future %d position %g\n",row,col,*future,position);
-		//printMatrix(mtx);
-		printf("ERROR Hopping off Electrode and out of system\n");
-		exit(1);
+    #ifdef _ERROR_
+		fprintf(stderr,"Value or row %d Value of col %d future %d position %g in ElecHopOffX\n",row,col,*future,position);
+		fprintf(stderr,"Number of columns mtx has %d Number of rows mtx has %d\n",getCols(mtx),getRows(mtx));
+    fprintf(stderr,"ERROR Hopping off Electrode and out of system\n");
+		#endif
+    exit(1);
 	}
 
 	return 0;
@@ -474,10 +436,10 @@ int ElecHopOffX(Electrode el, int * future, SNarray snA){
 
 int ElecHopOffY(Electrode el, int * future, SNarray snA){
 
-	int row;
-	int col;
+	int    row;
+	int    col;
 	double position;
-
+  int    flag;
 	//Cycle through the hops off the electrode
 
 	//This is the random number used to determine which direction a charge hops
@@ -485,16 +447,19 @@ int ElecHopOffY(Electrode el, int * future, SNarray snA){
 	matrix mtx = (matrix) getElectrode_HopRates(el);
 	//Cycle through the pvals until the pval
 	//is equal or above the random number
+  
+  flag = 0;
 
 	for(row=1;row<getRows(mtx);row++){
 		for(col=1;col<getCols(mtx);col++){
 			if( getE(mtx,row,col)>=position){
-				break;
+				flag = 1;
+        break;
 			}
 		}
-		if( getE(mtx,row,col)>=position){
-			break;
-		}
+    if(flag==1){
+      break;
+    }
 	}
 
 	//The site the charge has chosen to hop to is located on rows (row) and
@@ -504,10 +469,11 @@ int ElecHopOffY(Electrode el, int * future, SNarray snA){
 
 	*future = getIndex(snA,row-1,0,col-1); 
 
-	printf("Hopping off Y\n");
 	if(*future==-1){
-		printf("ERROR Hopping off Electrode and out of system\n");
-		exit(1);
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR Hopping off Electrode and out of system\n");
+		#endif
+    exit(1);
 	}
 
 	return 0;
@@ -515,27 +481,30 @@ int ElecHopOffY(Electrode el, int * future, SNarray snA){
 
 int ElecHopOffZ(Electrode el, int * future, SNarray snA){
 
-	int row;
-	int col;
+	int    row;
+	int    col;
 	double position;
-
+  int    flag;
 	//Cycle through the hops off the electrode
 
 	//This is the random number used to determine which direction a charge hops
-	position = (double)rand() / RAND_MAX;
-	matrix mtx = (matrix) getElectrode_HopRates(el);
+  position   = (double)rand() / RAND_MAX;
+  matrix mtx = (matrix) getElectrode_HopRates(el);
 	//Cycle through the pvals until the pval
 	//is equal or above the random number
+
+  flag = 0;
 
 	for(row=1;row<getRows(mtx);row++){
 		for(col=1;col<getCols(mtx);col++){
 			if( getE(mtx,row,col)>=position){
-				break;
+				flag = 1;
+        break;
 			}
 		}
-		if( getE(mtx,row,col)>=position){
-			break;
-		}
+    if(flag==1){
+      break;
+    }
 	}
 
 	//The site the charge has chosen to hop to is located on rows (row) and
@@ -544,15 +513,19 @@ int ElecHopOffZ(Electrode el, int * future, SNarray snA){
 	//and assign it to futre
 
 	*future = getIndex(snA,row-1,col-1,0); 
-	printf("Hopping off Z\n");
 	if(*future==-1){
-		printf("ERROR Hopping off Electrode and out of system\n");
-		exit(1);
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR Hopping off Electrode and out of system\n");
+		#endif
+    exit(1);
 	}
 	return 0;
 }
 
-int SiteHop(SNarray snA, Charge * one, SiteNode site, int * future, const int EndX, const int EndY, const int EndZ, const int XElecOn, const int YElecOn, const int ZElecOn, const int PeriodicX, const int PeriodicY, const int PeriodicZ){
+int SiteHop(SNarray snA        , Charge * one     , SiteNode site      , int * future       ,\
+            const int EndX     , const int EndY   , const int EndZ     , const int XElecOn  ,\
+            const int YElecOn  , const int ZElecOn, const int PeriodicX, const int PeriodicY,\
+            const int PeriodicZ){
 
 	//totalX is used to measure the total current in the X direction as the charges move around
 	//totalY is used to measure the total current in the Y direction as the charges move around
@@ -579,7 +552,7 @@ int SiteHop(SNarray snA, Charge * one, SiteNode site, int * future, const int En
 	//Initially, the flag is set to 0 
 	//means the charge is able to hop
 	double position;
-	int l;
+	int    l;
 	//Below values define location of the charge in the
 	//sample when the periodicity is removed
 	int x, xx;
@@ -589,12 +562,8 @@ int SiteHop(SNarray snA, Charge * one, SiteNode site, int * future, const int En
 	int SWidth;
 	int SHeight;
 
-	int factorX;
-	int factorY;
-	int factorZ;
-
 	SLength = getAlen(snA);
-	SWidth = getAwid(snA);
+	SWidth  = getAwid(snA);
 	SHeight = getAhei(snA);
 	//First Check is to see if all the neighboring sites are occupied. 
 	//If the site is not located at a boundary
@@ -602,28 +571,7 @@ int SiteHop(SNarray snA, Charge * one, SiteNode site, int * future, const int En
 	yy = getCy(*one);
 	zz = getCz(*one);
 
-	factorX=0;
-	factorY=0;
-	factorZ=0;
-
-	if (xx<0){
-		factorX = -xx/SLength+1;
-		x = (xx+SLength*factorX)%SLength;
-	}else{
-		x = (xx+SLength)%SLength;
-	}
-	if (yy<0){
-		factorY = -yy/SWidth+1;
-		y = (yy+SWidth*factorY)%SWidth;
-	}else{
-		y = (yy+SWidth)%SWidth;
-	}
-	if (zz<0){
-		factorZ = -zz/SHeight+1;
-		z = (zz+SHeight*factorZ)%SHeight;
-	}else{
-		z = (zz+SHeight)%SHeight;
-	}
+  ProjectChargePositionOntoSiteNodeReferenceFrame(&x,&y,&z,xx,yy,zz,SLength,SWidth,SHeight);
 
 	//This is the random number used to determine which direction a charge hops
 	position = (double)rand() / RAND_MAX;
@@ -855,10 +803,6 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 	int z;
 	int ID;
 
-	int factorX;
-	int factorY;
-	int factorZ;
-
 	double position;
 	double position2;
 
@@ -867,38 +811,15 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 	flag1 = 0;
 	flag2 = 0;
 
-	factorX = 0;
-	factorY = 0;
-	factorZ = 0;
+  ProjectChargePositionOntoSiteNodeReferenceFrame(&x,&y,&z,getCx(*ch),getCy(*ch),getCz(*ch),\
+                                                  getAlen(snA),getAwid(snA),getAhei(snA));
 
-	if(getCx(*ch)<0){
-		factorX = -getCx(*ch)/getAlen(snA)+1;
-		x = (getCx(*ch)+getAlen(snA)*factorX)%getAlen(snA);
-	}else{
-		x = (getCx(*ch)+getAlen(snA))%getAlen(snA);
-	}
-	if(getCy(*ch)<0){
-		factorY = -getCy(*ch)/getAwid(snA)+1;
-		y = (getCy(*ch)+getAwid(snA)*factorY)%getAwid(snA);
-	}else{
-		y = (getCy(*ch)+getAwid(snA))%getAwid(snA);
-	}
-	if(getCz(*ch)<0){
-		factorZ = -getCz(*ch)/getAhei(snA)+1;
-		z = (getCz(*ch)+getAhei(snA)*factorZ)%getAhei(snA);
-	}else{
-		z = (getCz(*ch)+getAhei(snA))%getAhei(snA);
-	}
-
-	//printf("xx %d yy %d zz %d\n",getCx(*ch),getCy(*ch),getCz(*ch));
-	//printf("FactorX %d FactorY %d FactorZ %d\n",factorX, factorY,factorZ);
-	//printf("cx cy and cz divided by %d, %d and %d : %d %d %d\n",getAlen(snA), getAwid(snA), getAhei(snA), getCx(*ch)/getAlen(snA),getCy(*ch)/getAwid(snA),getCz(*ch)/getAhei(snA));
 	//newID does not change unless
 	//hop to a different position
-	ID = getIndex(snA, x,y,z);
+	ID     = getIndex(snA, x,y,z);
 	*newID = ID;
 
-	position = (double)((double)rand()/(double)RAND_MAX);
+	position  = (double)((double)rand()/(double)RAND_MAX);
 	position2 = (double)((double)rand()/(double)RAND_MAX);
 
 	*tim = 0;
@@ -923,9 +844,7 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 		//Value of rv
 		//1 - hopped off cluster
 		//0 - stayed within cluster
-		printf("ID %d position %g\n",ID,position);
 		rv = HopOnOffCluster(snA,ID,position);
-		printf("HopOnOffCluster\n");
 
 		if(rv==1){
 			timeflag = 2;
@@ -1000,13 +919,13 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 	}
 
 	if(timeflag==0){
-		SiteNode sn = getSNwithInd(snA,ID);
+		SiteNode sn    = getSNwithInd(snA,ID);
 		ClusterLL ClLL = (ClusterLL) getClusterList(sn);
-		*tim = getCluster_time(ClLL);
+		*tim           = getCluster_time(ClLL);
 	}else if(timeflag==1){
-		SiteNode sn = getSNwithInd(snA,ID);
+		SiteNode sn    = getSNwithInd(snA,ID);
 		ClusterLL ClLL = (ClusterLL) getClusterList(sn);
-		*tim = getCluster_time(ClLL)*20;
+		*tim           = getCluster_time(ClLL)*20;
 	}
 
 	return 0;
@@ -1015,41 +934,22 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 
 
 //Can use MakeHop when jumping off electrode but not when jumping on because (newID?)
-int MakeHop(SNarray snA, int newID, Charge *ch, int * totalX, int * totalY, int * totalZ,\
-		const int PeriodicX, const int PeriodicY, const int PeriodicZ,\
-		const int XElecOn, const int YElecOn, const int ZElecOn){
+int MakeHop(SNarray snA, int newID          , Charge *ch         , int * totalX       ,\
+    int * totalY       , int * totalZ       , const int PeriodicX, const int PeriodicY,\
+    const int PeriodicZ, const int XElecOn  , const int YElecOn  , const int ZElecOn  ){
 
 	//Now we need to correctly move the charge to
 	//the new position
-	int x, y, z;
-	int x1, y1, z1;
+	int x    , y    , z    ;
+	int x1   , y1   , z1   ;
 	int XDiff, YDiff, ZDiff;
-	int xD1, yD1, zD1;
-	int xD2, yD2, zD2;
+	int xD1  , yD1  , zD1  ;
+	int xD2  , yD2  , zD2  ;
 
-	int factorX=0;
-	int factorY=0;
-	int factorZ=0;
+  ProjectChargePositionOntoSiteNodeReferenceFrame(&x,&y,&z,getCx(*ch),getCy(*ch),getCz(*ch),\
+                                                  getAlen(snA), getAwid(snA), getAhei(snA));
 
-	if(getCx(*ch)<0){
-		factorX = -getCx(*ch)/getAlen(snA)+1;
-		x = (getCx(*ch)+getAlen(snA)*factorX)%getAlen(snA);
-	}else{
-		x = (getCx(*ch)+getAlen(snA))%getAlen(snA);
-	}
-	if(getCy(*ch)<0){
-		factorY = -getCy(*ch)/getAwid(snA)+1;
-		y = (getCy(*ch)+getAwid(snA)*factorY)%getAwid(snA);
-	}else{
-		y = (getCy(*ch)+getAwid(snA))%getAwid(snA);
-	}
-	if(getCz(*ch)<0){
-		factorZ = -getCz(*ch)/getAhei(snA)+1;
-		z = (getCz(*ch)+getAhei(snA)*factorZ)%getAhei(snA);
-	}else{
-		z = (getCz(*ch)+getAhei(snA))%getAhei(snA);
-	}
-
+  //This is the protocol for refering to the electrodes
 	//	getAtotal(snA) + 0 - (-x)
 	//	getAtotal(snA) + 1 - (+x)
 	//	getAtotal(snA) + 2 - (-y)
@@ -1093,8 +993,8 @@ int MakeHop(SNarray snA, int newID, Charge *ch, int * totalX, int * totalY, int 
 			//it has reached an electrode
 			if(PeriodicX==1 || XElecOn==1){
 				int SLength = getAlen(snA);
-				xD1 = (x1+SLength)-x;
-				xD2 = x1-(x+SLength);
+				xD1         = (x1+SLength)-x;
+				xD2         = x1-(x+SLength);
 				if( XDiff*XDiff<=xD1*xD1 && XDiff*XDiff<=xD2*xD2 ){
 					XDiff=XDiff;
 				}else if( xD1*xD1<=xD2*xD2 ){
@@ -1166,8 +1066,9 @@ int MakeHop(SNarray snA, int newID, Charge *ch, int * totalX, int * totalY, int 
 
 }
 
-int CheckPt_Test_TOF(int * CheckPtNum,int CheckFileExist, char * FileNameCheckPtVersion, int FileNameSize,\
-		const double Vx, const double Vy, const double Vz, const double Temperature){
+int CheckPt_Test_TOF(int * CheckPtNum, int CheckFileExist      , char * FileNameCheckPtVersion,\
+                     int FileNameSize, const double Vx         , const double Vy              ,\
+                     const double Vz , const double Temperature){
 
 
 	if(CheckFileExist==0){
@@ -1238,13 +1139,15 @@ int CheckPt_Test_CELIV(int * CheckPtNum,int CheckFileExist, char * FileNameCheck
 
 
 
-int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * FileName,\
-		long double * t, matrix * Sequence,\
-		ChargeArray * chA,matrix * FutureSite,ArbArray * ClArLL, SNarray * snA, ParameterFrame PF,\
-		double electricEnergyX, double electricEnergyY, double electricEnergyZ, int r,\
-		double Vx, double Vy, double Vz, double Temperature, long int * n, int * nc, int * nca,\
-		Electrode * elXb, Electrode * elXf, Electrode * elYl,\
-		Electrode * elYr, Electrode * elZb, Electrode * elZa){
+int Pre_randomWalk(const int CheckPtStatus  , char * FileNameCheckPtVersion, char * FileName       ,\
+		               long double * t          , matrix * Sequence            , ChargeArray * chA     ,\
+                   matrix * FutureSite      , ArbArray * ClArLL            , SNarray * snA         ,\
+                   ParameterFrame PF        ,	double electricEnergyX       , double electricEnergyY,\
+                   double electricEnergyZ   , int r                        , double Vx             ,\
+                   double Vy                , double Vz                    , double Temperature    ,\
+                   long int * n             , int * nc                     , int * nca             ,\
+		               Electrode * elXb         , Electrode * elXf             , Electrode * elYl      ,\
+		               Electrode * elYr         , Electrode * elZb             , Electrode * elZa      ){
 
 	//Declaring constants
 	//Boltzmann constant Units of [eV/K]
@@ -1253,76 +1156,77 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 	static const double hbar = 6.58211928E-16;
 
 	//Declaring Variables from parameter frame
-	int method;
-	int SLength;
-	int SWidth;
-	int SHeight;
-	int EndX;
-	int EndY;
-	int EndZ;
-	int XElecOn;
-	int YElecOn;
-	int ZElecOn;
-	int Ntot;
-	int NCh;
+	int    method;
+	int    SLength;
+	int    SWidth;
+	int    SHeight;
+	int    EndX;
+	int    EndY;
+	int    EndZ;
+	int    XElecOn;
+	int    YElecOn;
+	int    ZElecOn;
+	int    Ntot;
+	int    NCh;
+  int    ClusterAlg;
 	double AttemptToHop;
 	double reOrgEnergy;
 	double gamma;
 	double SiteDistance;
 
 	//Declaring local variables
-	int loop;
-	int clusterfileExist;
-	int Num_elXf;
-	int Num_elXb;
-	int Num_elYl;
-	int Num_elYr;
-	int Num_elZb;
-	int Num_elZa;
+	int    loop;
+	int    clusterfileExist;
+	int    Num_elXf;
+	int    Num_elXb;
+	int    Num_elYl;
+	int    Num_elYr;
+	int    Num_elZb;
+	int    Num_elZa;
 	double MarcusJ0;
 	double MarcusCoeff;
 	double KT;
-	int OrderL;
+	int    OrderL;
 
 	//Initializing Variables from parameter frame
-	method = PFget_method(PF);
-	SLength = PFget_Len(PF);
-	SWidth = PFget_Wid(PF);
-	SHeight = PFget_Hei(PF);
-	EndX = PFget_EndX(PF);
-	EndY = PFget_EndY(PF);
-	EndZ = PFget_EndZ(PF);
-	XElecOn = PFget_XElecOn(PF);
-	YElecOn = PFget_YElecOn(PF);
-	ZElecOn = PFget_ZElecOn(PF);
-	Ntot = PFget_Ntot(PF);
-	NCh = PFget_NCh(PF);
+	method       = PFget_method(PF);
+	SLength      = PFget_Len(PF);
+	SWidth       = PFget_Wid(PF);
+	SHeight      = PFget_Hei(PF);
+	EndX         = PFget_EndX(PF);
+	EndY         = PFget_EndY(PF);
+	EndZ         = PFget_EndZ(PF);
+	XElecOn      = PFget_XElecOn(PF);
+	YElecOn      = PFget_YElecOn(PF);
+	ZElecOn      = PFget_ZElecOn(PF);
+	Ntot         = PFget_Ntot(PF);
+	NCh          = PFget_NCh(PF);
+  ClusterAlg   = PFget_ClusterAlg(PF);
 	AttemptToHop = PFget_AttemptToHop(PF);
-	reOrgEnergy = PFget_reOrg(PF);
-	gamma = PFget_gamma(PF);
+	reOrgEnergy  = PFget_reOrg(PF);
+	gamma        = PFget_gamma(PF);
 	SiteDistance = PFget_SiteDist(PF);
 
 	//Initializing Local variables
-	KT = kB*Temperature;
+	KT   = kB*Temperature;
 	*snA = newSNarray(SLength, SWidth, SHeight);
 
 	//is equivalent to the marcus coefficient at 300 K
-	MarcusJ0 = pow( AttemptToHop*hbar*pow(4*reOrgEnergy*kB*300/M_PI,1/2),1/2);
+	MarcusJ0    = pow( AttemptToHop*hbar*pow(4*reOrgEnergy*kB*300/M_PI,1/2),1/2);
 	//Calculating full Marcus Coefficient;
 	MarcusCoeff = pow(MarcusJ0,2)/hbar * pow(M_PI/(4*reOrgEnergy*KT),1/2)*exp(-2*gamma*SiteDistance);
 
 	//This means we are starting from scratch
 	if(method==0){
 		
-		*Sequence = newMatrix(Ntot,1);
+		*Sequence     = newMatrix(Ntot,1);
 		(*FutureSite) = newMatrix(Ntot,1);
-		/*int rv = printMatrix(*FutureSite);
-		printf("Value of Ntot %d\n",Ntot);
-		if(rv==-1){
-			printf("ERROR FutureSite problem!\n");
-			exit(1);
-		}
-		*/
+		//printf("Value of Ntot %d\n",Ntot);
+		//if(rv==-1){
+		//	printf("ERROR FutureSite problem!\n");
+		//	exit(1);
+		//}
+		
 		if(FutureSite==NULL){
 			printf("ERROR FutureSite NULL\n");
 			exit(1);
@@ -1334,7 +1238,7 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 			//create new energies
 			clusterfileExist = CheckPt_Cluster_TOF(Vx, Vy, Vz, Temperature, r);
 
-			if(clusterfileExist==0 && PFget_ClusterAlg(PF)!=0){
+			if(clusterfileExist==0 && ClusterAlg!=0){
 				//The cluster file exists already so lets just load what was saved
 				LoadCluster_Data( &FileName[0], &OrderL, snA, electricEnergyX,\
 						electricEnergyY, electricEnergyZ, ClArLL, KT);
@@ -1357,7 +1261,15 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 			printf("Initializing Charges\n");
 			*chA = initCharget0( *Sequence, *snA,  Ntot, NCh,\
 					XElecOn, YElecOn, ZElecOn,EndX, EndY, EndZ);
-
+      
+      //If the cluster algorithme is turned on we will allow 
+      //charges to contain a link list that keeps up with 
+      //how often a charge hops to a site, not applicable for
+      //CELIV method because rates change too much
+      //this is only applicaple for ClusterAlg 2
+      if(ClusterAlg==2 && method==0){
+        initChargeArrayPath(*chA, PFget_ClusterAlgRec(PF));  
+      }
 			//t - global time initially 0 when starting from scratch
 			//n - number of steps that charges have been injected starts at 1
 			//nc - Number of charges initially in the system equal to the Number
@@ -1383,31 +1295,35 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 				return -1;
 			}
 
-			if(clusterfileExist==-1 && PFget_ClusterAlg(PF)!=0){
-				//Go ahead and calculate clusters and save
-				FindCluster( &OrderL, (*snA), electricEnergyX,\
-						electricEnergyY, electricEnergyZ,\
-						ClArLL,KT,PF);
+// This code is obsolete Ben showed that it was not optimal to 
+// determine clusters before running the simulations we will
+// keep it turned on though for comparitive purposes
 
-				ConnectClusterElec( ClArLL,\
-						(*elXb), (*elXf), (*elYl), (*elYr),\
-						(*elZb), (*elZa) );
+    if(clusterfileExist==-1 && PFget_ClusterAlg(PF)==1){
+      //Go ahead and calculate clusters and save
+      FindCluster( &OrderL, (*snA), electricEnergyX,\
+          electricEnergyY, electricEnergyZ,\
+          ClArLL,KT,PF);
 
-				SaveCluster( &FileName[0], OrderL, (*snA), electricEnergyX,\
-						electricEnergyY, electricEnergyZ, (*ClArLL), KT, PF,
-						*elXb, *elXf, *elYl, *elYr, *elZb, *elZa);
+      ConnectClusterElec( ClArLL,\
+          (*elXb), (*elXf), (*elYl), (*elYr),\
+          (*elZb), (*elZa) );
 
-				PrintFile_xyz(OrderL, (*snA), ClArLL, &FileName[0]);
-				printFileEnergy((*snA), &FileName[0], electricEnergyX,\
+      SaveCluster( &FileName[0], OrderL, (*snA), electricEnergyX,\
+          electricEnergyY, electricEnergyZ, (*ClArLL), KT, PF,
+          *elXb, *elXf, *elYl, *elYr, *elZb, *elZa);
+
+      PrintFile_xyz(OrderL, (*snA), ClArLL, &FileName[0]);
+      printFileEnergy((*snA), &FileName[0], electricEnergyX,\
+          electricEnergyY, electricEnergyZ,PF);
+
+      PrintNeighFile_xyz(OrderL, (*snA), ClArLL, &FileName[0]);
+
+    }
+      
+        printFileEnergy((*snA), &FileName[0], electricEnergyX,\
 						electricEnergyY, electricEnergyZ,PF);
-
-				PrintNeighFile_xyz(OrderL, (*snA), ClArLL, &FileName[0]);
-				//printMatrix(*FutureSite);
-
-			}else{
-				printFileEnergy((*snA), &FileName[0], electricEnergyX,\
-						electricEnergyY, electricEnergyZ,PF);
-			}
+		
 
 
 		}else if(CheckPtStatus==1) {
@@ -1535,24 +1451,22 @@ int Pre_randomWalk(const int CheckPtStatus,char * FileNameCheckPtVersion,char * 
 
 			printFileEnergy((*snA), &FileName[0], electricEnergyX,\
 					electricEnergyY, electricEnergyZ,PF);
-			//printMatrix(*FutureSite);
 
 		}else if(CheckPtStatus!=1) {
-			printf("CELIV method has not been setup to run from a chkpt file\n");
-			printf("or anything other than the parameter.txt file as of now.\n");
-			exit(1);
+      printf("CELIV method has not been setup to run from a chkpt file\n");
+      printf("or anything other than the parameter.txt file as of now.\n");
+      exit(1);
 		}
 
 
 	}
 
-	/*printf("Printing Future site matrix at end of Pre_randomWalk\n");
-	int rv = printMatrix(*FutureSite);
-	if(FutureSite==NULL || rv==-1){
-		printf("FutureSite is NULL\n");
-		exit(1);
-	}
-	*/
+//printf("Printing Future site matrix at end of Pre_randomWalk\n");
+//	if(FutureSite==NULL || rv==-1){
+//		printf("FutureSite is NULL\n");
+//		exit(1);
+//	}
+
 	if(FutureSite==NULL){
 		printf("ERROR FutureSite is NULL\n");
 		exit(1);
@@ -1565,12 +1479,10 @@ int Post_randomWalk(ArbArray ClArLL, SNarray snA, Electrode elXb, Electrode elXf
 		Electrode elYl, Electrode elYr, Electrode elZb, Electrode elZa,ParameterFrame PF){
 
 
+  int ClusterAlg = PFget_ClusterAlg(PF);
+
 	if(snA==NULL){
 		printf("ERROR snA found to be NULL\n");
-		return -1;
-	}
-	if(ClArLL==NULL && PFget_ClusterAlg(PF)!=0){
-		printf("ERROR ClArLL found to be NULL\n");
 		return -1;
 	}
 
@@ -1580,7 +1492,7 @@ int Post_randomWalk(ArbArray ClArLL, SNarray snA, Electrode elXb, Electrode elXf
 	printf("Deleting Electrodes\n");
 	if (elXb!=NULL){
 		snAmini = (SNarray) getElectrode_AdjacentSites(elXb);
-		deleteSNarray(snAmini);
+		deleteSNarray(&snAmini);
 		mtxmini = (matrix) getElectrode_HopRates(elXb);
 		deleteMatrix(&mtxmini);
 		deleteElectrode(&elXb);
@@ -1588,17 +1500,16 @@ int Post_randomWalk(ArbArray ClArLL, SNarray snA, Electrode elXb, Electrode elXf
 	}
 	if (elXf!=NULL){
 		snAmini = (SNarray) getElectrode_AdjacentSites(elXf);
-		deleteSNarray(snAmini);
+		deleteSNarray(&snAmini);
 		mtxmini = (matrix) getElectrode_HopRates(elXf);
 		deleteMatrix(&mtxmini);
 		deleteElectrode(&elXf);
 		elXf = NULL;
 	}
 
-
 	if (elYl!=NULL){
 		snAmini = (SNarray) getElectrode_AdjacentSites(elYl);
-		deleteSNarray(snAmini);
+		deleteSNarray(&snAmini);
 		mtxmini = (matrix) getElectrode_HopRates(elYl);
 		deleteMatrix(&mtxmini);
 		deleteElectrode(&elYl);
@@ -1606,7 +1517,7 @@ int Post_randomWalk(ArbArray ClArLL, SNarray snA, Electrode elXb, Electrode elXf
 	}
 	if (elYr!=NULL){
 		snAmini = (SNarray) getElectrode_AdjacentSites(elYr);
-		deleteSNarray(snAmini);
+		deleteSNarray(&snAmini);
 		mtxmini = (matrix) getElectrode_HopRates(elYr);
 		deleteMatrix(&mtxmini);
 		deleteElectrode(&elYr);
@@ -1614,7 +1525,7 @@ int Post_randomWalk(ArbArray ClArLL, SNarray snA, Electrode elXb, Electrode elXf
 	}
 	if (elZb!=NULL){
 		snAmini = (SNarray) getElectrode_AdjacentSites(elZb);
-		deleteSNarray(snAmini);
+		deleteSNarray(&snAmini);
 		mtxmini = (matrix) getElectrode_HopRates(elZb);
 		deleteMatrix(&mtxmini);
 		deleteElectrode(&elZb);
@@ -1623,19 +1534,21 @@ int Post_randomWalk(ArbArray ClArLL, SNarray snA, Electrode elXb, Electrode elXf
 
 	if (elZa!=NULL){
 		snAmini = (SNarray) getElectrode_AdjacentSites(elZa);
-		deleteSNarray(snAmini);
+		deleteSNarray(&snAmini);
 		mtxmini = (matrix) getElectrode_HopRates(elZa);
 		deleteMatrix(&mtxmini);
 		deleteElectrode(&elZa);
 		elZa = NULL;
 	}
 
-	if(PFget_ClusterAlg(PF)!=0){
+	if(ClusterAlg>=1 && ClArLL!=NULL){
+  //If no clusters are formed ClusterAlg could be
+  //NULL
 		printf("Deleteting Cluster Arbitrary Array Link List\n");
 		deleteArbArray(&ClArLL);
 	}
 	printf("Deleting SiteNode array\n");
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	return 0;
 }
@@ -1661,9 +1574,6 @@ int initFutureSite( SNarray * snA, matrix * FutureSite,ChargeArray * chA, Parame
 
 	//Declaring local variables
 	int loop;
-	int factorX;
-	int factorY;
-	int factorZ;
 	int x;
 	int y;
 	int z;
@@ -1676,9 +1586,9 @@ int initFutureSite( SNarray * snA, matrix * FutureSite,ChargeArray * chA, Parame
 	SLength = PFget_Len(PF);
 	SWidth = PFget_Wid(PF);
 	SHeight = PFget_Hei(PF);
-	PeriodicX = PFget_Px(PF);
-	PeriodicY = PFget_Py(PF);
-	PeriodicZ = PFget_Pz(PF);
+  PeriodicX = PFget_Px(PF);
+  PeriodicY = PFget_Py(PF);
+  PeriodicZ = PFget_Pz(PF);
 	EndX = PFget_EndX(PF);
 	EndY = PFget_EndY(PF);
 	EndZ = PFget_EndZ(PF);
@@ -1691,28 +1601,8 @@ int initFutureSite( SNarray * snA, matrix * FutureSite,ChargeArray * chA, Parame
 
 		one = getCharge(*chA,loop);
 
-		factorX = 0;
-		factorY = 0;
-		factorZ = 0;
-
-		if(getCx(one)<0){
-			factorX = -getCx(one)/SLength+1;
-			x = (getCx(one)+SLength*factorX)%SLength;
-		}else{
-			x = (getCx(one)+SLength)%SLength;
-		}
-		if(getCy(one)<0){
-			factorY = -getCy(one)/SWidth+1;
-			y = (getCy(one)+SWidth*factorY)%SWidth;
-		}else{
-			y = (getCy(one)+SWidth)%SWidth;
-		}
-		if(getCz(one)<0){
-			factorZ = -getCz(one)/SHeight+1;
-			z = (getCz(one)+SHeight*factorZ)%SHeight;
-		}else{
-			z = (getCz(one)+SHeight)%SHeight;
-		}
+    ProjectChargePositionOntoSiteNodeReferenceFrame(&x,&y,&z,getCx(one),getCy(one),getCz(one),\
+                                                    SLength, SWidth, SHeight);
 
 		site = getSN(*snA,x,y,z);
 		if( x==0  && XElecOn==1 ){
@@ -1729,8 +1619,6 @@ int initFutureSite( SNarray * snA, matrix * FutureSite,ChargeArray * chA, Parame
 		setE(*FutureSite,loop+1,1,future);
 	}
 
-	//printMatrix(*FutureSite);
-
 	return 0;
 }
 
@@ -1741,12 +1629,20 @@ int randomWalk( SNarray snA,int CheckptNum,\
 		Electrode elYr, Electrode elZb, Electrode elZa,\
 		ParameterFrame PF,long double t,matrix Sequence,\
 		matrix FutureSite,ChargeArray * chA,\
-		long int n,int nc,int nca, double Temperature){
+		long int n,int nc,int nca, double Temperature,\
+    ArbArray * ClArLL){
 
+  #ifdef _ERROR_CHECKING_ON_
 	if(FutureSite==NULL){
-		printf("ERROR Future site matrix found to be NULL on entering randomWalk\n");
-		return -1;
+    #ifdef _ERROR_
+		fprintf(stderr,"ERROR Future site matrix found to be NULL on entering randomWalk\n");
+		#endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
 	}
+  #endif
 
 	//Boltzmann constant Units of [eV/K]
 	static const double kB = 8.6173324E-5;
@@ -1761,45 +1657,46 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	//n - Number of time steps that have passed where charges are injected
 	//nc - Number of charges in the system
 	//nca - Number of charges that are currently active
-	int method = PFget_method(PF);
-	double Tcv = PFget_Tcv(PF);
-	double Vcv = PFget_Vcv(PF);
-	double Tlag = PFget_Tlag(PF);
-	double TStep = PFget_TStep(PF);
-	int TCount = PFget_TCount(PF);
-	int Time_check = PFget_Time_check(PF);
-	int Nstep_av = PFget_Nstep_av(PF);
-	int NCh = PFget_NCh(PF);
-	double D = PFget_D(PF);
-	int XElecOn = PFget_XElecOn(PF);
-	int YElecOn = PFget_YElecOn(PF);
-	int ZElecOn = PFget_ZElecOn(PF);
-	int EndX = PFget_EndX(PF);
-	int EndY = PFget_EndY(PF);
-	int EndZ = PFget_EndZ(PF);
-	int PeriodicX = PFget_Px(PF);
-	int PeriodicY = PFget_Py(PF);
-	int PeriodicZ = PFget_Pz(PF);
-	double SiteDistance = PFget_SiteDist(PF);
-	int MovieFrames = PFget_MovieFrames(PF);
-	long double CutOffTime = (long double) PFget_CutOffTime(PF);
-
+	int method             = PFget_method(PF);
+	double Tcv             = PFget_Tcv(PF);
+	double Vcv             = PFget_Vcv(PF);
+	double Tlag            = PFget_Tlag(PF);
+	double TStep           = PFget_TStep(PF);
+	int TCount             = PFget_TCount(PF);
+	int Time_check         = PFget_Time_check(PF);
+	int Nstep_av           = PFget_Nstep_av(PF);
+	int NCh                = PFget_NCh(PF);
+	double D               = PFget_D(PF);
+	int XElecOn            = PFget_XElecOn(PF);
+	int YElecOn            = PFget_YElecOn(PF);
+	int ZElecOn            = PFget_ZElecOn(PF);
+	int EndX               = PFget_EndX(PF);
+	int EndY               = PFget_EndY(PF);
+	int EndZ               = PFget_EndZ(PF);
+	int PeriodicX          = PFget_Px(PF);
+	int PeriodicY          = PFget_Py(PF);
+	int PeriodicZ          = PFget_Pz(PF);
+	double SiteDistance    = PFget_SiteDist(PF);
+	int MovieFrames        = PFget_MovieFrames(PF);
+  long double CutOffTime = (long double) PFget_CutOffTime(PF);
+  int ClusterAlg         = PFget_ClusterAlg(PF);
+  int ClusterAlgTrigger  = PFget_ClusterAlgTrigger(PF);
 	//FILE * EndPtFile = NULL;
 	//FILE * PathFile = NULL;
 	//FILE * LogFile = NULL;
 
-	/*if(PFget_EndPtFile(PF)==1){
-		EndPtFile = openEndPtFile(FileName);
-		printf("Opening End Pt File\n");
-		if(EndPtFile == NULL){
-			printf("End Pt File is NULL\n");
-			exit(1);
-		}
-	}
-	if(PFget_PathFile(PF)==1 && PFget_NumChargesTrack(PF)!=0){
-		PathFile = openPathFile(FileName);
-	}
-	*/
+//if(PFget_EndPtFile(PF)==1){
+//		EndPtFile = openEndPtFile(FileName);
+//		printf("Opening End Pt File\n");
+//		if(EndPtFile == NULL){
+//			printf("End Pt File is NULL\n");
+//			exit(1);
+//		}
+//	}
+//	if(PFget_PathFile(PF)==1 && PFget_NumChargesTrack(PF)!=0){
+//		PathFile = openPathFile(FileName);
+//	}
+	
 	printf("will crash here if MovieFrames is 0\n");
 	assert(MovieFrames!=0);
 
@@ -1827,7 +1724,8 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	int Ntot = NCh*TCount;
 	//printf("NTot %d NCh %d\n",Ntot,NCh);
 	int flag;
-	int SaveCount;
+	int ClusterFlag;
+  int SaveCount;
 	//Movie start point
 	int Movie = (int) ((double)t/((double)TStep*(double)Nstep_av));
 
@@ -1868,20 +1766,16 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	int Zdrain;
 	int Zsource;
 
-	int ChargeCheck;
 	int CurrentInc;
 	int TotalCollected;
 	int ElecExit;
 	int ChargeID;
 	int future;
 	int JumpFromElec;
+  int trigger;
 
 	long double SaveTime;
 	double ran;
-
-	int factorX;
-	int factorY;
-	int factorZ;
 
 	int TrackX;
 	int TrackY;
@@ -1901,24 +1795,34 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	double MarcusJ0;
 	double MarcusCoeff;
 	double KT;
-	double Vx;
-	double Energy;
+  double Vx;
+  double Energy;
 
 	double tim;
 	long double CELIV_totalT = (long double)(Tlag + Tcv);
 
-	int rv;
-	int ID;
-	int ID2;
-	Charge one;
-	Charge two;
-	Charge three;
-	SiteNode site;
+	int      ID;
+	int      ID2;
+	int      SiteID;
+  int      SiteID_1;
+  int      SiteID_2;
+  int      ClusterID;
+  int      Global_ClusterID;          //Keeps track of the ids of the 
+  int      ConsecutiveFlag;
+                                      //clusters as they are created
+  ClusterLL AllClLL;
+  ClusterLL ClLL;
+  Charge    one;
+	Charge    two;
+	Charge    three;
+	SiteNode  site;
 
+  SiteNode sn1;
+  SiteNode sn2;
 	NumAvgVel = 0;
 
 	SLength = getAlen(snA);
-	SWidth = getAwid(snA);
+	SWidth  = getAwid(snA);
 	SHeight = getAhei(snA);
 
 	//Calculate Current 
@@ -1928,21 +1832,21 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 	//Keeps track of current in X, Y and Z direction
 	//during time increment
-	TotalX = 0;
-	TotalY = 0;
-	TotalZ = 0;
-	TrackX = 0;
-	TrackY = 0;
-	TrackZ = 0;
+	TotalX     = 0;
+	TotalY     = 0;
+	TotalZ     = 0;
+	TrackX     = 0;
+	TrackY     = 0;
+	TrackZ     = 0;
 	CurrentInc = 1;
 	TimeTrack1 = 0;
 
 	//Create source and drain for all electrodes that are turned on
-	matrix Xelec_Drain = newMatrix(8,1);
+	matrix Xelec_Drain  = newMatrix(8,1);
 	matrix Xelec_Source = newMatrix(8,1);
-	matrix Yelec_Drain = newMatrix(8,1);
+	matrix Yelec_Drain  = newMatrix(8,1);
 	matrix Yelec_Source = newMatrix(8,1);
-	matrix Zelec_Drain = newMatrix(8,1);
+	matrix Zelec_Drain  = newMatrix(8,1);
 	matrix Zelec_Source = newMatrix(8,1);
 
 	//Drift Velocities should be in units of [m/s]
@@ -1967,14 +1871,14 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	//printf("Value of nca %d\n",nca);
 	//Initilize number of charges reaching source
 	//and drian to 0
-	Xdrain = 0;
+	Xdrain  = 0;
 	Xsource = 0;
-	Ydrain = 0;
+	Ydrain  = 0;
 	Ysource = 0;
-	Zdrain = 0;
+	Zdrain  = 0;
 	Zsource = 0;
 	
-	FailedHop = 0;
+	FailedHop       = 0;
 	TotalHopAttempt = 0;
 
 	TotalVelX = 0;
@@ -1983,11 +1887,18 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 	//Continue looping while n is less than the TCount
 	//or if there are still charges in the system
-	SaveCount = 1;
-	SaveTime = 0;
-	tim = TStep;
+	SaveCount        = 1;
+	SaveTime         = 0;
+	tim              = TStep;
+  Global_ClusterID = 1;
+	AllClLL          = NULL;
+  ClLL             = NULL;
+  
+  electricEnergyX = SiteDistance*ElectricFieldX;
+  electricEnergyY = SiteDistance*ElectricFieldY;
+  electricEnergyZ = SiteDistance*ElectricFieldZ;
 	
-	//If CELIV method is specified calculate ramp rate
+  //If CELIV method is specified calculate ramp rate
 	if(method==1){
 		Vramp = Vcv/Tcv;
 		KT = kB*Temperature;
@@ -1995,8 +1906,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
 		MarcusJ0 = pow( PFget_AttemptToHop(PF)*hbar*pow(4*PFget_reOrg(PF)*kB*300/M_PI,1/2),1/2);
 		//Calculating full Marcus Coefficient;
 		MarcusCoeff = pow(MarcusJ0,2)/hbar * pow(M_PI/(4*PFget_reOrg(PF)*KT),1/2)*exp(-2*PFget_gamma(PF)*PFget_SiteDist(PF));
-		electricEnergyY = 0;
-		electricEnergyZ = 0;
 		//Need to define matrices containing energies of sites next to electrodes
 		Xb1 = newMatrix(SWidth,SHeight);
 		Xb2 = newMatrix(SWidth,SHeight);
@@ -2041,37 +1950,24 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 	}
 
+  SiteNode tempSN = NULL;
+  matrix MasterM;
+  //This is only needed if the second cluster Alg
+  //is turned on
+  if (ClusterAlg==2){
+    MasterM = CalculateAllHops(snA, electricEnergyX, electricEnergyY, electricEnergyZ,\
+          kB*Temperature,PFget_reOrg(PF), SiteDistance, PFget_AttemptToHop(PF), PFget_gamma(PF),\
+                PeriodicX, PeriodicY, PeriodicZ);
+  }
 
 	while( (n<TCount || nca>0) && t<CutOffTime && ((t<=CELIV_totalT && method==1) || method==0) ){
 
 		//If no charges have been inserted in the system we will
 		//simply increment the time
-
-		//printf("nca %d nc %d elXb %d elXf %d\n",nca,nc,getElectrode_Charges(elXb),getElectrode_Charges(elXf));
-		ChargeCheck = nc;
-		if(XElecOn==1){
-			ChargeCheck = ChargeCheck+getElectrode_Charges(elXb);
-		}
-		if(YElecOn==1){
-			ChargeCheck = ChargeCheck+getElectrode_Charges(elYl);
-		}
-		if(ZElecOn==1){
-			ChargeCheck = ChargeCheck+getElectrode_Charges(elZb);
-		}
-			
-		if( ChargeCheck != nca){
-			printf("nc %d elXb %d ",nc,getElectrode_Charges(elXb));
-			printf("elYl %d elZb %d\n",getElectrode_Charges(elYl),getElectrode_Charges(elZb));
-			printf("Charges lost somehow ChargeCheck %d nca %d!\n",ChargeCheck,nca);
-			exit(1);
-		}
-
-		//if((double)t==(double)TimeTrack1){
-		//	printf("t==TimeTrack\n");
-		//	exit(1);
-		//}
-
-		if (nca==0){
+		CheckConservationCharges(elXb   , elYl    , elZb   ,\
+                             nca    , XElecOn , YElecOn,\
+                             ZElecOn, nc);
+    if (nca==0){
 
 			//Should be the Step time
 			tim = TStep;
@@ -2128,8 +2024,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 				SaveCount++;
 
-				//printf("SaveTime %Lg TStep %g SaveCount %d Nstep_av %d Movie %d MovieFrames %d\n",SaveTime,TStep,SaveCount,Nstep_av,Movie,MovieFrames);
-
 				if((SaveCount%Nstep_av)==0 ){
 					SaveCount = 1;
 					SaveTime = fmod(SaveTime, (long double)TStep);
@@ -2145,15 +2039,12 @@ int randomWalk( SNarray snA,int CheckptNum,\
 							ElectricFieldX, ElectricFieldY, ElectricFieldZ,\
 							FileName);
 					if(Movie<MovieFrames){
-						//printf("Should have entered the printMovie Routine\n");
 						printMovie(&Movie,t,FileName,snA,PF);
-						
-						
 					}
 				}
 
-				time(&later);
-				seconds = difftime(later,now);
+        time(&later);
+        seconds = difftime(later,now);
 
 				if(seconds>(double)(Time_check*60)){
 					time(&now);
@@ -2175,43 +2066,20 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				exit(1);
 			}
 
-			//printf("Number of charges in sample %d active charges %d time %Lg\n",nc,nca, t);
-			//printf("Grabbing Charge %d Value of nca %d\n",ChargeID, nca);
-			//printf("ID of charge %d Position of Charge %d %d %d\n",ChargeID,getCx(one),getCy(one),getCz(one));
 			if(getCx(one)<-1 || getCx(one)>SLength){
 				printf("Charge position less than -1 or greater than SLength %d\n",SLength);
 				exit(1);
 			}
 
-			//*********************REGARDLESS OF HOP OR NOT*******************************************
+			// *********************REGARDLESS OF HOP OR NOT*******************************************
 
 			//Attempt to make the charge hop to site 
 			//that was previously determined. If site is
 			//occupied return -1. If site unoccupied hop and
 			//return 0
 
-			factorX=0;
-			factorY=0;
-			factorZ=0;
-
-			if(getCx(one)<0){
-				factorX = -getCx(one)/SLength+1;
-				x1 = (getCx(one)+SLength*factorX)%SLength;
-			}else{
-				x1 = (getCx(one)+SLength)%SLength;
-			}
-			if(getCy(one)<0){
-				factorY = -getCy(one)/SWidth+1;
-				y1 = (getCy(one)+SWidth*factorY)%SWidth;
-			}else{
-				y1 = (getCy(one)+SWidth)%SWidth;
-			}
-			if(getCz(one)<0){
-				factorZ = -getCz(one)/SHeight+1;
-				z1 = (getCz(one)+SHeight*factorZ)%SHeight;
-			}else{
-				z1 = (getCz(one)+SHeight)%SHeight;
-			}
+      ProjectChargePositionOntoSiteNodeReferenceFrame(&x1,&y1,&z1,getCx(one),getCy(one),getCz(one),\
+                                                      SLength,SWidth, SHeight);
 
 			//Coordinates of charge before hop
 			PrevX = getCx(one);
@@ -2235,7 +2103,12 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			TotalZtemp = TotalZ;
 
 			//Function accounts for hops within system from electrodes
-			//and two electrodes
+			//and two electrodes.
+      //The function MakeHop is very important this is where the charge
+      //acctually moves, the potential site is held in getE(FutureSite,ChargeID+1,1)
+      //it will however only move if the future site is not already occupied.
+      //flag - 0 if sucessful
+      //flag - 1 if site is already occupied
 	
 			flag = MakeHop(snA, getE(FutureSite,ChargeID+1,1),\
 					&one, &TotalXtemp, &TotalYtemp, &TotalZtemp,\
@@ -2285,31 +2158,195 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				if (TotalZ!=TotalZtemp){
 					TrackZ +=(TotalZtemp-TotalZ);
 				}
-
 				//Reinitialize TotalX
 				TotalX = TotalXtemp;
 				TotalY = TotalYtemp;
 				TotalZ = TotalZtemp;
+        
+        /* This is only applicable for the second
+         * cluster algorithm 
+         */
+        if(ClusterAlg==2 && method==0){
+          //At this point we want to ignore the electrodes
+          //the electrodes all have id's greater than getAtotal(snA)
+          if(getE(FutureSite,ChargeID+1,1)<getAtotal(snA)){
+            //We are updating the charge path linklist
+            //getE(FutureSite,ChargeID+1,1) contains the id of the site that
+            //the charge just hopped to
+
+            //If the site is already a cluster use the cluster id
+            SiteID = getE(FutureSite,ChargeID+1,1);
+          
+            if( checkSNconnectedCluster(getSNwithInd(snA,SiteID))==1){
+              //The sitenode is connected to a cluster
+              ClusterID = getCluster_id(getClusterList(getSNwithInd(snA,SiteID)));
+            }else{
+              //The SN is not connected to a cluster so the default
+              //ClusterID of -1 is used
+              ClusterID=-1;
+            }
+            printf("SiteID %d, ClusterID %d\n",SiteID,ClusterID);
+            updatePath(snA, one,SiteID,ClusterID);   
+            //Testing to see if the chargte has been hopping back and
+            //forth between sites and is stuck, ClusterAlgTrigger indicates
+            //how many hops need to occur back and forth before something
+            //is done.
+            trigger = triggerMatch(one, ClusterAlgTrigger);
+            if(trigger>=2){
+              printf("Trigger Pulled\n");
+              //This means this is a good spot to look for a cluster
+              //hopefully by doing this the code will be more optimized
+              //and it will prevent charges from constantly hopping back
+              //and forth between sites.
+              
+              //Step 1 is to determine if the sites are located right 
+              //next to each other as well as their IDs.
+              ConsecutiveFlag = getIDsOfTwoOfMostFrequentlyVisitedSites(one, &SiteID_1,&SiteID_2);
+              sn1 = getSNwithInd(snA,SiteID_1);
+              sn2 = getSNwithInd(snA,SiteID_2);
+               
+              if(ConsecutiveFlag==0){
+                //Step 2 is to determine if one or both of the sites are already
+                //considered part of a cluster.
+                ClusterFlag = DetermineClusterStatus(sn1,sn2);   
+
+                if(ClusterFlag==0){
+                   printf("Both sites part of cluster %d %d\n",SiteID_1,SiteID_2);
+                //A. If both are part of a different cluster
+                //Step 3 Join the clusters, when joined
+                //the clusters will take the smallest id
+                  if(checkSNconnectedSameCluster(sn1,sn2)==0){
+                    printf("Merging Clusters\n");
+                    mergeClusterLLGivenSiteNodeIDs(AllClLL,snA,MasterM,SiteID_1,\
+                                SiteID_2,PF);
+                    //We also need to reset the memory of the charge
+                    //so it does not keep triggering the cluster algorithme
+                    //We will do this by setting all the visit values to 1
+                    resetChargePathVisit(one,1.0); 
+                  printf("ClusterAlgStep 0\n");
+                  }
+                }else if(ClusterFlag==1){
+                //B. If the first site is part of a cluster
+                //Step 3 Join the site too the cluster
+                  printf("Site %d part of cluster Site %d not\n",SiteID_1,SiteID_2);
+                  printf("ClusterAlgStep 1\n");
+                  ClLL = getClusterGivenClusterID(AllClLL,getClusterIDGivenSiteNodeID(snA,SiteID_1));
+                  addNodeEndClusterLL(ClLL,SiteID_2); 
+                  
+                  //Initialize sitenode so it points to a cluter
+                  tempSN = getSNwithInd(snA,SiteID_2);
+                  setDataStruc(&tempSN,1,(void *)ClLL);
+                  //We also need to reset the memory of the charge
+                  //so it does not keep triggering the cluster algorithme
+                  //We will do this by setting all the visit values to 1
+                  resetChargePathVisit(one,1.0); 
+
+                  //Remove all evidence of nieghbor nodes because they need to 
+                  //be recalculated from scratch
+                  deleteClusterLL_NeighNodes(&ClLL);
+                  //Determine how nodes within Cluster are orientated to
+                  //each other.
+                  DetermineNodeOrientationSingleCluster(&ClLL, snA );
+                //Calculate the Neighboring Nodes for the Cluster
+                  CalculateNeighNodesForSingleClusterLL(ClLL,snA,PeriodicX,PeriodicY,PeriodicZ);
+                //Caluculate the sum And P values of the Cluster
+                  CalculateSumAndPGivenSingleClusterLL(snA, ClLL, MasterM, PFget_Attempts(PF),\
+                                                    PeriodicX, PeriodicY, PeriodicZ); 
+                }else if(ClusterFlag==2){
+                //C. If the second site is part of a cluster
+                //Step 3 Join the site too the cluster
+                  printf("Site %d part of cluster Site %d not\n",SiteID_2,SiteID_1);
+                  printf("ClusterAlgStep 2\n");
+                  ClLL = getClusterGivenClusterID(AllClLL,getClusterIDGivenSiteNodeID(snA,SiteID_2));
+                  addNodeEndClusterLL(ClLL,SiteID_1);
+                  
+                  //Initialize sitenode so it points to a cluter
+                  tempSN = getSNwithInd(snA,SiteID_1);
+                  setDataStruc(&tempSN,1,(void *)ClLL);
+                  //We also need to reset the memory of the charge
+                  //so it does not keep triggering the cluster algorithme
+                  //We will do this by setting all the visit values to 1
+                  resetChargePathVisit(one,1.0); 
+
+                  //Remove all evidence of neighbor nodes because they need to 
+                  //be recalculated from scratch
+                  deleteClusterLL_NeighNodes(&ClLL);
+                  //Determine how nodes within Cluster are orientated to
+                  //each other.
+                  DetermineNodeOrientationSingleCluster(&ClLL, snA );
+
+                //Calculate the Neighboring Nodes for the Cluster
+                  CalculateNeighNodesForSingleClusterLL(ClLL,snA,PeriodicX,PeriodicY,PeriodicZ);
+                //Caluculate the sum And P values of the Cluster
+                  CalculateSumAndPGivenSingleClusterLL(snA, ClLL, MasterM, PFget_Attempts(PF),\
+                                                    PeriodicX, PeriodicY, PeriodicZ); 
+                }else if(ClusterFlag==3){
+                  printf("Neither site %d or site %d part of cluster\n",SiteID_1,SiteID_2);
+                  printf("ClusterAlgStep 3\n");
+                //D. If none are part of the cluster
+                //Step 3 create a new cluster
+                  ClLL = newClusterLL(Global_ClusterID);
+                  addNodesToClusterGivenSites(ClLL,SiteID_1,SiteID_2);
+                //Determine how nodes within Cluster are orientated to
+                //each other.
+                  DetermineNodeOrientationSingleCluster(&ClLL, snA );
+                //Calculate the Neighboring Nodes for the Cluster
+                  CalculateNeighNodesForSingleClusterLL(ClLL,snA,PeriodicX,PeriodicY,PeriodicZ);
+                //Caluculate the sum And P values of the Cluster
+                  CalculateSumAndPGivenSingleClusterLL(snA, ClLL, MasterM, PFget_Attempts(PF),\
+                                                    PeriodicX, PeriodicY, PeriodicZ); 
+                  Global_ClusterID++;
+                  if(AllClLL==NULL){
+                    //This would mean it is the first cluster to be
+                    //stored
+                    *ClArLL = newArbArray(1,1);
+                    AllClLL = ClLL;
+                    setArbElement(*ClArLL,0,(void *) AllClLL);
+                  }else{
+                    //If it is not the first cluster to be stored
+                    //we will append it to the end of the cluster 
+                    //link list
+                    appendClusterLL(AllClLL,ClLL);
+                  }
+
+                  //Finally we need to now acknowledge that the sites
+                  //are connected to clusters
+                  tempSN = getSNwithInd(snA,SiteID_1);
+                  setDataStruc(&tempSN,1,(void *)ClLL);
+                  tempSN = getSNwithInd(snA,SiteID_2);
+                  setDataStruc(&tempSN,1,(void *)ClLL);
+                  //We also need to reset the memory of the charge
+                  //so it does not keep triggering the cluster algorithme
+                  //We will do this by setting all the visit values to 1
+                  resetChargePathVisit(one,1.0); 
+                }
+                //If none of the above if statements were triggered it
+                //means that the flag==4 and both sites are already connected
+                //to the same cluster we will do nothing
+              }
+            }
+          }
+        }//End of ClusterAlg==2 segment
 			}else{
 				//Hop failed because site was occupied
-				FailedHop++;
+				printf("Failed Hop\n");
+        FailedHop++;
 			}
 				
 			//t is incremented after the charge hops
 			//the global time is increased
 			if(t==(long double)t+tim){
-				printf("Exceeded precision t==t+tim\n");
-				printf("t %Le tim %g\n",t,tim);
+				fprintf(stderr,"ERROR Exceeded precision t==t+tim\n");
+				fprintf(stderr,"t %Le tim %g\n",t,tim);
 				exit(1);
 			}
 			t += (long double) tim;
 
 			if(tim==0){
-				printf("Error tim is 0\n");
-				printf("TimeTrack1 %Lg t %Lg\n",TimeTrack1,t);
+				fprintf(stderr,"Error tim is 0\n");
+				fprintf(stderr,"TimeTrack1 %Lg t %Lg\n",TimeTrack1,t);
 				exit(1);
 			}
-
 			SaveTime += (long double)tim;
 			//The time the charge has been in the sample is updated
 			Plust(one,(long double) tim);
@@ -2381,8 +2418,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
 						//printf("Should have entered the printMovie Routine\n");
 						printMovie(&Movie,t,FileName,snA,PF);
 					}
-					//printMatrix(System);
-					//printMatrix(timeArray);
 
 				}
 
@@ -2412,7 +2447,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				MinusDwel(two,tim);
 				UpdateOccTime(&snA, &two,tim, PF);
 			}
-			//*********************************************************************//
+			// *********************************************************************
 
 			//This is used to keep track of whether or not the charge exited at
 			//an electrode or not
@@ -2451,7 +2486,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			yy = getCy(one);
 			zz = getCz(one);
 
-			//Checik if a charge has arrived at the front or back electrode
+			//Check if a charge has arrived at the front or back electrode
 			//If it has updates the following parameters:
 			//	Velocities
 			//	NumAvgVel
@@ -2472,29 +2507,9 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					&nc,&ElecExit,\
 					PeriodicX, PeriodicY, PeriodicZ);	
 
-			factorX = 0;
-			factorY = 0;
-			factorZ = 0;
 
-			//Finding position of charge on sites
-			if(xx<0){
-				factorX = -xx/SLength+1;
-				x = (xx+SLength*factorX)%SLength;
-			}else{
-				x = (xx+SLength)%SLength;
-			}
-			if(yy<0){
-				factorY = -yy/SWidth+1;
-				y = (yy+SWidth*factorY)%SWidth;
-			}else{
-				y = (yy+SWidth)%SWidth;
-			}
-			if(zz<0){
-				factorZ = -zz/SHeight+1;
-				z = (zz+SHeight*factorZ)%SHeight;
-			}else{
-				z = (zz+SHeight)%SHeight;
-			}
+       ProjectChargePositionOntoSiteNodeReferenceFrame(&x, &y, &z, xx, yy, zz,\
+                                                     SLength, SWidth, SHeight);
 
 			////////////////////////////////////////////////////////////////////////
 			//Determining Next hop
@@ -2502,91 +2517,91 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			//Before future hop has been determined, tim of hop is 0
 			tim=0;
 			//printf("Middle Value of t %Lg\n",t);
-
 			//Did not hop to electrode
 			if(ElecExit==0){
-				//printf("No hop\n");
-				//Site jumped too
-				site = getSN(snA, x,y,z);
-				//Set the DwelStat of new site with the id of 
-				//the charge that just jumped
-				setDwelStat(site,ChargeID);
+        //printf("No hop\n");
+        //Site jumped too
+        site = getSN(snA, x,y,z);
+        //Set the DwelStat of new site with the id of 
+        //the charge that just jumped
+        setDwelStat(site,ChargeID);
 
-				//Check to see if new site is part of a cluster
-				ClusterYes=getType(site);
+        //Check to see if new site is part of a cluster
+        ClusterYes=getType(site);
+        //Determine future hopping site
+        if(ClusterYes==1){
+          printf("Site Part of Cluster\n");
+          //If site is part of a cluster ensure that the site
+          //is not next to an electrode
+          ClusterHopCheck(PeriodicX, PeriodicY, PeriodicZ,\
+              SLength, SWidth, SHeight,\
+              EndX, EndY, EndZ,\
+              x, y, z, site,\
+              xx, yy, zz,\
+              &CheckX, &CheckY, &CheckZ);
+          printf("CheckX %d CheckY %d CheckZ %d\n",CheckX,CheckY,CheckZ);
+          if(CheckX==1 || CheckY==1 || CheckZ==1){
+            //This means near the edge of a sample where 
+            //there is an electrode cannot use cluster 
+            //approximation
 
-				//Determine future hopping site
-				if(ClusterYes==1){
-					//If site is part of a cluster ensure that the site
-					//is not next to an electrode
-					ClusterHopCheck(PeriodicX, PeriodicY, PeriodicZ,\
-							SLength, SWidth, SHeight,\
-							EndX, EndY, EndZ,\
-							x, y, z, site,\
-							xx, yy, zz,\
-							&CheckX, &CheckY, &CheckZ);
+            if( x==0  && XElecOn==1 ){
+              HopToElecX(snA, elXb, &one, &future, EndY, EndZ);
+              getLoc(&x,&y,&z,future,snA);
+              tim = 1/getsum(getSN(snA,x,y,z));
+            }else if( y==0 && YElecOn==1){
+              HopToElecY(snA, elYl, &one, &future, EndX, EndZ);
+              getLoc(&x,&y,&z,future,snA);
+              tim = 1/getsum(getSN(snA,x,y,z));
+            }else if( z==0 && ZElecOn==1){
+              HopToElecZ(snA, elZb, &one, &future, EndX, EndY);
+              getLoc(&x,&y,&z,future,snA);
+              tim = 1/getsum(getSN(snA,x,y,z));
+            }else{
+              
+              SiteHop(snA, &one, site, &future, EndX, EndY,EndZ,\
+                  XElecOn,YElecOn,ZElecOn, PeriodicX,PeriodicY, PeriodicZ);
+              getLoc(&x,&y,&z,future,snA);
+              tim = 1/getsum(getSN(snA,x,y,z));
+            }
 
-					if(CheckX==1 || CheckY==1 || CheckZ==1){
-						//This means near the edge of a sample where 
-						//there is an electrode cannot use cluster 
-						//approximation
+          }else{
+            //Future Hop To Cluster or Site using cluster algorithm
+            ClusterHop(snA, &one, &tim, &future);
+            printf("Future Hop %d\n",future);
+            getLoc(&x,&y,&z,future,snA);
+          }
 
-						if( x==0  && XElecOn==1 ){
-							HopToElecX(snA, elXb, &one, &future, EndY, EndZ);
-							getLoc(&x,&y,&z,future,snA);
-							tim = 1/getsum(getSN(snA,x,y,z));
-						}else if( y==0 && YElecOn==1){
-							HopToElecY(snA, elYl, &one, &future, EndX, EndZ);
-							getLoc(&x,&y,&z,future,snA);
-							tim = 1/getsum(getSN(snA,x,y,z));
-						}else if( z==0 && ZElecOn==1){
-							HopToElecZ(snA, elZb, &one, &future, EndX, EndY);
-							getLoc(&x,&y,&z,future,snA);
-							tim = 1/getsum(getSN(snA,x,y,z));
-						}else{
-							//Future Hop To Cluster or Site using cluster algorithm
-							ClusterHop(snA, &one, &tim, &future);
-						}
+        }else{
+          //Future Hop To Cluster or Site
+          SiteHop(snA, &one, site, &future, EndX, EndY,EndZ,\
+              XElecOn,YElecOn,ZElecOn, PeriodicX,PeriodicY, PeriodicZ);
+          getLoc(&x,&y,&z,future,snA);
+          tim = 1/getsum(getSN(snA,x,y,z));
 
+        }
 
-					}else{
+        //Having chosen future site recording it
+        setE(FutureSite,ChargeID+1,1,future);
 
-						//Future Hop To Cluster or Site
-						SiteHop(snA, &one, site, &future, EndX, EndY,EndZ,\
-								XElecOn,YElecOn,ZElecOn, PeriodicX,PeriodicY, PeriodicZ);
-						getLoc(&x,&y,&z,future,snA);
-						tim = 1/getsum(getSN(snA,x,y,z));
-					}
-				}else{
-					//Future Hop To Cluster or Site
-					SiteHop(snA, &one, site, &future, EndX, EndY,EndZ,\
-							XElecOn,YElecOn,ZElecOn, PeriodicX,PeriodicY, PeriodicZ);
-					getLoc(&x,&y,&z,future,snA);
-					tim = 1/getsum(getSN(snA,x,y,z));
+        do{ran = rand();}while(ran == 0 || ran == RAND_MAX);
+        //The waiting time of the charge is updated based on
+        //it's location and a random number
+        //printf("Setting dwel site %lg\n",tim);
+        setDwel(one, -log((double) ran/RAND_MAX)*tim);
 
-				}
+        if(tim>1){
+          printf("tim %g\n",tim);
+          printf("WARNING setDwel huge\n");
+        }
 
-				//Having chosen future site recording it
-				setE(FutureSite,ChargeID+1,1,future);
-
-				do{ran = rand();}while(ran == 0 || ran == RAND_MAX);
-				//The waiting time of the charge is updated based on
-				//it's location and a random number
-				//printf("Setting dwel site %lg\n",tim);
-				setDwel(one, -log((double) ran/RAND_MAX)*tim);
-
-				if(tim>1){
-					printf("tim %g\n",tim);
-					printf("WARNING setDwel huge\n");
-				}
-
-				//The location of the charge in the sequence is updated
-				insertDwelltimePos(nca, *chA, &Sequence);
-			}else{
+        //The location of the charge in the sequence is updated
+        insertDwelltimePos(nca, *chA, &Sequence);
+      }else{
 				//printf("Yes Hopped to Electrode\n");
 				//If the charge jumped to an electrode it will now have to jump
 				//from the electrode back into the system
-				if(xx == -1 && EndX!=0){
+        if(xx == -1 && EndX!=0){
 					//Hopping from back Electrode
 					//Updating dwell time of charge
 					ElecHopOffX(elXb, &future, snA);
@@ -2604,15 +2619,15 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					//mobility
 					if(PFget_EndPtFile(PF)!=0){
 						//printf("Print to end Pt file X\n");
-						/*if(EndPtFile==NULL){
-							printf("End pt file is found to be NULL\n");
-							exit(1);
-						}*/
+						//if(EndPtFile==NULL){
+						//	printf("End pt file is found to be NULL\n");
+						//	exit(1);
+						//}
 						printToEndPtFile( FileName, xx, yy, zz, ChargeID, t);
 						//printf("Finished Printing to end pt file\n");
 					}
 					ChargeClosure(elXf, &one, &Sequence, &nc, &nca, &TotalCollected, Ntot);
-					rv = getE(Sequence,1,1);
+					getE(Sequence,1,1);
 					
 					ID2 = getE(Sequence,1,1);
 
@@ -2708,6 +2723,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					XElecOn, YElecOn, ZElecOn,\
 					EndX, EndY, EndZ);
 
+      
 			//Add to the number of charges that are 
 			//already in the system
 
@@ -2780,6 +2796,9 @@ int randomWalk( SNarray snA,int CheckptNum,\
 		deleteMatrix(&Xf1);
 		deleteMatrix(&Xf2);
 	}
+  if (ClusterAlg==2){
+    deleteMatrix(&MasterM);
+  }
 	deleteChargeA(*chA);
 	deleteMatrix(&timeArray);
 	deleteMatrix(&Xcurrent);
@@ -2794,8 +2813,8 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	deleteMatrix(&Xvelocity);
 	deleteMatrix(&Yvelocity);
 	deleteMatrix(&Zvelocity);
-	deleteMatrix(&System);
-	deleteMatrix(&Sequence);
+  deleteMatrix(&System);
+  deleteMatrix(&Sequence);
 	deleteMatrix(&FutureSite);
 	return 0;
 }
@@ -2820,7 +2839,7 @@ int UpdateOccTime(SNarray * snA,Charge * ch, double time, ParameterFrame PF){
 	int ZElecOn;
 
 	SLength = PFget_Len(PF);
-	SWidth = PFget_Wid(PF);
+	SWidth  = PFget_Wid(PF);
 	SHeight = PFget_Hei(PF);
 
 	i = getCx(*ch);
@@ -2867,23 +2886,23 @@ int CheckPt_exist(char * File, int buffersize){
 	}
 
 	struct stat st;
-	char FileName[256];
-	char FileEx[20];
-	char FileNameKeep[256];
-	int len;
-	int i;
+	char   FileName[256];
+	char   FileEx[20];
+	char   FileNameKeep[256];
+	int    len;
+	int    i;
 
 	int CheckFileExist;
 	//Determines if there is a checkpoint file
 	//What is the highest number of the checkpointfile
 
 	//Initialize file to Null pointer
-	File[0] = '\0';
+	File[0]        = '\0';
 	CheckFileExist = 0;
 
 	if(stat("CHECKPOINT",&st)==0){
 		//CHECKPOINT directory does exist
-		DIR *d;
+		DIR    *d;
 		struct dirent *dir;
 		d = opendir("CHECKPOINT");
 		if(d) {
@@ -2937,9 +2956,10 @@ int CheckPt_Cluster_TOF(const double Vx,const double Vy,const double Vz,const do
 	}
 
 	struct stat st;
-	char FileName[256];
-	FILE *file;
-	FileName[0] = '\0';
+	char   FileName[256];
+	FILE   *file;
+	
+  FileName[0] = '\0';
  	sprintf(FileName,"CHECKFILE/DataT%gVx%gVy%gVz%gR%d",T,Vx,Vy,Vz,r);
 
 	if(stat("CLUSTERFILE",&st)==0){
@@ -2975,7 +2995,8 @@ int CheckPt_Latest_TOF(char * FileNameFull, int buffersize, const double Vx,cons
 	}
 
 	struct stat st;
-	char FileName[256];
+	
+  char FileName[256];
 	char FileEx[20];
 	char CheckNum[30];
 	char CheckVx[30] = "";
@@ -2987,8 +3008,10 @@ int CheckPt_Latest_TOF(char * FileNameFull, int buffersize, const double Vx,cons
 	double ChVy;
 	double ChVz;
 	double ChT;
-	char FileNameKeep[256];
-	int len;
+	
+  char FileNameKeep[256];
+	
+  int len;
 	int stop1;
 	int stop2;
 	int stop3;
@@ -3003,14 +3026,14 @@ int CheckPt_Latest_TOF(char * FileNameFull, int buffersize, const double Vx,cons
 	int keep;
 
 	//Initialize file to Null pointer
-	FileName[0] = '\0';
+	FileName[0]     = '\0';
 	FileNameFull[0] = '\0';
-	CheckFileExist = 0;
+	CheckFileExist  = 0;
 
 	ChVx = 0.0;
 	ChVy = 0.0;
 	ChVz = 0.0;
-	ChT = 0.0;
+	ChT  = 0.0;
 
 	if(stat("CHECKPOINT",&st)==0){
 		//CHECKPOINT directory does exist
@@ -3019,7 +3042,7 @@ int CheckPt_Latest_TOF(char * FileNameFull, int buffersize, const double Vx,cons
 		d = opendir("CHECKPOINT");
 		if(d) {
 
-			num = 0;
+			num  = 0;
 			keep = 0;
 			while((dir = readdir(d))!=NULL){
 
@@ -3148,7 +3171,8 @@ int CheckPt_Latest_CELIV(char * FileNameFull, int buffersize,const double T){
 	}
 
 	struct stat st;
-	char FileName[256];
+	
+  char FileName[256];
 	char FileEx[20];
 	char CheckNum[30];
 	char CheckVx[30] = "";
@@ -3160,8 +3184,10 @@ int CheckPt_Latest_CELIV(char * FileNameFull, int buffersize,const double T){
 	double ChVy;
 	double ChVz;
 	double ChT;
-	char FileNameKeep[256];
-	int len;
+	
+  char FileNameKeep[256];
+	
+  int len;
 	int stop1;
 	int stop2;
 	int stop3;
@@ -3176,14 +3202,14 @@ int CheckPt_Latest_CELIV(char * FileNameFull, int buffersize,const double T){
 	int keep;
 
 	//Initialize file to Null pointer
-	FileName[0] = '\0';
+	FileName[0]     = '\0';
 	FileNameFull[0] = '\0';
-	CheckFileExist = 0;
+	CheckFileExist  = 0;
 
 	ChVx = 0.0;
 	ChVy = 0.0;
 	ChVz = 0.0;
-	ChT = 0.0;
+	ChT  = 0.0;
 
 	if(stat("CHECKPOINT",&st)==0){
 		//CHECKPOINT directory does exist
@@ -3192,7 +3218,7 @@ int CheckPt_Latest_CELIV(char * FileNameFull, int buffersize,const double T){
 		d = opendir("CHECKPOINT");
 		if(d) {
 
-			num = 0;
+			num  = 0;
 			keep = 0;
 			while((dir = readdir(d))!=NULL){
 
@@ -3309,10 +3335,12 @@ int CheckPt_Latest_CELIV(char * FileNameFull, int buffersize,const double T){
 	}
 }
 
-int Load_CheckPt(long double * t, SNarray * snA, ChargeArray * chA, matrix * Sequence,\
-		matrix * FutureSite, char * FileName, ParameterFrame *PF,long int *n, int * nc, int *nca,\
-		int * Num_elXb, int * Num_elXf, int * Num_elYl, int * Num_elYr, int * Num_elZb,\
-		int * Num_elZa){
+int Load_CheckPt(long double * t     , SNarray * snA      , ChargeArray * chA     ,\
+                 matrix * Sequence   , matrix * FutureSite, char * FileName       ,\
+                 ParameterFrame *PF  , long int *n        , int * nc              ,\
+                 int *nca            , int * Num_elXb     , int * Num_elXf        ,\
+                 int * Num_elYl      , int * Num_elYr     , int * Num_elZb        ,\
+                 int * Num_elZa      ){
 
 
 	//Boltzmann constant Units of [eV/K]
@@ -3335,19 +3363,21 @@ int Load_CheckPt(long double * t, SNarray * snA, ChargeArray * chA, matrix * Seq
 	//int check;
 	//unsigned int position;
 	long int intvar0;
-	int intvar;
-	int intvar2;
-	double doublevar;
+	int      intvar;
+	int      intvar2;
+	double   doublevar;
 
 	int Ntot;
 	int i;
 	int Max;
 	int ii, jj, kk;
 	int Xdist;
-	double Energy;
+	
+  double Energy;
 	double dwellTime;
 	double Time;
-	int Occupancy;
+	
+  int Occupancy;
 	int VisFreq;
 	int Vis;
 
@@ -3729,7 +3759,6 @@ int Load_CheckPt(long double * t, SNarray * snA, ChargeArray * chA, matrix * Seq
 
 			printf("Last value of rv %d\n",intvar);
 			printf("Load_CheckPt Printing FutureSite");
-			//printMatrix(**FutureSite);
 
 			//Read in the number of Charges on an electrode
 			fgets(bufRead,256,CheckIn);
@@ -4134,7 +4163,6 @@ int Load_CheckPt_Data_TOF(long double * t, SNarray * snA, ChargeArray * chA, mat
 
 			printf("Last value of rv %d\n",intvar);
 			printf("Load_CheckPt Printing FutureSite");
-			//printMatrix(**FutureSite);
 
 			//Read in the number of Charges on an electrode
 			fgets(bufRead,256,CheckIn);
@@ -4580,16 +4608,16 @@ int Save_CheckPt(char * FileName, int * CheckptNum, SNarray snA,\
 		fprintf(CheckOut,"alphaYr %f\n",PFget_alphayr(PF)/1E9);
 		fprintf(CheckOut,"alphaZb %f\n",PFget_alphazb(PF)/1E9);
 		fprintf(CheckOut,"alphaZa %f\n\n",PFget_alphaza(PF)/1E9);
-		/*
-			 fprintf(CheckOut,"//Define the work function of the electrodes [eV]\n");
-			 fprintf(CheckOut,"workX %f\n",PFget_);
-			 fprintf(CheckOut,"workY %f\n",PFget_);
-			 fprintf(CheckOut,"workZ %f\n\n",PFget_);
-			 fprintf(CheckOut,"//Define the electron affinity of medium [eV]\n");
-			 fprintf(CheckOut,"electronAffin %f\n",electronAffin);
-			 fprintf(CheckOut,"//Define the ionization energy of medium [eV]\n");
-			 fprintf(CheckOut,"ionizationEnergy %f\n\n",ionizationEnergy);
-		 */
+	  
+		//	 fprintf(CheckOut,"//Define the work function of the electrodes [eV]\n");
+		//	 fprintf(CheckOut,"workX %f\n",PFget_);
+		//	 fprintf(CheckOut,"workY %f\n",PFget_);
+		//	 fprintf(CheckOut,"workZ %f\n\n",PFget_);
+		//	 fprintf(CheckOut,"//Define the electron affinity of medium [eV]\n");
+		//	 fprintf(CheckOut,"electronAffin %f\n",electronAffin);
+		//	 fprintf(CheckOut,"//Define the ionization energy of medium [eV]\n");
+		//	 fprintf(CheckOut,"ionizationEnergy %f\n\n",ionizationEnergy);
+		 
 		fprintf(CheckOut,"//Relative permittivity of medium\n");
 		fprintf(CheckOut,"RelativePermittivity %f\n\n",PFget_RelativePerm(PF));
 
@@ -4808,7 +4836,7 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 	if(timeArray==NULL || Xcurrent==NULL || Ycurrent==NULL || Zcurrent==NULL ||\
 			Xelec_Drain==NULL || Yelec_Drain==NULL || Zelec_Drain==NULL ||\
 			Xelec_Source==NULL || Yelec_Source==NULL || Zelec_Source==NULL){
-		return -1;
+    return -1;
 	}
 	int i;
 
@@ -4828,13 +4856,13 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 		printf("Error! unable to open X.txt\n");
 	}else{
 		if(XElecOn == 1){
-			/*printf("Number of Rows of timeArray %d\n",getRows(timeArray));
-			printf("Number of Rows of Xcurrent %d\n",getRows(Xcurrent));
-			printf("Number of Rows of Xvelocity %d\n",getRows(Xvelocity));
-			printf("Number of Rows of System %d\n",getRows(System));
-			printf("Number of Rows of Xelec_Drain %d\n",getRows(Xelec_Drain));
-			printf("Number of Rows of Xelec_Source %d\n",getRows(Xelec_Source));
-	*/
+			//printf("Number of Rows of timeArray %d\n",getRows(timeArray));
+			//printf("Number of Rows of Xcurrent %d\n",getRows(Xcurrent));
+			//printf("Number of Rows of Xvelocity %d\n",getRows(Xvelocity));
+			//printf("Number of Rows of System %d\n",getRows(System));
+			//printf("Number of Rows of Xelec_Drain %d\n",getRows(Xelec_Drain));
+			//printf("Number of Rows of Xelec_Source %d\n",getRows(Xelec_Source));
+
 			for(i=1;i<=getRows(timeArray);i++){
 				if(getE(timeArray,i,1)!=0){
 
@@ -5012,9 +5040,9 @@ int insertDwelltimePos(const int nca, ChargeArray chA, matrix * Sequence){
 	int high;
 	int middle;
 	int ID;
-	int newID;
-	Charge chi;
-	Charge chj;
+  int newID;
+  Charge chi;
+  Charge chj;
 
 	//Charge id of first charge is the sequence
 	ID = getE(*Sequence,1,1);
@@ -5067,8 +5095,8 @@ int SaveDataPoint(int * CurrentInc, int * NumAvgVel, int nc, int XElecOn, int YE
 		char * FileName){
 
 	int rv;
-	double q = 1.602E-19;
-	double val;
+  double q = 1.602E-19;
+  double val;
 	double vel;
 
 	//Might need to resize the matrix if it becomes to large
@@ -5378,58 +5406,78 @@ int ClusterHopCheck(const int PeriodicX, const int PeriodicY, const int Periodic
 	*CheckZ = 0;
 
 	if(PeriodicX==1){
-		rv = getCluster_elecXid((ClusterLL) getClusterList(site));
-		if(x/SLength==0){
-			//Check to see if next to the back electrode
-			if(rv==2 || rv==0){
-				(*CheckX)=1;
-			}else{
-				(*CheckX)=0;
-			}
-		}else if(Cx/SLength==(EndX-1) || Cx/SLength==EndX){
-			//Check to see if next to the front electrode
-			if(rv==2 || rv==1){
-				(*CheckX)=1;
-			}else{
-				(*CheckX)=0;
-			}
-		}
+  
+    //If it is defined that means there is an electrode
+    if(checkCluster_elecXdefined((ClusterLL)getClusterList(site))){
+      // rv of 0 means not located adjacent to cluster
+      // rv of 1 means located next to back electrode
+      // rv of 2 means located next to front electrode
+      rv = getCluster_elecXid((ClusterLL) getClusterList(site));
+      if(((double)x)/((double)SLength)==0.0){
+        //Check to see if next to the back electrode
+        if(rv==2 || rv==1){
+          //Cluster Hop is not allowed
+          (*CheckX)=1;
+        }else{
+          (*CheckX)=0;
+        }
+      }else if((double)Cx/((double)SLength)==(double)(EndX-1) || 
+               (double)Cx/((double)SLength)==(double)EndX){
+        //Check to see if next to the front electrode
+        if(rv==2 || rv==1){
+          //if The charge is on the leading edge we have
+          //to check both electrodes to see if cluster
+          //hop is allowed if either is true it is not
+          //allowed
+          (*CheckX)=1;
+        }else{
+          (*CheckX)=0;
+        }
+      }
+    }
 	}
-	if(PeriodicY==1){
-		rv = getCluster_elecYid((ClusterLL) getClusterList(site));
-		if(y/SWidth==0){
-			//Check if next to left electrode
-			if(rv==2 || rv==0){
-				(*CheckY)=1;
-			}else{
-				(*CheckY)=0;
-			}
-		}else if(Cy/SWidth==(EndY-1) || Cy/SWidth==EndY){
-			//Check if next to right electrode
-			if(rv==2 || rv==1){
-				(*CheckY)=1;
-			}else{
-				(*CheckY)=0;
-			}
-		}
-	}
-	if(PeriodicZ==1){
-		rv = getCluster_elecZid((ClusterLL) getClusterList(site));
+  if(PeriodicY==1){
+    if(checkCluster_elecYdefined((ClusterLL)getClusterList(site))){
+      rv = getCluster_elecYid((ClusterLL) getClusterList(site));
+      if((double)y/((double)SWidth)==0.0){
+        //Check if next to left electrode
+        if(rv==2 || rv==1){
+          (*CheckY)=1;
+        }else{
+          (*CheckY)=0;
+        }
+      }else if((double)Cy/((double)SWidth)==(double)(EndY-1) || 
+               (double)Cy/((double)SWidth)==(double)EndY){
+        //Check if next to right electrode
+        if(rv==2 || rv==1){
+          (*CheckY)=1;
+        }else{
+          (*CheckY)=0;
+        }
+      }
+    }
+  }
+  if(PeriodicZ==1){
+    if(checkCluster_elecZdefined((ClusterLL)getClusterList(site))){
+      rv = getCluster_elecZid((ClusterLL) getClusterList(site));
 
-		if(z/SHeight==0){
-			if(rv==2 || rv==1){
-				(*CheckZ)=1;
-			}else{
-				(*CheckZ)=0;
-			}
-		}else if(Cz/SHeight==(EndZ-1) || Cz/SHeight==EndZ){
-			if(rv==2 || rv==1){
-				(*CheckZ)=1;
-			}else{
-				(*CheckZ)=0;
-			}
-		}
-	}
+      if((double)z/((double)SHeight)==0.0){
+        if(rv==2 || rv==1){
+          (*CheckZ)=1;
+        }else{
+          (*CheckZ)=0;
+        }
+      }else if((double)Cz/((double)SHeight)==(double)(EndZ-1) || 
+               (double)Cz/((double)SHeight)==(double)EndZ){
+        
+        if(rv==2 || rv==1){
+          (*CheckZ)=1;
+        }else{
+          (*CheckZ)=0;
+        }
+      }
+    }
+  }
 
 	return 0;
 }
@@ -5988,3 +6036,58 @@ int printFileEnergy(const_SNarray snA, char * FileName,\
 	return 0;
 }
 
+int CheckConservationCharges( Electrode elXb,Electrode elYl,Electrode elZb,\
+                             int nca        ,int XElecOn   ,int YElecOn   ,int ZElecOn   ,\
+                             int nc){
+
+  int ChargeCheck = nc;
+  if(XElecOn==1){
+    ChargeCheck = ChargeCheck+getElectrode_Charges(elXb);
+  }
+  if(YElecOn==1){
+    ChargeCheck = ChargeCheck+getElectrode_Charges(elYl);
+  }
+  if(ZElecOn==1){
+    ChargeCheck = ChargeCheck+getElectrode_Charges(elZb);
+  }
+  if( ChargeCheck != nca){
+    #ifdef _ERROR_
+    fprintf(stderr,"nc %d elXb %d ",nc,getElectrode_Charges(elXb));
+    fprintf(stderr,"elYl %d elZb %d\n",getElectrode_Charges(elYl),getElectrode_Charges(elZb));
+    fprintf(stderr,"Charges lost somehow ChargeCheck %d nca %d!\n",ChargeCheck,nca);
+    #endif
+    exit(1);
+  }
+  return 0;
+}
+
+int ProjectChargePositionOntoSiteNodeReferenceFrame(int *x     , int *y    , int *z     ,\
+                                                    int xx     , int yy    , int zz     ,\
+                                                    int SLength, int SWidth, int SHeight){
+
+  int factorX = 0;
+  int factorY = 0;
+  int factorZ = 0;
+
+  //Finding position of charge on sites
+  if(xx<0){
+    factorX = -xx/SLength+1;
+    *x = (xx+SLength*factorX)%SLength;
+  }else{
+    *x = (xx+SLength)%SLength;
+  }
+  if(yy<0){
+    factorY = -yy/SWidth+1;
+    *y = (yy+SWidth*factorY)%SWidth;
+  }else{
+    *y = (yy+SWidth)%SWidth;
+  }
+  if(zz<0){
+    factorZ = -zz/SHeight+1;
+    *z = (zz+SHeight*factorZ)%SHeight;
+  }else{
+    *z = (zz+SHeight)%SHeight;
+  }
+
+  return 0;
+}

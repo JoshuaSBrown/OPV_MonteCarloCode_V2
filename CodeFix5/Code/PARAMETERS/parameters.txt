@@ -4,7 +4,7 @@
 method 0 
 
 //Number of nodes along the x-axis, y-axis and z-axis
-SLength 15
+SLength 10
 SWidth 15
 SHeight 15
 
@@ -102,7 +102,7 @@ D 20E14
 TCount 1
 
 //Number of charges injected per time step
-NCh 10
+NCh 1
 
 //Total number of charges passed through the system
 Ntot TCount*NCh
@@ -119,8 +119,10 @@ Time_check 240
 //Number of iterations with different random seeds
 Rcount 1
 
-//Turn on Cluster Algorithm 2, Leave off 0, whatever is optimal 1
-ClusterAlg 0
+//Turn on Cluster Algorithm 2, Leave off 0, old ClusterAlg 1
+ClusterAlg 2
+ClusterAlgRec 4
+ClusterAlgTrigger 20
 
 //Defines the cutoff radius for the correlation function
 //CutOffDistance CutOff*lambda
@@ -142,8 +144,10 @@ ScaleAfterCorr 1
 //		 to describe the seed energies.
 SeedProt 2
 //How many numerical iterations should be used to approximate
-//cluster behavior (Default to 15% should be less than 5% error)
-Attempts 15
+//cluster behavior per Node. If I have 5 nodes 5*attempts 
+//will be used to numerically predict the probability
+//(Default to 3, should lead to less than 5% error)
+Attempts 3
 
 //What fraction of sites act as seeds
 fracSeed 0.4

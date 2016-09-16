@@ -3,15 +3,16 @@
 #include <time.h>
 #include <math.h>
 
-#include "../CHARGE/charge.h"
-#include "../MEM/mem.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/SITENODE/sitenode.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/MATRIX/matrix.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/clusterfunctions.h"
-#include "../CLUSTER/CLUSTERFUNCTIONS/DATASTRUCT/cluster.h"
-#include "../CLUSTER/CLUSTERSITENODE/clustersitenode.h"
-#include "../FUNCTIONS/functions.h"
 #include "chargetransport.h"
+#include "../CHARGE/charge.h"
+#include "../SITENODE/sitenode.h"
+#include "../MATRIX/matrix.h"
+#include "../PARAMETERS/read.h"
+#include "../CLUSTERFUNCTIONS/clusterfunctions.h"
+#include "../CLUSTER/cluster.h"
+#include "../ELECTRODE/electrode.h"
+#include "../CLUSTERSITENODE/clustersitenode.h"
+#include "../FUNCTIONS/functions.h"
 
 int main(void){
 
@@ -116,6 +117,8 @@ int main(void){
 	//Planck constant Units of [eV s]
 	static const double hbar = 6.58211928E-16;
 	double KT;
+  
+  SNarray TempSNarray;
 
 	KT = 1;
 
@@ -299,12 +302,12 @@ int main(void){
 
 	ArbArray Arb2 = SortOrderMag(TotalOrders2, OrderL2, mpA2);
 	printArbArray(Arb2,OrderL2);
-	ArbArray ArClLL2 = ClusterSort( TotalOrders2, OrderL2, Arb2);
+	ArbArray ArClLL2 = ClusterSort( TotalOrders2, Arb2);
 	//printArbArray(ArClLL2,OrderL2);
 	FilterCluster( TotalOrders2, OrderL2, MasterM2, &ArClLL2, snA2,\
 			PeriodicX2, PeriodicY2, PeriodicZ2,\
 			XElecOn2, YElecOn2, ZElecOn2);
-	CalculateNeighNodes(TotalOrders2, OrderL2, &ArClLL2, snA2, PeriodicX2, PeriodicY2, PeriodicZ2);
+	CalculateNeighNodes(TotalOrders2, &ArClLL2, snA2, PeriodicX2, PeriodicY2, PeriodicZ2);
 	CalculateSumAndP(TotalOrders2, snA2, &ArClLL2, MasterM2, attempts, PeriodicX2, PeriodicY2, PeriodicZ2);
 	ConnectClusterSN(TotalOrders2, snA2, ArClLL2);
 
@@ -344,7 +347,7 @@ int main(void){
 	printf("Deleting Arb2\n");
 	deleteArbArray(&Arb2);	
 	printf("Deleting snA2\n");
-	deleteSNarray(snA2);
+	deleteSNarray(&snA2);
 	printf("Deleting mpA2\n");
 	deleteAllMidPointArray(&mpA2);
 	
@@ -379,12 +382,12 @@ int main(void){
 
 	Arb2 = SortOrderMag(TotalOrders2, OrderL2, mpA2);
 	printArbArray(Arb2,OrderL2);
-	ArClLL2 = ClusterSort( TotalOrders2, OrderL2, Arb2);
+	ArClLL2 = ClusterSort( TotalOrders2, Arb2);
 	//printArbArray(ArClLL2,OrderL2);
 	FilterCluster( TotalOrders2, OrderL2, MasterM2, &ArClLL2, snA2,\
 			PeriodicX2, PeriodicY2, PeriodicZ2,\
 			XElecOn2, YElecOn2, ZElecOn2);
-	CalculateNeighNodes(TotalOrders2, OrderL2, &ArClLL2, snA2, PeriodicX2, PeriodicY2, PeriodicZ2);
+	CalculateNeighNodes(TotalOrders2, &ArClLL2, snA2, PeriodicX2, PeriodicY2, PeriodicZ2);
 	CalculateSumAndP(TotalOrders2, snA2, &ArClLL2, MasterM2, attempts, PeriodicX2, PeriodicY2, PeriodicZ2);
 	ConnectClusterSN(TotalOrders2, snA2, ArClLL2);
 
@@ -408,10 +411,9 @@ int main(void){
 	deleteMatrix(&MasterM2);
 	deleteArbArray(&ArClLL2);	
 	deleteArbArray(&Arb2);	
-	deleteSNarray(snA2);
+	deleteSNarray(&snA2);
 	deleteAllMidPointArray(&mpA2);
 
-	/*	
 	///////////////////////////////////////////////////////////////////
 	//Study 3
 	//hopping within cluster is allowed.
@@ -564,7 +566,7 @@ int main(void){
 	printSN(site);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 2 Testing when placed in center of Sample and made favorable to jump in - X direction
 	//Parameters
@@ -632,7 +634,7 @@ int main(void){
 	printSN(site);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 3 Testing when placed in center of Sample and made favorable to jump in + Y direction
 	//Parameters
@@ -700,7 +702,7 @@ int main(void){
 	printSN(site);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 4 Testing when placed in center of Sample and made favorable to jump in - Y direction
 	//Parameters
@@ -768,7 +770,7 @@ int main(void){
 	printSN(site);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 5 Testing when placed in center of Sample and made favorable to jump in +Z direction
 	//Parameters
@@ -836,7 +838,7 @@ int main(void){
 	printSN(site);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 6 Testing when placed in center of Sample and made favorable to jump in -Z direction
 	//Parameters
@@ -904,7 +906,7 @@ int main(void){
 	printSN(site);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 7 Testing when charge placed infront of x+ electrode and
 	//hop to electrode is favorable
@@ -974,7 +976,7 @@ int main(void){
 	printSN(site);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 8 Testing when charge placed infront of x- electrode and
 	//hop to electrode is favorable
@@ -1044,7 +1046,7 @@ int main(void){
 	printSN(site);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 9 Testing when charge placed infront of y+ electrode and
 	//hop to electrode is favorable
@@ -1114,7 +1116,7 @@ int main(void){
 	printSN(site);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 10 Testing when charge placed infront of y- electrode and
 	//hop to electrode is favorable
@@ -1184,7 +1186,7 @@ int main(void){
 	printSN(site);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 11 Testing when charge placed infront of z+ electrode and
 	//hop to electrode is favorable
@@ -1254,7 +1256,7 @@ int main(void){
 	printSN(site);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 12 Testing when charge placed infront of z- electrode and
 	//hop to electrode is favorable
@@ -1324,7 +1326,7 @@ int main(void){
 	printSN(site);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 13 Testing when charge placed next to a side without electrode
 	//in the x+ direction
@@ -1389,7 +1391,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 14 Testing when charge placed next to a side without electrode
 	//in the x- direction
@@ -1454,7 +1456,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 15 Testing when charge placed next to a side without electrode
 	//in the y+ direction
@@ -1519,7 +1521,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 16 Testing when charge placed next to a side without electrode
 	//in the y- direction
@@ -1584,7 +1586,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 17 Testing when charge placed next to a side without electrode
 	//in the z+ direction
@@ -1649,7 +1651,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 18 Testing when charge placed next to a side without electrode
 	//in the z- direction
@@ -1714,7 +1716,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 19 Testing when charge placed next to two sides without electrodes
 	//placing on xy corner
@@ -1772,7 +1774,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 20 Testing when charge placed next to two sides without electrodes
 	//placing on xy corner
@@ -1830,7 +1832,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 21 Testing when charge placed next to two sides without electrodes
 	//placing on xy corner
@@ -1888,7 +1890,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 22 Testing when charge placed next to two sides without electrodes
 	//placing on xy corner
@@ -1946,7 +1948,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 23 Testing when charge placed next to two sides without electrodes
 	//placing on yz corner
@@ -2004,7 +2006,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 24 Testing when charge placed next to two sides without electrodes
 	//placing on yz corner
@@ -2066,7 +2068,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 25 Testing when charge placed next to two sides without electrodes
 	//placing on yz corner
@@ -2124,7 +2126,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 26 Testing when charge placed next to two sides without electrodes
 	//placing on yz corner
@@ -2182,7 +2184,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 27 Testing when charge placed next to two sides without electrodes
 	//placing on xz corner
@@ -2244,7 +2246,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 28 Testing when charge placed next to two sides without electrodes
 	//placing on xz corner
@@ -2302,7 +2304,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 29 Testing Periodic Conditions in x when sample 
 	//is doubled
@@ -2362,7 +2364,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 30 Testing Periodic Conditions in x when sample 
 	//is doubled
@@ -2422,7 +2424,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 31 Testing Periodic Conditions in y when sample 
 	//is doubled
@@ -2482,7 +2484,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	//CASE STUDY 32 Testing Periodic Conditions in y when sample 
 	//is doubled
@@ -2542,7 +2544,7 @@ int main(void){
 	printCharge(ch);
 
 	deleteCharge(ch);
-	deleteSNarray(snA);
+	deleteSNarray(&snA);
 
 	printf("Testing RandomWalk");
 
@@ -2621,7 +2623,8 @@ int main(void){
 			deleteMatrix((matrix) getElectrode_HopRates(elXb));
 		}
 		if((SNarray) getElectrode_AdjacentSites(elXb)!=NULL){
-			deleteSNarray((SNarray)getElectrode_AdjacentSites(elXb));
+			TempSNarray=(SNarray)getElectrode_AdjacentSites(elXb;)
+      deleteSNarray(&TempSNarray);
 		}
 		deleteElectrode(elXb);
 		elXb=NULL;
@@ -2631,7 +2634,8 @@ int main(void){
 			deleteMatrix((matrix) getElectrode_HopRates(elXf));
 		}
 		if((SNarray) getElectrode_AdjacentSites(elXf)!=NULL){
-			deleteSNarray((SNarray)getElectrode_AdjacentSites(elXf));
+      TempSNarray = (SNarray)getElectrode_AdjacentSites(elXf);
+			deleteSNarray(&TempSNarray);
 		}
 		deleteElectrode(elXf);
 		elXf=NULL;
@@ -2641,7 +2645,8 @@ int main(void){
 			deleteMatrix((matrix) getElectrode_HopRates(elYl));
 		}
 		if((SNarray) getElectrode_AdjacentSites(elYl)!=NULL){
-			deleteSNarray((SNarray)getElectrode_AdjacentSites(elYl));
+      TempSNarray = (SNarray)getElectrode_AdjacentSites(elYl);
+			deleteSNarray( &TempSNarray );
 		}
 		deleteElectrode(elYl);
 		elYl=NULL;
@@ -2651,7 +2656,8 @@ int main(void){
 			deleteMatrix((matrix) getElectrode_HopRates(elYr));
 		}
 		if((SNarray) getElectrode_AdjacentSites(elYr)!=NULL){
-			deleteSNarray((SNarray)getElectrode_AdjacentSites(elYr));
+      TempSNarray = (SNarray)getElectrode_AdjacentSites(elYr);
+			deleteSNarray(&TempSNarray);
 		}
 		deleteElectrode(elYr);
 		elYr=NULL;
@@ -2661,7 +2667,8 @@ int main(void){
 			deleteMatrix((matrix) getElectrode_HopRates(elZb));
 		}
 		if((SNarray) getElectrode_AdjacentSites(elZb)!=NULL){
-			deleteSNarray((SNarray)getElectrode_AdjacentSites(elZb));
+      TempSNarray = (SNarray)getElectrode_AdjacentSites(elZb);
+			deleteSNarray(&TempSNarray);
 		}
 		deleteElectrode(elZb);
 		elZb=NULL;
@@ -2671,14 +2678,15 @@ int main(void){
 			deleteMatrix((matrix) getElectrode_HopRates(elZa));
 		}
 		if((SNarray) getElectrode_AdjacentSites(elZa)!=NULL){
-			deleteSNarray((SNarray)getElectrode_AdjacentSites(elZa));
+      TempSNarray = (SNarray)getElectrode_AdjacentSites(elZa);
+			deleteSNarray(&TempSNarray);
 		}
 		deleteElectrode(elZa);
 		elZa=NULL;
 	}
 
 	printf("Deleting SiteNode array\n");
-	deleteSNarray(snA3);
+	deleteSNarray(&snA3);
 		 
 	printf("Testing RandomWalk2\n");
 	//For non-periodic uniform sample 
@@ -2751,7 +2759,7 @@ int main(void){
 
 	printVisitFreq(snA4, &fid2[0]);
 
-	deleteSNarray(snA4);
+	deleteSNarray(&snA4);
 	
 	if(elXb!=NULL){
 		if((matrix) getElectrode_HopRates(elXb)!=NULL){
@@ -4881,8 +4889,6 @@ rv = randomWalk(snA7, CheckPointNum, &fid5[0],\
 		elZa=NULL;
 	}
 	
-	//atexit(mem_term);
-	*/
 	deleteParamFrame(&PF);
 	return 0;
 

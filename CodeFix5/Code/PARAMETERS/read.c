@@ -58,6 +58,8 @@ struct _ParameterFrame{
 	int Time_check;
 	int Rcount;
 	int ClusterAlg;
+  int ClusterAlgRec;
+  int ClusterAlgTrigger;
 	double CutOff;
 	double lambda;
 	int ScaleAfterCorr;
@@ -158,6 +160,8 @@ ParameterFrame newParamFrame(void){
 	PF->Time_check=0;
 	PF->Rcount=0;
 	PF->ClusterAlg=0;
+  PF->ClusterAlgRec=2;
+  PF->ClusterAlgTrigger=15;
 	PF->CutOff=0;
 	PF->lambda=0;
 	PF->ScaleAfterCorr=0;
@@ -869,7 +873,7 @@ ParameterFrame newParamFrame_File(void){
 			exit(1);
 		}
 
-		check = match(buffer, "\nClusterAlg");
+		check = match(buffer, "\nClusterAlg ");
 		if(check!=-1){
 			position = (unsigned int)check;
 			intval = GrabInt(position, &buffer[0] );
@@ -880,7 +884,35 @@ ParameterFrame newParamFrame_File(void){
 			exit(1);
 		}
 
+    check = match(buffer, "\nClusterAlgRec");
+		if(check!=-1){
+			position = (unsigned int)check;
+			intval = GrabInt(position, &buffer[0] );
+			printf("ClusterAlgRec %d\n",intval);
+			PF->ClusterAlgRec = intval;
+      if(intval<2){
+        fprintf(stderr,"ERROR ClusterAlgRec must be greater than 1\n");
+        exit(1);
+      }
+		}else{
+			printf("ERROR when reading file can not find ClusterAlgRec!\n");
+			exit(1);
+		}
 
+    check = match(buffer, "\nClusterAlgTrigger");
+		if(check!=-1){
+			position = (unsigned int)check;
+			intval = GrabInt(position, &buffer[0] );
+			printf("ClusterAlgTrigger %d\n",intval);
+			PF->ClusterAlgTrigger = intval;
+      if(intval<2){
+        fprintf(stderr,"ERROR ClusterAlgTrigger must be greater than 1\n");
+        exit(1);
+      }
+		}else{
+			printf("ERROR when reading file can not find ClusterAlgTrigger!\n");
+			exit(1);
+		}
 		check = match(buffer, "\nCutOff");
 		if(check!=-1){
 			position = (unsigned int)check;
@@ -1321,7 +1353,8 @@ int ReadParameter(int * method,\
 		double * VincX, double * VincY, double * VincZ,\
 		double * SiteDistance, double * D, int * TCount,\
 		int * NCh, int * Ntot, double * TStep, int * N_av,\
-		int * Nstep_av, int * Time_check, int * Rcount,int * ClusterAlg, double * CutOff,\
+		int * Nstep_av, int * Time_check, int * Rcount,int * ClusterAlg,\
+    int * ClusterAlgRec, int * ClusterAlgTrigger, double * CutOff,\
 		double * lambda, int * ScaleAfterCorr,int * SeedProt, int * Attempts,\
 		double * fracSeed, double * E0, double * sigma,\
 		double * fracTrap, double * Etrap, double * Tsigma,\
@@ -1612,9 +1645,17 @@ int ReadParameter(int * method,\
 				*Rcount = GrabInt(position, &buffer[0] );
 				printf("Rcount %d\n",*Rcount);
 
-				position = match(buffer, "\nClusterAlg");
+				position = match(buffer, "\nClusterAlg ");
 				*ClusterAlg = GrabInt(position, &buffer[0] );
 				printf("ClusterAlg %d\n",*ClusterAlg);
+
+				position = match(buffer, "\nClusterAlgRec");
+				*ClusterAlgRec = GrabInt(position, &buffer[0] );
+				printf("ClusterAlgRec %d\n",*ClusterAlgRec);
+
+				position = match(buffer, "\nClusterAlgTrigger");
+				*ClusterAlgTrigger = GrabInt(position, &buffer[0] );
+				printf("ClusterAlgTrigger %d\n",*ClusterAlgTrigger);
 
 				position = match(buffer, "\nCutOff");
 				*CutOff = GrabDouble(position, &buffer[0] );
@@ -2369,6 +2410,7 @@ int PFset_Rcount(ParameterFrame PF,int Rcount ){
 
 	return 0;
 }
+
 int PFset_ClusterAlg(ParameterFrame PF,int ClusterAlg ){
 
 	if(PF==NULL){
@@ -2380,6 +2422,27 @@ int PFset_ClusterAlg(ParameterFrame PF,int ClusterAlg ){
 	return 0;
 }
 
+int PFset_ClusterAlgRec(ParameterFrame PF,int ClusterAlgRec ){
+
+	if(PF==NULL){
+		return -1;
+	}
+
+	PF->ClusterAlgRec = ClusterAlgRec;
+
+	return 0;
+}
+
+int PFset_ClusterAlgTrigger(ParameterFrame PF,int ClusterAlgTrigger ){
+
+	if(PF==NULL){
+		return -1;
+	}
+
+	PF->ClusterAlgTrigger = ClusterAlgTrigger;
+
+	return 0;
+}
 
 int PFset_CutOff(ParameterFrame PF,double CutOff ){
 
@@ -3105,6 +3168,24 @@ int PFget_ClusterAlg(ParameterFrame PF ){
 	}
 
 	return PF->ClusterAlg;
+}
+
+int PFget_ClusterAlgRec(ParameterFrame PF ){
+
+	if(PF==NULL){
+		return -1;
+	}
+
+	return PF->ClusterAlgRec;
+}
+
+int PFget_ClusterAlgTrigger(ParameterFrame PF ){
+
+	if(PF==NULL){
+		return -1;
+	}
+
+	return PF->ClusterAlgTrigger;
 }
 
 double PFget_CutOff(ParameterFrame PF){
