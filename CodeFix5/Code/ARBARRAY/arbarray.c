@@ -23,27 +23,21 @@ ArbArray newArbArray(int len, int type){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR len is less than 0 in newArbArray\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+    return_error_val();
 		return NULL;
 	}
 	if(type>=3){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR type is greater than 3 in newArbArray\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return NULL;
+		return_error_val();
+    return NULL;
 	}
 	if(type<0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR type is less than 0 in newArbArray\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
   #endif
@@ -57,9 +51,7 @@ ArbArray newArbArray(int len, int type){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR malloc returned NULL in newArbArray\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
   #endif
@@ -80,10 +72,7 @@ int ArbArrayCheck(const_ArbArray Arb){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in ArbArrayCheck\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 	printf("Arb Type Check %d\n",Arb->type);
@@ -97,19 +86,13 @@ int deleteAllMidPointArray(ArbArray * Arb){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in deleteAllMidPointArray\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if((*Arb)==NULL){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR *Arb is NULL in deleteAllMidPointArray\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 		
 	}
   #endif
@@ -138,19 +121,13 @@ int deleteArbArray(ArbArray * Arb){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in deleteArbArray\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return	return_error_val();
 	}
 	if((*Arb)==NULL){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR *Arb is NULL in deleteArbArray\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 	//OrderMagLL
@@ -211,27 +188,21 @@ void * getArbElement(const_ArbArray Arb, int element){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in getArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
 	if(element<0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR element is less than 0 in getArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
 	if(element>=Arb->reserved){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR element is larger than the elements reserved in Arb in getArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
   #endif
@@ -245,28 +216,19 @@ int NullArbElement(ArbArray Arb, int element){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in NullArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(element<0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR element is less than 0 in NullArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(element>=Arb->reserved){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR element is larger than reserved in Arb in NullArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 
@@ -286,28 +248,19 @@ int appendArbElement(ArbArray * Arb, void * ptr){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in appendArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1;
+    return return_error_val();
 	}
 	if((*Arb)==NULL){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR *Arb is NULL in appendArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1;
+    return return_error_val();
 	}
 	if( ptr==NULL){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR ptr is NULL in appendArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1;
+    return return_error_val();
 	}
   #endif
 
@@ -336,37 +289,25 @@ int setArbElement(ArbArray Arb, int element, void * ptr){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in setArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(element<0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR element is less than 0 in setArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+    return return_error_val();
 	}
 	if(element>=Arb->reserved){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR element is larger than reserved in Arb in setArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(ptr==NULL){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR ptr is NULL in setArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 
@@ -385,10 +326,7 @@ int printArbArray(const_ArbArray Arb, ...) {
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in printArbArray\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 
@@ -431,10 +369,7 @@ int getElementsUsed(const_ArbArray Arb){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in getElementsUsed\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 	return Arb->used;
@@ -446,10 +381,7 @@ int getElementsReserved(const_ArbArray Arb){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in getElementReserved\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 	return Arb->reserved;
@@ -461,28 +393,19 @@ int removeArbElement(ArbArray Arb, int element){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in removeArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if( element<0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR element is less than 0 in removeArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(element>=Arb->reserved){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR element is greater than reserved in removeArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 
@@ -500,36 +423,28 @@ MidPoint getMP(const_ArbArray Arb,int element) {
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in getMP\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
 	if (Arb->type!=2){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb must be of type 2 to use getMP function\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
 	if ( element<0 ){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR requested element is less than 0 in getMP\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
 	if (element>=Arb->reserved){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR element is greater than the number of elements reserved in Arb in getMP\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
   #endif
@@ -543,37 +458,25 @@ int getMPnei1(const_ArbArray Arb, int Mid_ID){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in getMPnei1\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if( Mid_ID<0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Mid_ID is less than 0 in getMPnei1\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(Mid_ID>=Arb->reserved){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Mid_ID is larger than the number of elements reserved by Arb in getMPnei1\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(Arb->type!=2){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb needs to be of type 2 to call getMPnei1\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 	MidPoint mp = (MidPoint) Arb->Num[Mid_ID];
@@ -589,37 +492,25 @@ int getMPnei2(const_ArbArray Arb, int Mid_ID){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in getMPnei2\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(Mid_ID<0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Mid_ID is less than 0 in getMPnei2\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(Mid_ID>=Arb->reserved){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR MID_ID is larger than the number of elements reserved in Arb in getMPnei2\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(Arb->type!=2){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is of the wrong type to call getMPnei2 function\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 
@@ -637,37 +528,25 @@ int getMPOrder(const_ArbArray Arb, int Mid_ID){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in getMPOrder\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(Mid_ID<0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Mid_ID (Midpoint id) is less than 0 in getMPOrder\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(Mid_ID>=Arb->reserved){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR requested Mid_ID is larger than the elements reserved by Arb in getMPOrder\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(Arb->type!=2){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is of the wronge type to call function getMPOrder must be of type 2\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 	MidPoint mp = (MidPoint) Arb->Num[Mid_ID];
@@ -684,55 +563,37 @@ int addToOrLL(ArbArray Arb, int element , MidPoint * mp){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in addToOrLL\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(element<0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR requested element is less than 0 in addToOrLL\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(element>=Arb->reserved){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR requested element is larger than the elements reserved by Arb in addToOrLL\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if( mp==NULL){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR mp is NULL in addToOrLL\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if( (*mp)==NULL){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR *mp is NULL in addToOrLL\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(Arb->type!=0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb->type is no 0 in addToOrLL\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 	//increment the size of the order of magnitude link list
@@ -752,36 +613,28 @@ OrderMagLL getOrderLL(const_ArbArray Arb, int element){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in getOrderLL\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
 	if(element>=Arb->reserved){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR requested element in getOrderLL is larger than the elements reserved to Arb\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
 	if( element<0 ){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR requested element is less than 0 in getOrderLL\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
 	if(Arb->type!=0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is of the wrong type when calling getOrderLL\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		return_error_val();
 		return NULL;
 	}
   #endif
@@ -795,37 +648,25 @@ int setDefaultArbElem(ArbArray Arb, int element, int orderMag){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Arb is NULL in setDefaultArbElem\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(element<0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR element is less than 0 in setDefaultArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(element>=Arb->reserved){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR element is larger than what is reserved in setDefaultArbElement\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
 	if(Arb->type!=0){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR type is not equal to 0 in setDefaultArbElem\n");
     #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		return return_error_val();
 	}
   #endif
 

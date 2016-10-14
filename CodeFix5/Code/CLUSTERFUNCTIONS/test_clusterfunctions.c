@@ -1349,5 +1349,7 @@ int main() {
 	deleteMatrix(&mtxB);
 	deleteArbArray(&ArbB2);
 	deleteArbArray(&ArbB);
+
+  printf("COMPLETED test_cluster success\n");
 	return 0;
 }

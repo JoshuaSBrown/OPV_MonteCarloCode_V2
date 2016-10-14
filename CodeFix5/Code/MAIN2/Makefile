@@ -1,18 +1,21 @@
 # Variables
 CC = gcc
-CFLAGS = -lm  -m64 -o0 -Wall -Wextra -std=gnu99 -pedantic -ggdb 
+CFLAGS = -lm -pg -m64 -o0 -Wall -Wextra -std=gnu99 -pedantic -ggdb 
 
 # Targets
 ALL : run
 
-run : main.c chargetransport.o midpoint.o electrode.o matrix.o read.o charge.o matrix_linklist.o neighll.o neighnode.o node.o omll.o arbarray.o linklist.o clusterfunctions.o clustersitenode.o cluster.o sitenode.o montecarlo.o functions.o io.o
-	$(CC) $(CFLAGS) main.c chargetransport.o midpoint.o electrode.o read.o charge.o matrix_linklist.o neighll.o neighnode.o node.o omll.o arbarray.o matrix.o linklist.o clusterfunctions.o clustersitenode.o cluster.o sitenode.o functions.o io.o montecarlo.o -o run
+run : main.c chargetransport.o midpoint.o electrode.o matrix.o read.o charge.o matrix_linklist.o neighll.o neighnode.o node.o omll.o arbarray.o linklist.o clusterfunctions.o clustersitenode.o cluster.o sitenode.o montecarlo.o functions.o io.o error.o chargesitenode.o
+	$(CC) $(CFLAGS) main.c chargetransport.o midpoint.o electrode.o read.o charge.o matrix_linklist.o neighll.o neighnode.o node.o omll.o arbarray.o matrix.o linklist.o clusterfunctions.o clustersitenode.o cluster.o sitenode.o functions.o io.o montecarlo.o error.o chargesitenode.o -o run
 
 chargetransport.o  : ../CHARGETRANSPORT/chargetransport.c
 	$(CC) $(CFLAGS) -c ../CHARGETRANSPORT/chargetransport.c -o chargetransport.o
 
 charge.o 					 : ../CHARGE/charge.c
 	$(CC) $(CFLAGS) -c ../CHARGE/charge.c -o charge.o
+
+chargesitenode.o   : ../CHARGESITENODE/chargesitenode.c
+	$(CC) $(CFLAGS) -c ../CHARGESITENODE/chargesitenode.c -o chargesitenode.o
 
 functions.o 			 : ../FUNCTIONS/functions.c
 	$(CC) $(CFLAGS) -c ../FUNCTIONS/functions.c -o functions.o
@@ -67,6 +70,9 @@ clustersitenode.o  : ../CLUSTERSITENODE/clustersitenode.c
 
 io.o 							 : ../IO/io.c
 	$(CC) $(CFLAGS) -c ../IO/io.c -o io.o
+
+error.o 					 : ../ERROR/error.c
+	$(CC) $(CFLAGS) -c ../ERROR/error.c -o error.o
 
 .PHONY: clean
 clean:

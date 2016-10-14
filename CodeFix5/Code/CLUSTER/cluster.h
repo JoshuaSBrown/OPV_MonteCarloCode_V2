@@ -83,6 +83,8 @@ ClusterLL getNextClusterLL(const_ClusterLL clLL);
 */
 int printNodesClusterLL(const_ClusterLL clLL);
 
+int printNeighNodesClusterLL(const_ClusterLL clLL);
+
 /* Prints all the Clusters in a given Cluster LL
 	 and their respective nodes or site ids
 	 If clLL uses Nodes or NeighNodes it should

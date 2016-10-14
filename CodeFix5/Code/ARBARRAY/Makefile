@@ -5,8 +5,8 @@ CFLAGS = -Wall -Wextra -std=gnu99 -pedantic -g
 # Targets
 ALL : test_arbarray
 
-test_arbarray : test_arbarray.c  arbarray.o midpoint.o omll.o cluster.o electrode.o neighnode.o neighll.o node.o 
-	$(CC) $(CFLAGS) test_arbarray.c arbarray.o midpoint.o omll.o cluster.o electrode.o neighnode.o neighll.o node.o -o test_arbarray
+test_arbarray : test_arbarray.c  arbarray.o midpoint.o omll.o cluster.o electrode.o neighnode.o neighll.o node.o error.o 
+	$(CC) $(CFLAGS) test_arbarray.c arbarray.o midpoint.o omll.o cluster.o electrode.o neighnode.o neighll.o node.o error.o -o test_arbarray
 
 arbarray.o : arbarray.c
 	$(CC) $(CFLAGS) -c arbarray.c -o arbarray.o
@@ -31,6 +31,9 @@ node.o : ../NODE/node.c
 
 electrode.o : ../ELECTRODE/electrode.c
 	$(CC) $(CFLAGS) -c ../ELECTRODE/electrode.c -o electrode.o
+
+error.o : ../ERROR/error.c
+	$(CC) $(CFLAGS) -c ../ERROR/error.c -o error.o
 
 .PHONY : clean
 clean :

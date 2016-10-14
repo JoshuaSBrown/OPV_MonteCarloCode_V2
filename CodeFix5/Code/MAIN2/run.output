@@ -1,0 +1,2820 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 50.00      0.01     0.01   199521     0.00     0.00  getCols
+ 50.00      0.02     0.01                             printClusterLL
+  0.00      0.02     0.00   319652     0.00     0.00  getRows
+  0.00      0.02     0.00   263877     0.00     0.00  getIndex
+  0.00      0.02     0.00   208825     0.00     0.00  getSN
+  0.00      0.02     0.00   174808     0.00     0.00  getAhei
+  0.00      0.02     0.00   138603     0.00     0.00  getEnergy
+  0.00      0.02     0.00   123079     0.00     0.00  getAwid
+  0.00      0.02     0.00   107582     0.00     0.00  getE
+  0.00      0.02     0.00    87016     0.00     0.00  setE
+  0.00      0.02     0.00    72904     0.00     0.00  getDwel
+  0.00      0.02     0.00    66424     0.00     0.00  getCharge
+  0.00      0.02     0.00    64245     0.00     0.00  getCx
+  0.00      0.02     0.00    59571     0.00     0.00  getCy
+  0.00      0.02     0.00    59571     0.00     0.00  getCz
+  0.00      0.02     0.00    56700     0.00     0.00  hoppingRate
+  0.00      0.02     0.00    50434     0.00     0.00  getAtotal
+  0.00      0.02     0.00    47667     0.00     0.00  getDwelStat
+  0.00      0.02     0.00    46736     0.00     0.00  PFget_Hei
+  0.00      0.02     0.00    46736     0.00     0.00  PFget_Len
+  0.00      0.02     0.00    46736     0.00     0.00  PFget_Wid
+  0.00      0.02     0.00    46725     0.00     0.00  PFget_XElecOn
+  0.00      0.02     0.00    46725     0.00     0.00  PFget_YElecOn
+  0.00      0.02     0.00    46725     0.00     0.00  PFget_ZElecOn
+  0.00      0.02     0.00    46720     0.00     0.00  UpdateOccTime
+  0.00      0.02     0.00    46605     0.00     0.00  addTime
+  0.00      0.02     0.00    45000     0.00     0.00  getTime
+  0.00      0.02     0.00    44384     0.00     0.00  MinusDwel
+  0.00      0.02     0.00    39743     0.00     0.00  getSN_p
+  0.00      0.02     0.00    39274     0.00     0.00  getInitE
+  0.00      0.02     0.00    32227     0.00     0.00  getAlen
+  0.00      0.02     0.00    32056     0.00     0.00  getSNwithInd
+  0.00      0.02     0.00    31074     0.00     0.00  getIndexPeriodic
+  0.00      0.02     0.00    29700     0.00     0.00  setSN_p
+  0.00      0.02     0.00     9450     0.00     0.00  setEnergy
+  0.00      0.02     0.00     9368     0.00     0.00  ProjectChargePositionOntoSiteNodeReferenceFrame
+  0.00      0.02     0.00     8033     0.00     0.00  getLoc
+  0.00      0.02     0.00     6243     0.00     0.00  deleteMatrix
+  0.00      0.02     0.00     5766     0.00     0.00  newMatrixSet
+  0.00      0.02     0.00     4950     0.00     0.00  newPoint
+  0.00      0.02     0.00     4950     0.00     0.00  newSN
+  0.00      0.02     0.00     4950     0.00     0.00  setsum
+  0.00      0.02     0.00     4533     0.00     0.00  getMatrixLLlength
+  0.00      0.02     0.00     4500     0.00     0.00  setInitE
+  0.00      0.02     0.00     3776     0.00     0.00  Rfind
+  0.00      0.02     0.00     3600     0.00     0.00  rdtsc
+  0.00      0.02     0.00     3350     0.00     0.00  setDwelStat
+  0.00      0.02     0.00     2700     0.00     0.00  CorrCal
+  0.00      0.02     0.00     2700     0.00     0.00  corr
+  0.00      0.02     0.00     2700     0.00     0.00  grn
+  0.00      0.02     0.00     2550     0.00     0.00  getType
+  0.00      0.02     0.00     2376     0.00     0.00  setDwel
+  0.00      0.02     0.00     2352     0.00     0.00  insertDwelltimePos
+  0.00      0.02     0.00     2337     0.00     0.00  CheckConservationCharges
+  0.00      0.02     0.00     2337     0.00     0.00  MakeHop
+  0.00      0.02     0.00     2337     0.00     0.00  getElectrode_Charges
+  0.00      0.02     0.00     2336     0.00     0.00  CheckIfElecHop
+  0.00      0.02     0.00     2336     0.00     0.00  Plust
+  0.00      0.02     0.00     2222     0.00     0.00  getsum
+  0.00      0.02     0.00     2202     0.00     0.00  SiteHop
+  0.00      0.02     0.00     1800     0.00     0.00  getRandomSitePos
+  0.00      0.02     0.00     1698     0.00     0.00  getNeighNode_id
+  0.00      0.02     0.00     1632     0.00     0.00  HoppingToSurroundingSites
+  0.00      0.02     0.00     1575     0.00     0.00  getIndexPeriodicZ
+  0.00      0.02     0.00     1291     0.00     0.00  getNextNeigh
+  0.00      0.02     0.00     1137     0.00     0.00  printCharge
+  0.00      0.02     0.00     1137     0.00     0.00  printMatrixLL
+  0.00      0.02     0.00     1088     0.00     0.00  checkSNconnectedCluster
+  0.00      0.02     0.00     1068     0.00     0.00  setCx
+  0.00      0.02     0.00     1068     0.00     0.00  setCy
+  0.00      0.02     0.00     1068     0.00     0.00  setCz
+  0.00      0.02     0.00     1032     0.00     0.00  setVis
+  0.00      0.02     0.00     1028     0.00     0.00  PFget_NumChargesTrack
+  0.00      0.02     0.00     1028     0.00     0.00  getChargePath
+  0.00      0.02     0.00     1028     0.00     0.00  getMatrixLLLastMatchAtRow
+  0.00      0.02     0.00     1028     0.00     0.00  getMatrixLLNumberElemGreaterThanMatchAtRow
+  0.00      0.02     0.00     1028     0.00     0.00  triggerMatch
+  0.00      0.02     0.00     1028     0.00     0.00  updatePath
+  0.00      0.02     0.00     1012     0.00     0.00  incVisFreq
+  0.00      0.02     0.00      946     0.00     0.00  getNeighNode_p
+  0.00      0.02     0.00      922     0.00     0.00  getClusterList
+  0.00      0.02     0.00      855     0.00     0.00  getIndBelP
+  0.00      0.02     0.00      839     0.00     0.00  incMatrixLLElem
+  0.00      0.02     0.00      839     0.00     0.00  incrementE
+  0.00      0.02     0.00      784     0.00     0.00  moveMatrixLLNodeToStart
+  0.00      0.02     0.00      720     0.00     0.00  getIndAboP
+  0.00      0.02     0.00      701     0.00     0.00  getIndexPeriodicY
+  0.00      0.02     0.00      623     0.00     0.00  getNode_id
+  0.00      0.02     0.00      590     0.00     0.00  OccAllNei
+  0.00      0.02     0.00      576     0.00     0.00  newMatrix
+  0.00      0.02     0.00      562     0.00     0.00  getNextNode
+  0.00      0.02     0.00      469     0.00     0.00  getNeighNode_hoplength
+  0.00      0.02     0.00      468     0.00     0.00  FindRowOfMatchInCol
+  0.00      0.02     0.00      450     0.00     0.00  hoppingRateMillerAbraham
+  0.00      0.02     0.00      389     0.00     0.00  getIndexPeriodicX
+  0.00      0.02     0.00      363     0.00     0.00  getIndLefP
+  0.00      0.02     0.00      338     0.00     0.00  getIndRigP
+  0.00      0.02     0.00      333     0.00     0.00  getMatrixLLNodeElem
+  0.00      0.02     0.00      324     0.00     0.00  newLL_MNode
+  0.00      0.02     0.00      296     0.00     0.00  getStartNode
+  0.00      0.02     0.00      294     0.00     0.00  getFlagAbo
+  0.00      0.02     0.00      294     0.00     0.00  getFlagBel
+  0.00      0.02     0.00      294     0.00     0.00  getFlagFro
+  0.00      0.02     0.00      294     0.00     0.00  getFlagLef
+  0.00      0.02     0.00      294     0.00     0.00  getFlagRig
+  0.00      0.02     0.00      278     0.00     0.00  SumOfCol
+  0.00      0.02     0.00      270     0.00     0.00  getFlagBeh
+  0.00      0.02     0.00      244     0.00     0.00  addLL_MNodeBegin
+  0.00      0.02     0.00      244     0.00     0.00  deleteLL_MNode
+  0.00      0.02     0.00      244     0.00     0.00  getNeighLL_start
+  0.00      0.02     0.00      244     0.00     0.00  getStartNeigh
+  0.00      0.02     0.00      244     0.00     0.00  removeLL_MNodeEnd
+  0.00      0.02     0.00      206     0.00     0.00  getIndBehP
+  0.00      0.02     0.00      183     0.00     0.00  getIndFroP
+  0.00      0.02     0.00      182     0.00     0.00  setAll
+  0.00      0.02     0.00      118     0.00     0.00  PFget_PathFile
+  0.00      0.02     0.00      118     0.00     0.00  printToPathFile
+  0.00      0.02     0.00      116     0.00     0.00  ClusterHop
+  0.00      0.02     0.00      116     0.00     0.00  ClusterHopCheck
+  0.00      0.02     0.00      116     0.00     0.00  HopOffCluster
+  0.00      0.02     0.00      116     0.00     0.00  HopOnOffCluster
+  0.00      0.02     0.00      116     0.00     0.00  OccAllCluster
+  0.00      0.02     0.00      116     0.00     0.00  OccAllNeiCluster
+  0.00      0.02     0.00      116     0.00     0.00  checkCluster_elecYdefined
+  0.00      0.02     0.00      116     0.00     0.00  checkCluster_elecZdefined
+  0.00      0.02     0.00      116     0.00     0.00  getCluster_time
+  0.00      0.02     0.00      115     0.00     0.00  getNeighNode_t
+  0.00      0.02     0.00      113     0.00     0.00  getCluster_id
+  0.00      0.02     0.00      110     0.00     0.00  addNeighNodeToCluster
+  0.00      0.02     0.00      110     0.00     0.00  newHop
+  0.00      0.02     0.00      110     0.00     0.00  setNeighNodeNew_p
+  0.00      0.02     0.00      110     0.00     0.00  setNeighNode_t
+  0.00      0.02     0.00      109     0.00     0.00  newNeighNode
+  0.00      0.02     0.00       97     0.00     0.00  setNeighLL_addNeighNode
+  0.00      0.02     0.00       96     0.00     0.00  DivideEachElementCol
+  0.00      0.02     0.00       96     0.00     0.00  setNextNeighNode
+  0.00      0.02     0.00       89     0.00     0.00  getMatrixLLMatchAtRow
+  0.00      0.02     0.00       89     0.00     0.00  getMatrixLLNumberMatchAtRow
+  0.00      0.02     0.00       77     0.00     0.00  match
+  0.00      0.02     0.00       72     0.00     0.00  getCluster_numNodes
+  0.00      0.02     0.00       60     0.00     0.00  addLL_MNode
+  0.00      0.02     0.00       56     0.00     0.00  checkBoundsIndexAbove
+  0.00      0.02     0.00       56     0.00     0.00  checkBoundsIndexBehind
+  0.00      0.02     0.00       56     0.00     0.00  checkBoundsIndexBelow
+  0.00      0.02     0.00       56     0.00     0.00  checkBoundsIndexFront
+  0.00      0.02     0.00       56     0.00     0.00  checkBoundsIndexLeft
+  0.00      0.02     0.00       56     0.00     0.00  checkBoundsIndexRight
+  0.00      0.02     0.00       56     0.00     0.00  setNode_p
+  0.00      0.02     0.00       52     0.00     0.00  getIndFro
+  0.00      0.02     0.00       47     0.00     0.00  SaveDataPoint
+  0.00      0.02     0.00       43     0.00     0.00  GrabDouble
+  0.00      0.02     0.00       43     0.00     0.00  getIndLef
+  0.00      0.02     0.00       42     0.00     0.00  duplicateMatrix
+  0.00      0.02     0.00       34     0.00     0.00  GrabInt
+  0.00      0.02     0.00       30     0.00     0.01  resizeRow
+  0.00      0.02     0.00       28     0.00     0.00  getIndBeh
+  0.00      0.02     0.00       28     0.00     0.00  getNextClusterLL
+  0.00      0.02     0.00       28     0.00     0.00  getNode_p
+  0.00      0.02     0.00       27     0.00     0.00  getIndAbo
+  0.00      0.02     0.00       25     0.00     0.00  getIndRig
+  0.00      0.02     0.00       25     0.00     0.00  getIndexAboveP
+  0.00      0.02     0.00       25     0.00     0.00  getIndexBelowP
+  0.00      0.02     0.00       24     0.00     0.00  getIDsOfTwoOfMostFrequentlyVisitedSites
+  0.00      0.02     0.00       24     0.00     0.00  getIndexFrontP
+  0.00      0.02     0.00       23     0.00     0.00  deleteNeighNode
+  0.00      0.02     0.00       22     0.00     0.00  deleteAllHop
+  0.00      0.02     0.00       22     0.00     0.00  setNextNeighNodeToNULL
+  0.00      0.02     0.00       21     0.00     0.00  newNode
+  0.00      0.02     0.00       21     0.00     0.00  setDataStruc
+  0.00      0.02     0.00       20     0.00     0.00  HopToElecX
+  0.00      0.02     0.00       20     0.00     0.00  getElectrode_AdjacentSites
+  0.00      0.02     0.00       20     0.00     0.00  getVisFreq
+  0.00      0.02     0.00       20     0.00     0.00  initChargePath
+  0.00      0.02     0.00       20     0.00     0.00  newCharge
+  0.00      0.02     0.00       20     0.00     0.00  newMatrix_LinkList
+  0.00      0.02     0.00       20     0.00     0.00  setVisFreq
+  0.00      0.02     0.00       19     0.00     0.00  getIndexLeftP
+  0.00      0.02     0.00       19     0.00     0.00  getIndexRightP
+  0.00      0.02     0.00       18     0.00     0.00  ChargeElectrode
+  0.00      0.02     0.00       18     0.00     0.01  ElecHopOffX
+  0.00      0.02     0.00       18     0.00     0.00  getElectrode_HopRates
+  0.00      0.02     0.00       18     0.00     0.00  getElectrode_Sum
+  0.00      0.02     0.00       17     0.00     0.00  PFget_SiteDist
+  0.00      0.02     0.00       16     0.00     0.00  ChargeSystem
+  0.00      0.02     0.00       16     0.00     0.00  Electrode_addCharge
+  0.00      0.02     0.00       16     0.00     0.00  Electrode_minusCharge
+  0.00      0.02     0.00       16     0.00     0.00  setCluster_elecZid
+  0.00      0.02     0.00       15     0.00     0.00  DivideEachElement
+  0.00      0.02     0.00       13     0.00     0.00  getIndBel
+  0.00      0.02     0.00       13     0.00     0.00  partition
+  0.00      0.02     0.00       13     0.00     0.00  printMatrix
+  0.00      0.02     0.00       12     0.00     0.00  CalculateDwellTimeAndRateN
+  0.00      0.02     0.00       12     0.00     0.00  CalculateNeighNodesForSingleClusterLL
+  0.00      0.02     0.00       12     0.00     0.00  CalculateNeighSinglePYPZ
+  0.00      0.02     0.00       12     0.00     0.01  CalculateProb
+  0.00      0.02     0.00       12     0.00     0.00  CalculateProbNeighDwell
+  0.00      0.02     0.00       12     0.00     0.01  CalculatePvalNeigh
+  0.00      0.02     0.00       12     0.00     0.00  CalculatePvalNodes
+  0.00      0.02     0.00       12     0.00     0.03  CalculateSumAndPGivenSingleClusterLL
+  0.00      0.02     0.00       12     0.00     0.00  CountOptions
+  0.00      0.02     0.00       12     0.00     0.00  DetermineClusterStatus
+  0.00      0.02     0.00       12     0.00     0.00  DetermineNodeOrientationSingleCluster
+  0.00      0.02     0.00       12     0.00     0.00  PFget_Attempts
+  0.00      0.02     0.00       12     0.00     0.00  getIndexBehindP
+  0.00      0.02     0.00       12     0.00     0.00  newNeighLL
+  0.00      0.02     0.00       12     0.00     0.00  resetChargePathVisit
+  0.00      0.02     0.00       12     0.00     0.00  setAllRowsInCol
+  0.00      0.02     0.00       12     0.00     0.00  setCluster_elecXid
+  0.00      0.02     0.00       12     0.00     0.00  setCluster_time
+  0.00      0.02     0.00       12     0.00     0.00  setMatrixLLElem
+  0.00      0.02     0.00       12     0.00     0.00  setMatrixLLValueAtRow
+  0.00      0.02     0.00       12     0.00     0.00  setNeighLL_start
+  0.00      0.02     0.00       12     0.00     0.00  setNextNode
+  0.00      0.02     0.00       10     0.00     0.00  printMovie
+  0.00      0.02     0.00        9     0.00     0.00  addNodesToClusterGivenSites
+  0.00      0.02     0.00        9     0.00     0.00  newClusterLL
+  0.00      0.02     0.00        9     0.00     0.00  setFlagLef
+  0.00      0.02     0.00        9     0.00     0.00  setFlagRig
+  0.00      0.02     0.00        8     0.00     0.00  appendClusterLL
+  0.00      0.02     0.00        6     0.00     0.00  setCluster_elecYid
+  0.00      0.02     0.00        5     0.00     0.00  PFget_EndX
+  0.00      0.02     0.00        5     0.00     0.00  PFget_EndY
+  0.00      0.02     0.00        5     0.00     0.00  PFget_EndZ
+  0.00      0.02     0.00        4     0.00     0.00  PFget_Px
+  0.00      0.02     0.00        4     0.00     0.00  PFget_Py
+  0.00      0.02     0.00        4     0.00     0.00  PFget_Pz
+  0.00      0.02     0.00        4     0.00     0.00  PFget_reOrg
+  0.00      0.02     0.00        4     0.00     0.00  setFlagBeh
+  0.00      0.02     0.00        4     0.00     0.00  setFlagFro
+  0.00      0.02     0.00        3     0.00     0.00  PFget_AttemptToHop
+  0.00      0.02     0.00        3     0.00     0.00  PFget_ClusterAlg
+  0.00      0.02     0.00        3     0.00     0.00  PFget_NCh
+  0.00      0.02     0.00        3     0.00     0.00  PFget_RelativePerm
+  0.00      0.02     0.00        3     0.00     0.00  PFget_gamma
+  0.00      0.02     0.00        3     0.00     0.00  PFget_method
+  0.00      0.02     0.00        3     0.00     0.00  addNodeEndClusterLL
+  0.00      0.02     0.00        3     0.00     0.00  deleteClusterLL_NeighNodes
+  0.00      0.02     0.00        3     0.00     0.00  deleteNeighLL
+  0.00      0.02     0.00        3     0.00     0.00  deleteNeighLLAll
+  0.00      0.02     0.00        3     0.00     0.00  getClusterGivenClusterID
+  0.00      0.02     0.00        3     0.00     0.00  getClusterIDGivenSiteNode
+  0.00      0.02     0.00        3     0.00     0.00  getClusterIDGivenSiteNodeID
+  0.00      0.02     0.00        3     0.00     0.00  getNeighLL_numNeigh
+  0.00      0.02     0.00        3     0.00     0.00  getNode_lastNode
+  0.00      0.02     0.00        3     0.00     0.00  newSNarray
+  0.00      0.02     0.00        3     0.00     0.00  setFlagAbo
+  0.00      0.02     0.00        3     0.00     0.00  setFlagBel
+  0.00      0.02     0.00        2     0.00     0.00  PFget_E0
+  0.00      0.02     0.00        2     0.00     0.00  PFget_ImageCharge
+  0.00      0.02     0.00        2     0.00     0.00  PFget_sigma
+  0.00      0.02     0.00        2     0.00     0.00  getElectrode_FermiEnergy
+  0.00      0.02     0.00        2     0.00     0.00  getElectrode_alpha
+  0.00      0.02     0.00        2     0.00     0.10  initJumPossibility_ElecX
+  0.00      0.02     0.00        2     0.00     0.00  newElectrode
+  0.00      0.02     0.00        2     0.00     0.00  printFileEnergy
+  0.00      0.02     0.00        2     0.00     0.00  setElectrode_AdjacentSites
+  0.00      0.02     0.00        2     0.00     0.00  setElectrode_FermiEnergy
+  0.00      0.02     0.00        2     0.00     0.00  setElectrode_HopRates
+  0.00      0.02     0.00        2     0.00     0.00  setElectrode_Sum
+  0.00      0.02     0.00        2     0.00     0.00  setElectrode_alpha
+  0.00      0.02     0.00        1     0.00     2.71  CalculateAllHops
+  0.00      0.02     0.00        1     0.00     0.00  CheckPt_Cluster_TOF
+  0.00      0.02     0.00        1     0.00     0.00  CheckPt_Test_TOF
+  0.00      0.02     0.00        1     0.00     0.00  CheckPt_exist
+  0.00      0.02     0.00        1     0.00     0.00  PFget_ClusterAlgRec
+  0.00      0.02     0.00        1     0.00     0.00  PFget_ClusterAlgTrigger
+  0.00      0.02     0.00        1     0.00     0.00  PFget_CutOff
+  0.00      0.02     0.00        1     0.00     0.00  PFget_CutOffTime
+  0.00      0.02     0.00        1     0.00     0.00  PFget_D
+  0.00      0.02     0.00        1     0.00     0.00  PFget_Etrap
+  0.00      0.02     0.00        1     0.00     0.00  PFget_FracSeed
+  0.00      0.02     0.00        1     0.00     0.00  PFget_FracTrap
+  0.00      0.02     0.00        1     0.00     0.00  PFget_MovieFrames
+  0.00      0.02     0.00        1     0.00     0.00  PFget_Nstep_av
+  0.00      0.02     0.00        1     0.00     0.00  PFget_Ntot
+  0.00      0.02     0.00        1     0.00     0.00  PFget_Rcount
+  0.00      0.02     0.00        1     0.00     0.00  PFget_ScaleAfterCorr
+  0.00      0.02     0.00        1     0.00     0.00  PFget_SeedProt
+  0.00      0.02     0.00        1     0.00     0.00  PFget_TCount
+  0.00      0.02     0.00        1     0.00     0.00  PFget_TStep
+  0.00      0.02     0.00        1     0.00     0.00  PFget_Tcv
+  0.00      0.02     0.00        1     0.00     0.00  PFget_TempInc
+  0.00      0.02     0.00        1     0.00     0.00  PFget_TempStart
+  0.00      0.02     0.00        1     0.00     0.00  PFget_TempStep
+  0.00      0.02     0.00        1     0.00     0.00  PFget_Time_check
+  0.00      0.02     0.00        1     0.00     0.00  PFget_Tlag
+  0.00      0.02     0.00        1     0.00     0.00  PFget_Tsigma
+  0.00      0.02     0.00        1     0.00     0.00  PFget_VStepX
+  0.00      0.02     0.00        1     0.00     0.00  PFget_VStepY
+  0.00      0.02     0.00        1     0.00     0.00  PFget_VStepZ
+  0.00      0.02     0.00        1     0.00     0.00  PFget_Vcv
+  0.00      0.02     0.00        1     0.00     0.00  PFget_VincX
+  0.00      0.02     0.00        1     0.00     0.00  PFget_VincY
+  0.00      0.02     0.00        1     0.00     0.00  PFget_VincZ
+  0.00      0.02     0.00        1     0.00     0.00  PFget_VoltageX
+  0.00      0.02     0.00        1     0.00     0.00  PFget_VoltageY
+  0.00      0.02     0.00        1     0.00     0.00  PFget_VoltageZ
+  0.00      0.02     0.00        1     0.00     0.00  PFget_XFermiB
+  0.00      0.02     0.00        1     0.00     0.00  PFget_XFermiF
+  0.00      0.02     0.00        1     0.00     0.00  PFget_YFermiL
+  0.00      0.02     0.00        1     0.00     0.00  PFget_YFermiR
+  0.00      0.02     0.00        1     0.00     0.00  PFget_ZFermiA
+  0.00      0.02     0.00        1     0.00     0.00  PFget_ZFermiB
+  0.00      0.02     0.00        1     0.00     0.00  PFget_alphaxb
+  0.00      0.02     0.00        1     0.00     0.00  PFget_alphaxf
+  0.00      0.02     0.00        1     0.00     0.00  PFget_alphayl
+  0.00      0.02     0.00        1     0.00     0.00  PFget_alphayr
+  0.00      0.02     0.00        1     0.00     0.00  PFget_alphaza
+  0.00      0.02     0.00        1     0.00     0.00  PFget_alphazb
+  0.00      0.02     0.00        1     0.00     0.00  PFget_lambda
+  0.00      0.02     0.00        1     0.00     0.00  PFget_vX
+  0.00      0.02     0.00        1     0.00     0.00  PFget_vY
+  0.00      0.02     0.00        1     0.00     0.00  PFget_vZ
+  0.00      0.02     0.00        1     0.00     1.50  Pre_randomWalk
+  0.00      0.02     0.00        1     0.00     0.46  ScaleAfterCorrFunc
+  0.00      0.02     0.00        1     0.00     0.00  getUnOccYZplane
+  0.00      0.02     0.00        1     0.00     0.01  initChargeArrayPath
+  0.00      0.02     0.00        1     0.00     0.01  initCharget0
+  0.00      0.02     0.00        1     0.00     0.25  initElec
+  0.00      0.02     0.00        1     0.00     0.00  initFutureSite
+  0.00      0.02     0.00        1     0.00     0.00  initJumPossibility
+  0.00      0.02     0.00        1     0.00     1.22  initSite
+  0.00      0.02     0.00        1     0.00     0.00  newArbArray
+  0.00      0.02     0.00        1     0.00     0.00  newChargeA
+  0.00      0.02     0.00        1     0.00     0.00  newParamFrame_File
+  0.00      0.02     0.00        1     0.00     0.01  printChargeA
+  0.00      0.02     0.00        1     0.00     0.01  quickSort
+  0.00      0.02     0.00        1     0.00     8.50  randomWalk
+  0.00      0.02     0.00        1     0.00     0.00  setArbElement
+  0.00      0.02     0.00        1     0.00     0.00  setDefaultSNa
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+ 
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this 
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 50.00% of 0.02 seconds
+
+index % time    self  children    called     name
+                0.00    0.00      96/199521      DivideEachElementCol [36]
+                0.00    0.00     278/199521      SumOfCol [40]
+                0.00    0.00     468/199521      FindRowOfMatchInCol [35]
+                0.00    0.00     839/199521      incrementE [32]
+                0.00    0.00    1246/199521      duplicateMatrix [25]
+                0.00    0.00    1996/199521      ElecHopOffX [23]
+                0.00    0.00   87016/199521      setE [6]
+                0.01    0.00  107582/199521      getE [5]
+[1]     50.0    0.01    0.00  199521         getCols [1]
+-----------------------------------------------
+                                                 <spontaneous>
+[2]     50.0    0.01    0.00                 printClusterLL [2]
+-----------------------------------------------
+                                                 <spontaneous>
+[3]     50.0    0.00    0.01                 main [3]
+                0.00    0.01       1/1           randomWalk [4]
+                0.00    0.00       1/1           Pre_randomWalk [8]
+                0.00    0.00       1/13          printMatrix [50]
+                0.00    0.00       1/1           CheckPt_exist [275]
+                0.00    0.00       1/1           newParamFrame_File [329]
+                0.00    0.00       1/3           PFget_method [248]
+                0.00    0.00       1/46736       PFget_Len [77]
+                0.00    0.00       1/46736       PFget_Wid [78]
+                0.00    0.00       1/46736       PFget_Hei [76]
+                0.00    0.00       1/1           PFget_VoltageX [306]
+                0.00    0.00       1/1           PFget_VoltageY [307]
+                0.00    0.00       1/1           PFget_VoltageZ [308]
+                0.00    0.00       1/1           PFget_VStepX [299]
+                0.00    0.00       1/1           PFget_VStepY [300]
+                0.00    0.00       1/1           PFget_VStepZ [301]
+                0.00    0.00       1/1           PFget_VincX [303]
+                0.00    0.00       1/1           PFget_VincY [304]
+                0.00    0.00       1/1           PFget_VincZ [305]
+                0.00    0.00       1/17          PFget_SiteDist [210]
+                0.00    0.00       1/1           PFget_Rcount [287]
+                0.00    0.00       1/1           PFget_TempStart [294]
+                0.00    0.00       1/1           PFget_TempStep [295]
+                0.00    0.00       1/1           PFget_TempInc [293]
+                0.00    0.00       1/1           CheckPt_Test_TOF [274]
+                0.00    0.00       1/2           printFileEnergy [267]
+-----------------------------------------------
+                0.00    0.01       1/1           main [3]
+[4]     42.5    0.00    0.01       1         randomWalk [4]
+                0.00    0.00       1/1           CalculateAllHops [7]
+                0.00    0.00   51114/107582      getE [5]
+                0.00    0.00    2318/2352        insertDwelltimePos [10]
+                0.00    0.00    1028/1028        updatePath [11]
+                0.00    0.00      12/12          CalculateSumAndPGivenSingleClusterLL [16]
+                0.00    0.00    1028/1028        triggerMatch [20]
+                0.00    0.00      47/47          SaveDataPoint [22]
+                0.00    0.00      18/18          ElecHopOffX [23]
+                0.00    0.00    2336/87016       setE [6]
+                0.00    0.00      24/24          getIDsOfTwoOfMostFrequentlyVisitedSites [39]
+                0.00    0.00       1/1           printChargeA [41]
+                0.00    0.00      18/18          ChargeElectrode [48]
+                0.00    0.00      16/16          ChargeSystem [49]
+                0.00    0.00      12/12          resetChargePathVisit [54]
+                0.00    0.00    2202/2202        SiteHop [58]
+                0.00    0.00   49059/72904       getDwel [68]
+                0.00    0.00   46721/66424       getCharge [69]
+                0.00    0.00   46720/46720       UpdateOccTime [82]
+                0.00    0.00   44384/44384       MinusDwel [85]
+                0.00    0.00   11802/64245       getCx [70]
+                0.00    0.00    7128/59571       getCz [72]
+                0.00    0.00    7128/59571       getCy [71]
+                0.00    0.00    6839/208825      getSN [64]
+                0.00    0.00    4673/9368        ProjectChargePositionOntoSiteNodeReferenceFrame [93]
+                0.00    0.00    3330/3350        setDwelStat [104]
+                0.00    0.00    2337/2337        CheckConservationCharges [109]
+                0.00    0.00    2337/2337        MakeHop [110]
+                0.00    0.00    2336/2336        Plust [113]
+                0.00    0.00    2336/2336        CheckIfElecHop [112]
+                0.00    0.00    2318/2550        getType [107]
+                0.00    0.00    2318/8033        getLoc [94]
+                0.00    0.00    2318/2376        setDwel [108]
+                0.00    0.00    2202/2222        getsum [114]
+                0.00    0.00    1186/32056       getSNwithInd [89]
+                0.00    0.00    1028/1028        PFget_NumChargesTrack [124]
+                0.00    0.00    1028/50434       getAtotal [74]
+                0.00    0.00    1028/1088        checkSNconnectedCluster [119]
+                0.00    0.00    1012/1032        setVis [123]
+                0.00    0.00    1012/1012        incVisFreq [126]
+                0.00    0.00     118/118         PFget_PathFile [156]
+                0.00    0.00     118/118         printToPathFile [157]
+                0.00    0.00     116/116         ClusterHopCheck [159]
+                0.00    0.00     116/116         ClusterHop [158]
+                0.00    0.00      89/922         getClusterList [128]
+                0.00    0.00      89/113         getCluster_id [168]
+                0.00    0.00      21/21          setDataStruc [201]
+                0.00    0.00      14/576         newMatrix [135]
+                0.00    0.00      12/12          DetermineClusterStatus [217]
+                0.00    0.00      12/12          DetermineNodeOrientationSingleCluster [218]
+                0.00    0.00      12/12          CalculateNeighNodesForSingleClusterLL [215]
+                0.00    0.00      12/12          PFget_Attempts [219]
+                0.00    0.00      10/10          printMovie [227]
+                0.00    0.00       9/9           newClusterLL [229]
+                0.00    0.00       9/9           addNodesToClusterGivenSites [228]
+                0.00    0.00       8/8           appendClusterLL [232]
+                0.00    0.00       3/3           getClusterIDGivenSiteNodeID [255]
+                0.00    0.00       3/3           getClusterGivenClusterID [253]
+                0.00    0.00       3/3           addNodeEndClusterLL [249]
+                0.00    0.00       3/3           deleteClusterLL_NeighNodes [250]
+                0.00    0.00       1/3           PFget_method [248]
+                0.00    0.00       1/1           PFget_Tcv [292]
+                0.00    0.00       1/1           PFget_Vcv [302]
+                0.00    0.00       1/1           PFget_Tlag [297]
+                0.00    0.00       1/1           PFget_TStep [291]
+                0.00    0.00       1/1           PFget_TCount [290]
+                0.00    0.00       1/1           PFget_Time_check [296]
+                0.00    0.00       1/1           PFget_Nstep_av [285]
+                0.00    0.00       1/3           PFget_NCh [245]
+                0.00    0.00       1/1           PFget_D [280]
+                0.00    0.00       1/46725       PFget_XElecOn [79]
+                0.00    0.00       1/46725       PFget_YElecOn [80]
+                0.00    0.00       1/46725       PFget_ZElecOn [81]
+                0.00    0.00       1/5           PFget_EndX [234]
+                0.00    0.00       1/5           PFget_EndY [235]
+                0.00    0.00       1/5           PFget_EndZ [236]
+                0.00    0.00       1/4           PFget_Px [237]
+                0.00    0.00       1/4           PFget_Py [238]
+                0.00    0.00       1/4           PFget_Pz [239]
+                0.00    0.00       1/17          PFget_SiteDist [210]
+                0.00    0.00       1/1           PFget_MovieFrames [284]
+                0.00    0.00       1/1           PFget_CutOffTime [279]
+                0.00    0.00       1/3           PFget_ClusterAlg [244]
+                0.00    0.00       1/1           PFget_ClusterAlgTrigger [277]
+                0.00    0.00       1/32227       getAlen [88]
+                0.00    0.00       1/123079      getAwid [67]
+                0.00    0.00       1/174808      getAhei [65]
+                0.00    0.00       1/3           PFget_gamma [247]
+                0.00    0.00       1/3           PFget_AttemptToHop [243]
+                0.00    0.00       1/4           PFget_reOrg [240]
+                0.00    0.00       1/1           newArbArray [327]
+                0.00    0.00       1/1           setArbElement [330]
+-----------------------------------------------
+                0.00    0.00       8/107582      HoppingToSurroundingSites [57]
+                0.00    0.00      56/107582      CalculateSumAndPGivenSingleClusterLL [16]
+                0.00    0.00      56/107582      CalculatePvalNodes [53]
+                0.00    0.00      92/107582      printMatrix [50]
+                0.00    0.00     143/107582      updatePath [11]
+                0.00    0.00     153/107582      partition [45]
+                0.00    0.00     276/107582      CalculateProbNeighDwell [34]
+                0.00    0.00     333/107582      getMatrixLLNodeElem [38]
+                0.00    0.00     356/107582      getMatrixLLNumberMatchAtRow [37]
+                0.00    0.00     459/107582      getMatrixLLMatchAtRow [29]
+                0.00    0.00     528/107582      CalculateDwellTimeAndRateN [30]
+                0.00    0.00     560/107582      resizeRow [24]
+                0.00    0.00     616/107582      duplicateMatrix [25]
+                0.00    0.00     622/107582      CalculateProb [26]
+                0.00    0.00    1452/107582      CalculatePvalNeigh [27]
+                0.00    0.00    1880/107582      ElecHopOffX [23]
+                0.00    0.00    2700/107582      CorrCal [14]
+                0.00    0.00    3150/107582      initJumPossibility_ElecX [21]
+                0.00    0.00    4112/107582      getMatrixLLLastMatchAtRow [18]
+                0.00    0.00    4112/107582      getMatrixLLNumberElemGreaterThanMatchAtRow [19]
+                0.00    0.00    4600/107582      ScaleAfterCorrFunc [15]
+                0.00    0.00   13644/107582      printMatrixLL [13]
+                0.00    0.00   16560/107582      insertDwelltimePos [10]
+                0.00    0.00   51114/107582      randomWalk [4]
+[5]     27.0    0.00    0.01  107582         getE [5]
+                0.01    0.00  107582/199521      getCols [1]
+                0.00    0.00  215164/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00      12/87016       setMatrixLLElem [60]
+                0.00    0.00      15/87016       HoppingToSurroundingSites [57]
+                0.00    0.00      20/87016       Pre_randomWalk [8]
+                0.00    0.00      20/87016       initFutureSite [59]
+                0.00    0.00      20/87016       initCharget0 [44]
+                0.00    0.00      43/87016       DivideEachElement [56]
+                0.00    0.00      48/87016       setMatrixLLValueAtRow [55]
+                0.00    0.00      59/87016       partition [45]
+                0.00    0.00      84/87016       CountOptions [51]
+                0.00    0.00     139/87016       getMatrixLLMatchAtRow [29]
+                0.00    0.00     248/87016       CalculateProbNeighDwell [34]
+                0.00    0.00     276/87016       CalculateDwellTimeAndRateN [30]
+                0.00    0.00     346/87016       DivideEachElementCol [36]
+                0.00    0.00     430/87016       CalculateProb [26]
+                0.00    0.00     470/87016       SaveDataPoint [22]
+                0.00    0.00     616/87016       duplicateMatrix [25]
+                0.00    0.00     900/87016       initElec [17]
+                0.00    0.00     900/87016       initJumPossibility_ElecX [21]
+                0.00    0.00     972/87016       newLL_MNode [28]
+                0.00    0.00    1120/87016       resizeRow [24]
+                0.00    0.00    2336/87016       randomWalk [4]
+                0.00    0.00    4500/87016       ScaleAfterCorrFunc [15]
+                0.00    0.00    5400/87016       initSite [9]
+                0.00    0.00    6802/87016       insertDwelltimePos [10]
+                0.00    0.00    7240/87016       CorrCal [14]
+                0.00    0.00   54000/87016       CalculateAllHops [7]
+[6]     21.8    0.00    0.00   87016         setE [6]
+                0.00    0.00   87016/199521      getCols [1]
+                0.00    0.00   87016/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[7]     13.5    0.00    0.00       1         CalculateAllHops [7]
+                0.00    0.00   54000/87016       setE [6]
+                0.00    0.00   54000/138603      getEnergy [66]
+                0.00    0.00   54000/263877      getIndex [63]
+                0.00    0.00   31500/208825      getSN [64]
+                0.00    0.00   27000/56700       hoppingRate [73]
+                0.00    0.00   18300/174808      getAhei [65]
+                0.00    0.00   18021/32227       getAlen [88]
+                0.00    0.00   13820/123079      getAwid [67]
+                0.00    0.00       2/50434       getAtotal [74]
+                0.00    0.00       1/576         newMatrix [135]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[8]      7.5    0.00    0.00       1         Pre_randomWalk [8]
+                0.00    0.00       1/1           initSite [9]
+                0.00    0.00       1/1           initElec [17]
+                0.00    0.00       1/1           initChargeArrayPath [43]
+                0.00    0.00       1/1           initCharget0 [44]
+                0.00    0.00       1/1           initFutureSite [59]
+                0.00    0.00      20/87016       setE [6]
+                0.00    0.00       2/3           PFget_ClusterAlg [244]
+                0.00    0.00       2/576         newMatrix [135]
+                0.00    0.00       1/3           PFget_method [248]
+                0.00    0.00       1/46736       PFget_Len [77]
+                0.00    0.00       1/46736       PFget_Wid [78]
+                0.00    0.00       1/46736       PFget_Hei [76]
+                0.00    0.00       1/5           PFget_EndX [234]
+                0.00    0.00       1/5           PFget_EndY [235]
+                0.00    0.00       1/5           PFget_EndZ [236]
+                0.00    0.00       1/46725       PFget_XElecOn [79]
+                0.00    0.00       1/46725       PFget_YElecOn [80]
+                0.00    0.00       1/46725       PFget_ZElecOn [81]
+                0.00    0.00       1/1           PFget_Ntot [286]
+                0.00    0.00       1/3           PFget_NCh [245]
+                0.00    0.00       1/3           PFget_AttemptToHop [243]
+                0.00    0.00       1/4           PFget_reOrg [240]
+                0.00    0.00       1/3           PFget_gamma [247]
+                0.00    0.00       1/17          PFget_SiteDist [210]
+                0.00    0.00       1/3           newSNarray [258]
+                0.00    0.00       1/1           CheckPt_Cluster_TOF [273]
+                0.00    0.00       1/1           PFget_ClusterAlgRec [276]
+                0.00    0.00       1/2           printFileEnergy [267]
+-----------------------------------------------
+                0.00    0.00       1/1           Pre_randomWalk [8]
+[9]      6.1    0.00    0.00       1         initSite [9]
+                0.00    0.00    2700/2700        CorrCal [14]
+                0.00    0.00       1/1           ScaleAfterCorrFunc [15]
+                0.00    0.00    5400/87016       setE [6]
+                0.00    0.00    9900/208825      getSN [64]
+                0.00    0.00    6300/39274       getInitE [87]
+                0.00    0.00    4500/9450        setEnergy [92]
+                0.00    0.00    4500/4500        setInitE [101]
+                0.00    0.00    2700/2700        grn [106]
+                0.00    0.00    1800/1800        getRandomSitePos [115]
+                0.00    0.00       1/4           PFget_reOrg [240]
+                0.00    0.00       1/3           PFget_AttemptToHop [243]
+                0.00    0.00       1/3           PFget_gamma [247]
+                0.00    0.00       1/1           PFget_lambda [321]
+                0.00    0.00       1/1           PFget_ScaleAfterCorr [288]
+                0.00    0.00       1/1           PFget_CutOff [278]
+                0.00    0.00       1/1           PFget_FracSeed [282]
+                0.00    0.00       1/1           PFget_FracTrap [283]
+                0.00    0.00       1/17          PFget_SiteDist [210]
+                0.00    0.00       1/1           PFget_Etrap [281]
+                0.00    0.00       1/1           PFget_Tsigma [298]
+                0.00    0.00       1/2           PFget_E0 [261]
+                0.00    0.00       1/2           PFget_sigma [263]
+                0.00    0.00       1/1           PFget_SeedProt [289]
+                0.00    0.00       1/4           PFget_Px [237]
+                0.00    0.00       1/4           PFget_Py [238]
+                0.00    0.00       1/4           PFget_Pz [239]
+                0.00    0.00       1/46725       PFget_XElecOn [79]
+                0.00    0.00       1/46725       PFget_YElecOn [80]
+                0.00    0.00       1/46725       PFget_ZElecOn [81]
+                0.00    0.00       1/32227       getAlen [88]
+                0.00    0.00       1/123079      getAwid [67]
+                0.00    0.00       1/174808      getAhei [65]
+                0.00    0.00       1/1           setDefaultSNa [331]
+                0.00    0.00       1/576         newMatrix [135]
+                0.00    0.00       1/6243        deleteMatrix [95]
+                0.00    0.00       1/1           initJumPossibility [326]
+-----------------------------------------------
+                0.00    0.00      16/2352        ChargeSystem [49]
+                0.00    0.00      18/2352        ChargeElectrode [48]
+                0.00    0.00    2318/2352        randomWalk [4]
+[10]     5.9    0.00    0.00    2352         insertDwelltimePos [10]
+                0.00    0.00   16560/107582      getE [5]
+                0.00    0.00    6802/87016       setE [6]
+                0.00    0.00   23718/72904       getDwel [68]
+                0.00    0.00   19516/66424       getCharge [69]
+-----------------------------------------------
+                0.00    0.00    1028/1028        randomWalk [4]
+[11]     5.1    0.00    0.00    1028         updatePath [11]
+                0.00    0.00    1117/1137        printCharge [12]
+                0.00    0.00    1028/1028        getMatrixLLLastMatchAtRow [18]
+                0.00    0.00      89/89          getMatrixLLMatchAtRow [29]
+                0.00    0.00     839/839         incMatrixLLElem [31]
+                0.00    0.00     244/244         addLL_MNodeBegin [33]
+                0.00    0.00     143/107582      getE [5]
+                0.00    0.00      38/333         getMatrixLLNodeElem [38]
+                0.00    0.00      12/12          setMatrixLLElem [60]
+                0.00    0.00    1028/50434       getAtotal [74]
+                0.00    0.00    1028/1028        getChargePath [125]
+                0.00    0.00     784/784         moveMatrixLLNodeToStart [130]
+                0.00    0.00     244/244         removeLL_MNodeEnd [152]
+                0.00    0.00      80/6243        deleteMatrix [95]
+                0.00    0.00      48/32056       getSNwithInd [89]
+                0.00    0.00      45/4533        getMatrixLLlength [100]
+                0.00    0.00      36/1088        checkSNconnectedCluster [119]
+                0.00    0.00      12/922         getClusterList [128]
+                0.00    0.00      12/113         getCluster_id [168]
+-----------------------------------------------
+                0.00    0.00      20/1137        printChargeA [41]
+                0.00    0.00    1117/1137        updatePath [11]
+[12]     3.4    0.00    0.00    1137         printCharge [12]
+                0.00    0.00    1137/1137        printMatrixLL [13]
+-----------------------------------------------
+                0.00    0.00    1137/1137        printCharge [12]
+[13]     3.4    0.00    0.00    1137         printMatrixLL [13]
+                0.00    0.00   13644/107582      getE [5]
+                0.00    0.00    4548/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00    2700/2700        initSite [9]
+[14]     2.5    0.00    0.00    2700         CorrCal [14]
+                0.00    0.00    7240/87016       setE [6]
+                0.00    0.00    2700/107582      getE [5]
+                0.00    0.00   30950/31074       getIndexPeriodic [90]
+                0.00    0.00   30688/39274       getInitE [87]
+                0.00    0.00   28250/32056       getSNwithInd [89]
+                0.00    0.00    8100/32227       getAlen [88]
+                0.00    0.00    5754/5766        newMatrixSet [96]
+                0.00    0.00    5754/6243        deleteMatrix [95]
+                0.00    0.00    5400/123079      getAwid [67]
+                0.00    0.00    5400/174808      getAhei [65]
+                0.00    0.00    5138/208825      getSN [64]
+                0.00    0.00    3776/3776        Rfind [102]
+                0.00    0.00    2700/138603      getEnergy [66]
+                0.00    0.00    2700/2700        corr [105]
+                0.00    0.00     472/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00       1/1           initSite [9]
+[15]     2.3    0.00    0.00       1         ScaleAfterCorrFunc [15]
+                0.00    0.00    4600/107582      getE [5]
+                0.00    0.00    4500/87016       setE [6]
+                0.00    0.00    9000/208825      getSN [64]
+                0.00    0.00    9000/138603      getEnergy [66]
+                0.00    0.00    4500/9450        setEnergy [92]
+                0.00    0.00       1/46736       PFget_Len [77]
+                0.00    0.00       1/46736       PFget_Wid [78]
+                0.00    0.00       1/46736       PFget_Hei [76]
+                0.00    0.00       1/2           PFget_E0 [261]
+                0.00    0.00       1/2           PFget_sigma [263]
+                0.00    0.00       1/576         newMatrix [135]
+                0.00    0.00       1/6243        deleteMatrix [95]
+-----------------------------------------------
+                0.00    0.00      12/12          randomWalk [4]
+[16]     1.5    0.00    0.00      12         CalculateSumAndPGivenSingleClusterLL [16]
+                0.00    0.00      12/12          CalculateProb [26]
+                0.00    0.00      12/12          CalculatePvalNeigh [27]
+                0.00    0.00      12/12          CalculateDwellTimeAndRateN [30]
+                0.00    0.00      12/42          duplicateMatrix [25]
+                0.00    0.00      12/12          CalculateProbNeighDwell [34]
+                0.00    0.00      12/12          CountOptions [51]
+                0.00    0.00      56/107582      getE [5]
+                0.00    0.00      12/12          CalculatePvalNodes [53]
+                0.00    0.00      12/96          DivideEachElementCol [36]
+                0.00    0.00      12/278         SumOfCol [40]
+                0.00    0.00      72/6243        deleteMatrix [95]
+                0.00    0.00      36/296         getStartNode [142]
+                0.00    0.00      28/562         getNextNode [136]
+                0.00    0.00      24/576         newMatrix [135]
+                0.00    0.00      12/72          getCluster_numNodes [177]
+-----------------------------------------------
+                0.00    0.00       1/1           Pre_randomWalk [8]
+[17]     1.2    0.00    0.00       1         initElec [17]
+                0.00    0.00       2/2           initJumPossibility_ElecX [21]
+                0.00    0.00     900/87016       setE [6]
+                0.00    0.00     900/208825      getSN [64]
+                0.00    0.00     900/138603      getEnergy [66]
+                0.00    0.00       4/576         newMatrix [135]
+                0.00    0.00       4/6243        deleteMatrix [95]
+                0.00    0.00       2/2           newElectrode [266]
+                0.00    0.00       2/2           setElectrode_alpha [272]
+                0.00    0.00       2/2           setElectrode_FermiEnergy [269]
+                0.00    0.00       2/2           PFget_ImageCharge [262]
+                0.00    0.00       1/4           PFget_reOrg [240]
+                0.00    0.00       1/3           PFget_RelativePerm [246]
+                0.00    0.00       1/17          PFget_SiteDist [210]
+                0.00    0.00       1/4           PFget_Px [237]
+                0.00    0.00       1/4           PFget_Py [238]
+                0.00    0.00       1/4           PFget_Pz [239]
+                0.00    0.00       1/46725       PFget_XElecOn [79]
+                0.00    0.00       1/46725       PFget_YElecOn [80]
+                0.00    0.00       1/46725       PFget_ZElecOn [81]
+                0.00    0.00       1/1           PFget_XFermiB [309]
+                0.00    0.00       1/1           PFget_XFermiF [310]
+                0.00    0.00       1/1           PFget_YFermiL [311]
+                0.00    0.00       1/1           PFget_YFermiR [312]
+                0.00    0.00       1/1           PFget_ZFermiB [314]
+                0.00    0.00       1/1           PFget_ZFermiA [313]
+                0.00    0.00       1/1           PFget_alphaxb [315]
+                0.00    0.00       1/1           PFget_alphaxf [316]
+                0.00    0.00       1/1           PFget_alphayl [317]
+                0.00    0.00       1/1           PFget_alphayr [318]
+                0.00    0.00       1/1           PFget_alphazb [320]
+                0.00    0.00       1/1           PFget_alphaza [319]
+                0.00    0.00       1/1           PFget_vX [322]
+                0.00    0.00       1/1           PFget_vY [323]
+                0.00    0.00       1/1           PFget_vZ [324]
+                0.00    0.00       1/32227       getAlen [88]
+                0.00    0.00       1/123079      getAwid [67]
+                0.00    0.00       1/174808      getAhei [65]
+-----------------------------------------------
+                0.00    0.00    1028/1028        updatePath [11]
+[18]     1.0    0.00    0.00    1028         getMatrixLLLastMatchAtRow [18]
+                0.00    0.00    4112/107582      getE [5]
+                0.00    0.00    4112/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00    1028/1028        triggerMatch [20]
+[19]     1.0    0.00    0.00    1028         getMatrixLLNumberElemGreaterThanMatchAtRow [19]
+                0.00    0.00    4112/107582      getE [5]
+                0.00    0.00    4112/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00    1028/1028        randomWalk [4]
+[20]     1.0    0.00    0.00    1028         triggerMatch [20]
+                0.00    0.00    1028/1028        getMatrixLLNumberElemGreaterThanMatchAtRow [19]
+-----------------------------------------------
+                0.00    0.00       2/2           initElec [17]
+[21]     1.0    0.00    0.00       2         initJumPossibility_ElecX [21]
+                0.00    0.00    3150/107582      getE [5]
+                0.00    0.00     900/87016       setE [6]
+                0.00    0.00    2700/56700       hoppingRate [73]
+                0.00    0.00    2700/29700       setSN_p [91]
+                0.00    0.00    2700/39743       getSN_p [86]
+                0.00    0.00     450/208825      getSN [64]
+                0.00    0.00     450/9450        setEnergy [92]
+                0.00    0.00     450/450         hoppingRateMillerAbraham [138]
+                0.00    0.00     450/4950        setsum [99]
+                0.00    0.00       2/2           getElectrode_FermiEnergy [264]
+                0.00    0.00       2/2           getElectrode_alpha [265]
+                0.00    0.00       2/3           newSNarray [258]
+                0.00    0.00       2/576         newMatrix [135]
+                0.00    0.00       2/2           setElectrode_Sum [271]
+                0.00    0.00       2/2           setElectrode_HopRates [270]
+                0.00    0.00       2/2           setElectrode_AdjacentSites [268]
+-----------------------------------------------
+                0.00    0.00      47/47          randomWalk [4]
+[22]     1.0    0.00    0.00      47         SaveDataPoint [22]
+                0.00    0.00      30/30          resizeRow [24]
+                0.00    0.00     470/87016       setE [6]
+                0.00    0.00      77/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00      18/18          randomWalk [4]
+[23]     1.0    0.00    0.00      18         ElecHopOffX [23]
+                0.00    0.00    1996/199521      getCols [1]
+                0.00    0.00    1880/107582      getE [5]
+                0.00    0.00     134/319652      getRows [62]
+                0.00    0.00      18/18          getElectrode_HopRates [208]
+                0.00    0.00      18/263877      getIndex [63]
+-----------------------------------------------
+                0.00    0.00      30/30          SaveDataPoint [22]
+[24]     0.9    0.00    0.00      30         resizeRow [24]
+                0.00    0.00      30/42          duplicateMatrix [25]
+                0.00    0.00    1120/87016       setE [6]
+                0.00    0.00     560/107582      getE [5]
+                0.00    0.00      60/6243        deleteMatrix [95]
+                0.00    0.00      30/576         newMatrix [135]
+-----------------------------------------------
+                0.00    0.00      12/42          CalculateSumAndPGivenSingleClusterLL [16]
+                0.00    0.00      30/42          resizeRow [24]
+[25]     0.6    0.00    0.00      42         duplicateMatrix [25]
+                0.00    0.00    1246/199521      getCols [1]
+                0.00    0.00     616/87016       setE [6]
+                0.00    0.00     616/107582      getE [5]
+                0.00    0.00     672/319652      getRows [62]
+                0.00    0.00      42/576         newMatrix [135]
+-----------------------------------------------
+                0.00    0.00      12/12          CalculateSumAndPGivenSingleClusterLL [16]
+[26]     0.5    0.00    0.00      12         CalculateProb [26]
+                0.00    0.00     622/107582      getE [5]
+                0.00    0.00     440/468         FindRowOfMatchInCol [35]
+                0.00    0.00     430/87016       setE [6]
+                0.00    0.00      72/96          DivideEachElementCol [36]
+                0.00    0.00     254/278         SumOfCol [40]
+                0.00    0.00      12/13          printMatrix [50]
+                0.00    0.00     210/623         getNode_id [133]
+                0.00    0.00     210/562         getNextNode [136]
+                0.00    0.00     182/8033        getLoc [94]
+                0.00    0.00     182/294         getFlagFro [145]
+                0.00    0.00     182/270         getFlagBeh [148]
+                0.00    0.00     182/294         getFlagLef [146]
+                0.00    0.00     182/294         getFlagRig [147]
+                0.00    0.00     182/294         getFlagBel [144]
+                0.00    0.00     182/294         getFlagAbo [143]
+                0.00    0.00     182/182         setAll [155]
+                0.00    0.00      84/296         getStartNode [142]
+                0.00    0.00      66/363         getIndLefP [140]
+                0.00    0.00      66/338         getIndRigP [141]
+                0.00    0.00      36/72          getCluster_numNodes [177]
+                0.00    0.00      29/183         getIndFroP [154]
+                0.00    0.00      29/206         getIndBehP [153]
+                0.00    0.00      15/855         getIndBelP [129]
+                0.00    0.00      15/720         getIndAboP [131]
+                0.00    0.00      12/5766        newMatrixSet [96]
+                0.00    0.00      12/576         newMatrix [135]
+                0.00    0.00      12/6243        deleteMatrix [95]
+-----------------------------------------------
+                0.00    0.00      12/12          CalculateSumAndPGivenSingleClusterLL [16]
+[27]     0.4    0.00    0.00      12         CalculatePvalNeigh [27]
+                0.00    0.00    1452/107582      getE [5]
+                0.00    0.00    1340/319652      getRows [62]
+                0.00    0.00     110/110         setNeighNodeNew_p [171]
+                0.00    0.00     110/110         setNeighNode_t [172]
+                0.00    0.00     108/1698        getNeighNode_id [116]
+                0.00    0.00     108/1291        getNextNeigh [118]
+                0.00    0.00      12/244         getStartNeigh [151]
+-----------------------------------------------
+                0.00    0.00      20/324         newMatrix_LinkList [52]
+                0.00    0.00      60/324         addLL_MNode [47]
+                0.00    0.00     244/324         addLL_MNodeBegin [33]
+[28]     0.2    0.00    0.00     324         newLL_MNode [28]
+                0.00    0.00     972/87016       setE [6]
+                0.00    0.00     324/576         newMatrix [135]
+-----------------------------------------------
+                0.00    0.00      89/89          updatePath [11]
+[29]     0.2    0.00    0.00      89         getMatrixLLMatchAtRow [29]
+                0.00    0.00     459/107582      getE [5]
+                0.00    0.00      89/89          getMatrixLLNumberMatchAtRow [37]
+                0.00    0.00     139/87016       setE [6]
+                0.00    0.00      80/576         newMatrix [135]
+-----------------------------------------------
+                0.00    0.00      12/12          CalculateSumAndPGivenSingleClusterLL [16]
+[30]     0.2    0.00    0.00      12         CalculateDwellTimeAndRateN [30]
+                0.00    0.00     528/107582      getE [5]
+                0.00    0.00     276/87016       setE [6]
+                0.00    0.00      12/15          DivideEachElement [56]
+                0.00    0.00      12/278         SumOfCol [40]
+                0.00    0.00     156/263877      getIndex [63]
+                0.00    0.00      28/623         getNode_id [133]
+                0.00    0.00      28/8033        getLoc [94]
+                0.00    0.00      28/56          checkBoundsIndexFront [181]
+                0.00    0.00      28/294         getFlagFro [145]
+                0.00    0.00      28/56          checkBoundsIndexBehind [179]
+                0.00    0.00      28/56          checkBoundsIndexLeft [182]
+                0.00    0.00      28/294         getFlagLef [146]
+                0.00    0.00      28/56          checkBoundsIndexRight [183]
+                0.00    0.00      28/294         getFlagRig [147]
+                0.00    0.00      28/56          checkBoundsIndexBelow [180]
+                0.00    0.00      28/294         getFlagBel [144]
+                0.00    0.00      28/56          checkBoundsIndexAbove [178]
+                0.00    0.00      28/294         getFlagAbo [143]
+                0.00    0.00      28/562         getNextNode [136]
+                0.00    0.00      24/72          getCluster_numNodes [177]
+                0.00    0.00      24/576         newMatrix [135]
+                0.00    0.00      16/270         getFlagBeh [148]
+                0.00    0.00      12/296         getStartNode [142]
+                0.00    0.00      12/12          setCluster_time [224]
+                0.00    0.00      12/6243        deleteMatrix [95]
+-----------------------------------------------
+                0.00    0.00     839/839         updatePath [11]
+[31]     0.2    0.00    0.00     839         incMatrixLLElem [31]
+                0.00    0.00     839/839         incrementE [32]
+                0.00    0.00    1910/4533        getMatrixLLlength [100]
+-----------------------------------------------
+                0.00    0.00     839/839         incMatrixLLElem [31]
+[32]     0.2    0.00    0.00     839         incrementE [32]
+                0.00    0.00     839/199521      getCols [1]
+                0.00    0.00     839/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00     244/244         updatePath [11]
+[33]     0.2    0.00    0.00     244         addLL_MNodeBegin [33]
+                0.00    0.00     244/324         newLL_MNode [28]
+-----------------------------------------------
+                0.00    0.00      12/12          CalculateSumAndPGivenSingleClusterLL [16]
+[34]     0.2    0.00    0.00      12         CalculateProbNeighDwell [34]
+                0.00    0.00     276/107582      getE [5]
+                0.00    0.00     248/87016       setE [6]
+                0.00    0.00      12/96          DivideEachElementCol [36]
+                0.00    0.00      28/468         FindRowOfMatchInCol [35]
+                0.00    0.00     124/263877      getIndex [63]
+                0.00    0.00      28/623         getNode_id [133]
+                0.00    0.00      28/56          checkBoundsIndexFront [181]
+                0.00    0.00      28/8033        getLoc [94]
+                0.00    0.00      28/294         getFlagFro [145]
+                0.00    0.00      28/56          checkBoundsIndexBehind [179]
+                0.00    0.00      28/56          checkBoundsIndexLeft [182]
+                0.00    0.00      28/294         getFlagLef [146]
+                0.00    0.00      28/56          checkBoundsIndexRight [183]
+                0.00    0.00      28/294         getFlagRig [147]
+                0.00    0.00      28/56          checkBoundsIndexBelow [180]
+                0.00    0.00      28/294         getFlagBel [144]
+                0.00    0.00      28/56          checkBoundsIndexAbove [178]
+                0.00    0.00      28/294         getFlagAbo [143]
+                0.00    0.00      28/562         getNextNode [136]
+                0.00    0.00      25/25          getIndexBelowP [195]
+                0.00    0.00      25/25          getIndexAboveP [194]
+                0.00    0.00      24/24          getIndexFrontP [196]
+                0.00    0.00      19/19          getIndexLeftP [206]
+                0.00    0.00      19/19          getIndexRightP [207]
+                0.00    0.00      16/270         getFlagBeh [148]
+                0.00    0.00      12/576         newMatrix [135]
+                0.00    0.00      12/12          setAllRowsInCol [222]
+                0.00    0.00      12/12          getIndexBehindP [220]
+-----------------------------------------------
+                0.00    0.00      28/468         CalculateProbNeighDwell [34]
+                0.00    0.00     440/468         CalculateProb [26]
+[35]     0.1    0.00    0.00     468         FindRowOfMatchInCol [35]
+                0.00    0.00     468/199521      getCols [1]
+-----------------------------------------------
+                0.00    0.00      12/96          CalculateSumAndPGivenSingleClusterLL [16]
+                0.00    0.00      12/96          CalculateProbNeighDwell [34]
+                0.00    0.00      72/96          CalculateProb [26]
+[36]     0.1    0.00    0.00      96         DivideEachElementCol [36]
+                0.00    0.00     346/87016       setE [6]
+                0.00    0.00      96/199521      getCols [1]
+-----------------------------------------------
+                0.00    0.00      89/89          getMatrixLLMatchAtRow [29]
+[37]     0.1    0.00    0.00      89         getMatrixLLNumberMatchAtRow [37]
+                0.00    0.00     356/107582      getE [5]
+                0.00    0.00     356/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00      38/333         updatePath [11]
+                0.00    0.00     295/333         getIDsOfTwoOfMostFrequentlyVisitedSites [39]
+[38]     0.1    0.00    0.00     333         getMatrixLLNodeElem [38]
+                0.00    0.00     333/107582      getE [5]
+                0.00    0.00     773/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00      24/24          randomWalk [4]
+[39]     0.1    0.00    0.00      24         getIDsOfTwoOfMostFrequentlyVisitedSites [39]
+                0.00    0.00     295/333         getMatrixLLNodeElem [38]
+                0.00    0.00      72/4533        getMatrixLLlength [100]
+-----------------------------------------------
+                0.00    0.00      12/278         CalculateSumAndPGivenSingleClusterLL [16]
+                0.00    0.00      12/278         CalculateDwellTimeAndRateN [30]
+                0.00    0.00     254/278         CalculateProb [26]
+[40]     0.1    0.00    0.00     278         SumOfCol [40]
+                0.00    0.00     278/199521      getCols [1]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[41]     0.1    0.00    0.00       1         printChargeA [41]
+                0.00    0.00      20/1137        printCharge [12]
+-----------------------------------------------
+                0.00    0.00      20/20          initChargeArrayPath [43]
+[42]     0.1    0.00    0.00      20         initChargePath [42]
+                0.00    0.00      60/60          addLL_MNode [47]
+                0.00    0.00      20/20          newMatrix_LinkList [52]
+-----------------------------------------------
+                0.00    0.00       1/1           Pre_randomWalk [8]
+[43]     0.1    0.00    0.00       1         initChargeArrayPath [43]
+                0.00    0.00      20/20          initChargePath [42]
+-----------------------------------------------
+                0.00    0.00       1/1           Pre_randomWalk [8]
+[44]     0.1    0.00    0.00       1         initCharget0 [44]
+                0.00    0.00       1/1           quickSort [46]
+                0.00    0.00      20/87016       setE [6]
+                0.00    0.00      60/66424       getCharge [69]
+                0.00    0.00      60/208825      getSN [64]
+                0.00    0.00      40/2376        setDwel [108]
+                0.00    0.00      40/1068        setCx [120]
+                0.00    0.00      40/1068        setCy [121]
+                0.00    0.00      40/1068        setCz [122]
+                0.00    0.00      20/123079      getAwid [67]
+                0.00    0.00      20/174808      getAhei [65]
+                0.00    0.00      20/47667       getDwelStat [75]
+                0.00    0.00      20/3350        setDwelStat [104]
+                0.00    0.00      20/20          getVisFreq [203]
+                0.00    0.00      20/20          setVisFreq [205]
+                0.00    0.00      20/1032        setVis [123]
+                0.00    0.00      20/2222        getsum [114]
+                0.00    0.00      20/72904       getDwel [68]
+                0.00    0.00       1/1           newChargeA [328]
+                0.00    0.00       1/1           getUnOccYZplane [325]
+-----------------------------------------------
+                0.00    0.00      13/13          quickSort [46]
+[45]     0.1    0.00    0.00      13         partition [45]
+                0.00    0.00     153/107582      getE [5]
+                0.00    0.00      59/87016       setE [6]
+                0.00    0.00     107/66424       getCharge [69]
+                0.00    0.00     107/72904       getDwel [68]
+-----------------------------------------------
+                                  26             quickSort [46]
+                0.00    0.00       1/1           initCharget0 [44]
+[46]     0.1    0.00    0.00       1+26      quickSort [46]
+                0.00    0.00      13/13          partition [45]
+                                  26             quickSort [46]
+-----------------------------------------------
+                0.00    0.00      60/60          initChargePath [42]
+[47]     0.0    0.00    0.00      60         addLL_MNode [47]
+                0.00    0.00      60/324         newLL_MNode [28]
+-----------------------------------------------
+                0.00    0.00      18/18          randomWalk [4]
+[48]     0.0    0.00    0.00      18         ChargeElectrode [48]
+                0.00    0.00      18/2352        insertDwelltimePos [10]
+                0.00    0.00      18/18          getElectrode_Sum [209]
+                0.00    0.00      18/2376        setDwel [108]
+                0.00    0.00      16/16          Electrode_addCharge [211]
+-----------------------------------------------
+                0.00    0.00      16/16          randomWalk [4]
+[49]     0.0    0.00    0.00      16         ChargeSystem [49]
+                0.00    0.00      16/2352        insertDwelltimePos [10]
+                0.00    0.00      16/16          Electrode_minusCharge [212]
+-----------------------------------------------
+                0.00    0.00       1/13          main [3]
+                0.00    0.00      12/13          CalculateProb [26]
+[50]     0.0    0.00    0.00      13         printMatrix [50]
+                0.00    0.00      92/107582      getE [5]
+                0.00    0.00      13/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00      12/12          CalculateSumAndPGivenSingleClusterLL [16]
+[51]     0.0    0.00    0.00      12         CountOptions [51]
+                0.00    0.00      84/87016       setE [6]
+                0.00    0.00      28/623         getNode_id [133]
+                0.00    0.00      28/8033        getLoc [94]
+                0.00    0.00      28/294         getFlagFro [145]
+                0.00    0.00      28/270         getFlagBeh [148]
+                0.00    0.00      28/294         getFlagLef [146]
+                0.00    0.00      28/294         getFlagRig [147]
+                0.00    0.00      28/294         getFlagBel [144]
+                0.00    0.00      28/294         getFlagAbo [143]
+                0.00    0.00      28/562         getNextNode [136]
+-----------------------------------------------
+                0.00    0.00      20/20          initChargePath [42]
+[52]     0.0    0.00    0.00      20         newMatrix_LinkList [52]
+                0.00    0.00      20/324         newLL_MNode [28]
+-----------------------------------------------
+                0.00    0.00      12/12          CalculateSumAndPGivenSingleClusterLL [16]
+[53]     0.0    0.00    0.00      12         CalculatePvalNodes [53]
+                0.00    0.00      56/107582      getE [5]
+                0.00    0.00      56/56          setNode_p [184]
+                0.00    0.00      56/562         getNextNode [136]
+                0.00    0.00      28/28          getNode_p [191]
+                0.00    0.00      24/296         getStartNode [142]
+-----------------------------------------------
+                0.00    0.00      12/12          randomWalk [4]
+[54]     0.0    0.00    0.00      12         resetChargePathVisit [54]
+                0.00    0.00      12/12          setMatrixLLValueAtRow [55]
+-----------------------------------------------
+                0.00    0.00      12/12          resetChargePathVisit [54]
+[55]     0.0    0.00    0.00      12         setMatrixLLValueAtRow [55]
+                0.00    0.00      48/87016       setE [6]
+                0.00    0.00      12/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00       3/15          HoppingToSurroundingSites [57]
+                0.00    0.00      12/15          CalculateDwellTimeAndRateN [30]
+[56]     0.0    0.00    0.00      15         DivideEachElement [56]
+                0.00    0.00      43/87016       setE [6]
+-----------------------------------------------
+                0.00    0.00      20/1632        HopToElecX [61]
+                0.00    0.00    1612/1632        SiteHop [58]
+[57]     0.0    0.00    0.00    1632         HoppingToSurroundingSites [57]
+                0.00    0.00      15/87016       setE [6]
+                0.00    0.00       3/15          DivideEachElement [56]
+                0.00    0.00       8/107582      getE [5]
+                0.00    0.00    7969/39743       getSN_p [86]
+                0.00    0.00       3/576         newMatrix [135]
+                0.00    0.00       3/6243        deleteMatrix [95]
+-----------------------------------------------
+                0.00    0.00    2202/2202        randomWalk [4]
+[58]     0.0    0.00    0.00    2202         SiteHop [58]
+                0.00    0.00    1612/1632        HoppingToSurroundingSites [57]
+                0.00    0.00    2202/32227       getAlen [88]
+                0.00    0.00    2202/123079      getAwid [67]
+                0.00    0.00    2202/174808      getAhei [65]
+                0.00    0.00    2202/64245       getCx [70]
+                0.00    0.00    2202/59571       getCy [71]
+                0.00    0.00    2202/59571       getCz [72]
+                0.00    0.00    2202/9368        ProjectChargePositionOntoSiteNodeReferenceFrame [93]
+                0.00    0.00    2074/39743       getSN_p [86]
+                0.00    0.00     797/855         getIndBelP [129]
+                0.00    0.00     650/720         getIndAboP [131]
+                0.00    0.00     590/590         OccAllNei [134]
+                0.00    0.00     264/363         getIndLefP [140]
+                0.00    0.00     223/338         getIndRigP [141]
+                0.00    0.00     149/206         getIndBehP [153]
+                0.00    0.00     119/183         getIndFroP [154]
+-----------------------------------------------
+                0.00    0.00       1/1           Pre_randomWalk [8]
+[59]     0.0    0.00    0.00       1         initFutureSite [59]
+                0.00    0.00      20/87016       setE [6]
+                0.00    0.00      20/20          HopToElecX [61]
+                0.00    0.00      20/66424       getCharge [69]
+                0.00    0.00      20/59571       getCy [71]
+                0.00    0.00      20/59571       getCz [72]
+                0.00    0.00      20/64245       getCx [70]
+                0.00    0.00      20/9368        ProjectChargePositionOntoSiteNodeReferenceFrame [93]
+                0.00    0.00      20/208825      getSN [64]
+                0.00    0.00       1/46736       PFget_Len [77]
+                0.00    0.00       1/46736       PFget_Wid [78]
+                0.00    0.00       1/46736       PFget_Hei [76]
+                0.00    0.00       1/4           PFget_Px [237]
+                0.00    0.00       1/4           PFget_Py [238]
+                0.00    0.00       1/4           PFget_Pz [239]
+                0.00    0.00       1/5           PFget_EndX [234]
+                0.00    0.00       1/5           PFget_EndY [235]
+                0.00    0.00       1/5           PFget_EndZ [236]
+                0.00    0.00       1/46725       PFget_XElecOn [79]
+                0.00    0.00       1/46725       PFget_YElecOn [80]
+                0.00    0.00       1/46725       PFget_ZElecOn [81]
+                0.00    0.00       1/3           PFget_NCh [245]
+-----------------------------------------------
+                0.00    0.00      12/12          updatePath [11]
+[60]     0.0    0.00    0.00      12         setMatrixLLElem [60]
+                0.00    0.00      12/87016       setE [6]
+                0.00    0.00      12/4533        getMatrixLLlength [100]
+                0.00    0.00      12/319652      getRows [62]
+-----------------------------------------------
+                0.00    0.00      20/20          initFutureSite [59]
+[61]     0.0    0.00    0.00      20         HopToElecX [61]
+                0.00    0.00      20/1632        HoppingToSurroundingSites [57]
+                0.00    0.00      20/32227       getAlen [88]
+                0.00    0.00      20/123079      getAwid [67]
+                0.00    0.00      20/174808      getAhei [65]
+                0.00    0.00      20/64245       getCx [70]
+                0.00    0.00      20/59571       getCy [71]
+                0.00    0.00      20/59571       getCz [72]
+                0.00    0.00      20/9368        ProjectChargePositionOntoSiteNodeReferenceFrame [93]
+                0.00    0.00      20/20          getElectrode_AdjacentSites [202]
+                0.00    0.00      20/208825      getSN [64]
+                0.00    0.00       7/183         getIndFroP [154]
+                0.00    0.00       5/363         getIndLefP [140]
+                0.00    0.00       4/855         getIndBelP [129]
+                0.00    0.00       2/338         getIndRigP [141]
+                0.00    0.00       2/720         getIndAboP [131]
+-----------------------------------------------
+                0.00    0.00      12/319652      setMatrixLLElem [60]
+                0.00    0.00      12/319652      setMatrixLLValueAtRow [55]
+                0.00    0.00      13/319652      printMatrix [50]
+                0.00    0.00      77/319652      SaveDataPoint [22]
+                0.00    0.00     134/319652      ElecHopOffX [23]
+                0.00    0.00     356/319652      getMatrixLLNumberMatchAtRow [37]
+                0.00    0.00     472/319652      CorrCal [14]
+                0.00    0.00     672/319652      duplicateMatrix [25]
+                0.00    0.00     773/319652      getMatrixLLNodeElem [38]
+                0.00    0.00     839/319652      incrementE [32]
+                0.00    0.00    1340/319652      CalculatePvalNeigh [27]
+                0.00    0.00    4112/319652      getMatrixLLLastMatchAtRow [18]
+                0.00    0.00    4112/319652      getMatrixLLNumberElemGreaterThanMatchAtRow [19]
+                0.00    0.00    4548/319652      printMatrixLL [13]
+                0.00    0.00   87016/319652      setE [6]
+                0.00    0.00  215164/319652      getE [5]
+[62]     0.0    0.00    0.00  319652         getRows [62]
+-----------------------------------------------
+                0.00    0.00      13/263877      getIndBel [214]
+                0.00    0.00      18/263877      ElecHopOffX [23]
+                0.00    0.00      25/263877      getIndRig [193]
+                0.00    0.00      27/263877      getIndAbo [192]
+                0.00    0.00      28/263877      getIndBeh [189]
+                0.00    0.00      43/263877      getIndLef [187]
+                0.00    0.00      52/263877      getIndFro [185]
+                0.00    0.00     116/263877      ClusterHop [158]
+                0.00    0.00     124/263877      CalculateProbNeighDwell [34]
+                0.00    0.00     156/263877      CalculateDwellTimeAndRateN [30]
+                0.00    0.00     450/263877      getUnOccYZplane [325]
+                0.00    0.00   54000/263877      CalculateAllHops [7]
+                0.00    0.00  208825/263877      getSN [64]
+[63]     0.0    0.00    0.00  263877         getIndex [63]
+-----------------------------------------------
+                0.00    0.00      20/208825      HopToElecX [61]
+                0.00    0.00      20/208825      initFutureSite [59]
+                0.00    0.00      60/208825      initCharget0 [44]
+                0.00    0.00     225/208825      getUnOccYZplane [325]
+                0.00    0.00     232/208825      OccAllNeiCluster [163]
+                0.00    0.00     310/208825      OccAllCluster [162]
+                0.00    0.00     450/208825      initJumPossibility_ElecX [21]
+                0.00    0.00     900/208825      initElec [17]
+                0.00    0.00    3540/208825      OccAllNei [134]
+                0.00    0.00    4086/208825      getRandomSitePos [115]
+                0.00    0.00    4500/208825      setDefaultSNa [331]
+                0.00    0.00    5138/208825      CorrCal [14]
+                0.00    0.00    6839/208825      randomWalk [4]
+                0.00    0.00    9000/208825      printFileEnergy [267]
+                0.00    0.00    9000/208825      ScaleAfterCorrFunc [15]
+                0.00    0.00    9900/208825      initSite [9]
+                0.00    0.00   31500/208825      CalculateAllHops [7]
+                0.00    0.00   31500/208825      initJumPossibility [326]
+                0.00    0.00   45000/208825      printMovie [227]
+                0.00    0.00   46605/208825      UpdateOccTime [82]
+[64]     0.0    0.00    0.00  208825         getSN [64]
+                0.00    0.00  208825/263877      getIndex [63]
+-----------------------------------------------
+                0.00    0.00       1/174808      randomWalk [4]
+                0.00    0.00       1/174808      initSite [9]
+                0.00    0.00       1/174808      initElec [17]
+                0.00    0.00      20/174808      HopToElecX [61]
+                0.00    0.00      20/174808      initCharget0 [44]
+                0.00    0.00      53/174808      CalculateNeighSinglePYPZ [216]
+                0.00    0.00     116/174808      ClusterHop [158]
+                0.00    0.00     116/174808      OccAllCluster [162]
+                0.00    0.00    2202/174808      SiteHop [58]
+                0.00    0.00    2337/174808      MakeHop [110]
+                0.00    0.00    4801/174808      initJumPossibility [326]
+                0.00    0.00    5400/174808      CorrCal [14]
+                0.00    0.00   18300/174808      CalculateAllHops [7]
+                0.00    0.00   48000/174808      printMovie [227]
+                0.00    0.00   93440/174808      UpdateOccTime [82]
+[65]     0.0    0.00    0.00  174808         getAhei [65]
+-----------------------------------------------
+                0.00    0.00       3/138603      getClusterIDGivenSiteNode [254]
+                0.00    0.00     900/138603      initElec [17]
+                0.00    0.00    2700/138603      CorrCal [14]
+                0.00    0.00    9000/138603      ScaleAfterCorrFunc [15]
+                0.00    0.00   18000/138603      printFileEnergy [267]
+                0.00    0.00   54000/138603      CalculateAllHops [7]
+                0.00    0.00   54000/138603      initJumPossibility [326]
+[66]     0.0    0.00    0.00  138603         getEnergy [66]
+-----------------------------------------------
+                0.00    0.00       1/123079      randomWalk [4]
+                0.00    0.00       1/123079      initSite [9]
+                0.00    0.00       1/123079      initElec [17]
+                0.00    0.00      20/123079      HopToElecX [61]
+                0.00    0.00      20/123079      initCharget0 [44]
+                0.00    0.00      28/123079      CalculateNeighSinglePYPZ [216]
+                0.00    0.00     116/123079      ClusterHop [158]
+                0.00    0.00     116/123079      OccAllCluster [162]
+                0.00    0.00     321/123079      initJumPossibility [326]
+                0.00    0.00    2202/123079      SiteHop [58]
+                0.00    0.00    3200/123079      printMovie [227]
+                0.00    0.00    4393/123079      MakeHop [110]
+                0.00    0.00    5400/123079      CorrCal [14]
+                0.00    0.00   13820/123079      CalculateAllHops [7]
+                0.00    0.00   93440/123079      UpdateOccTime [82]
+[67]     0.0    0.00    0.00  123079         getAwid [67]
+-----------------------------------------------
+                0.00    0.00      20/72904       initCharget0 [44]
+                0.00    0.00     107/72904       partition [45]
+                0.00    0.00   23718/72904       insertDwelltimePos [10]
+                0.00    0.00   49059/72904       randomWalk [4]
+[68]     0.0    0.00    0.00   72904         getDwel [68]
+-----------------------------------------------
+                0.00    0.00      20/66424       initFutureSite [59]
+                0.00    0.00      60/66424       initCharget0 [44]
+                0.00    0.00     107/66424       partition [45]
+                0.00    0.00   19516/66424       insertDwelltimePos [10]
+                0.00    0.00   46721/66424       randomWalk [4]
+[69]     0.0    0.00    0.00   66424         getCharge [69]
+-----------------------------------------------
+                0.00    0.00      20/64245       HopToElecX [61]
+                0.00    0.00      20/64245       initFutureSite [59]
+                0.00    0.00     116/64245       ClusterHop [158]
+                0.00    0.00    2202/64245       SiteHop [58]
+                0.00    0.00    3365/64245       MakeHop [110]
+                0.00    0.00   11802/64245       randomWalk [4]
+                0.00    0.00   46720/64245       UpdateOccTime [82]
+[70]     0.0    0.00    0.00   64245         getCx [70]
+-----------------------------------------------
+                0.00    0.00      20/59571       HopToElecX [61]
+                0.00    0.00      20/59571       initFutureSite [59]
+                0.00    0.00     116/59571       ClusterHop [158]
+                0.00    0.00    2202/59571       SiteHop [58]
+                0.00    0.00    3365/59571       MakeHop [110]
+                0.00    0.00    7128/59571       randomWalk [4]
+                0.00    0.00   46720/59571       UpdateOccTime [82]
+[71]     0.0    0.00    0.00   59571         getCy [71]
+-----------------------------------------------
+                0.00    0.00      20/59571       HopToElecX [61]
+                0.00    0.00      20/59571       initFutureSite [59]
+                0.00    0.00     116/59571       ClusterHop [158]
+                0.00    0.00    2202/59571       SiteHop [58]
+                0.00    0.00    3365/59571       MakeHop [110]
+                0.00    0.00    7128/59571       randomWalk [4]
+                0.00    0.00   46720/59571       UpdateOccTime [82]
+[72]     0.0    0.00    0.00   59571         getCz [72]
+-----------------------------------------------
+                0.00    0.00    2700/56700       initJumPossibility_ElecX [21]
+                0.00    0.00   27000/56700       CalculateAllHops [7]
+                0.00    0.00   27000/56700       initJumPossibility [326]
+[73]     0.0    0.00    0.00   56700         hoppingRate [73]
+-----------------------------------------------
+                0.00    0.00       2/50434       printFileEnergy [267]
+                0.00    0.00       2/50434       CalculateAllHops [7]
+                0.00    0.00      10/50434       printMovie [227]
+                0.00    0.00    1028/50434       randomWalk [4]
+                0.00    0.00    1028/50434       updatePath [11]
+                0.00    0.00    2286/50434       getRandomSitePos [115]
+                0.00    0.00   14022/50434       MakeHop [110]
+                0.00    0.00   32056/50434       getSNwithInd [89]
+[74]     0.0    0.00    0.00   50434         getAtotal [74]
+-----------------------------------------------
+                0.00    0.00      20/47667       initCharget0 [44]
+                0.00    0.00     116/47667       OccAllNeiCluster [163]
+                0.00    0.00     194/47667       OccAllCluster [162]
+                0.00    0.00    2337/47667       MakeHop [110]
+                0.00    0.00   45000/47667       printMovie [227]
+[75]     0.0    0.00    0.00   47667         getDwelStat [75]
+-----------------------------------------------
+                0.00    0.00       1/46736       main [3]
+                0.00    0.00       1/46736       Pre_randomWalk [8]
+                0.00    0.00       1/46736       initFutureSite [59]
+                0.00    0.00       1/46736       ScaleAfterCorrFunc [15]
+                0.00    0.00       2/46736       printFileEnergy [267]
+                0.00    0.00      10/46736       printMovie [227]
+                0.00    0.00   46720/46736       UpdateOccTime [82]
+[76]     0.0    0.00    0.00   46736         PFget_Hei [76]
+-----------------------------------------------
+                0.00    0.00       1/46736       main [3]
+                0.00    0.00       1/46736       Pre_randomWalk [8]
+                0.00    0.00       1/46736       initFutureSite [59]
+                0.00    0.00       1/46736       ScaleAfterCorrFunc [15]
+                0.00    0.00       2/46736       printFileEnergy [267]
+                0.00    0.00      10/46736       printMovie [227]
+                0.00    0.00   46720/46736       UpdateOccTime [82]
+[77]     0.0    0.00    0.00   46736         PFget_Len [77]
+-----------------------------------------------
+                0.00    0.00       1/46736       main [3]
+                0.00    0.00       1/46736       Pre_randomWalk [8]
+                0.00    0.00       1/46736       initFutureSite [59]
+                0.00    0.00       1/46736       ScaleAfterCorrFunc [15]
+                0.00    0.00       2/46736       printFileEnergy [267]
+                0.00    0.00      10/46736       printMovie [227]
+                0.00    0.00   46720/46736       UpdateOccTime [82]
+[78]     0.0    0.00    0.00   46736         PFget_Wid [78]
+-----------------------------------------------
+                0.00    0.00       1/46725       Pre_randomWalk [8]
+                0.00    0.00       1/46725       initFutureSite [59]
+                0.00    0.00       1/46725       randomWalk [4]
+                0.00    0.00       1/46725       initSite [9]
+                0.00    0.00       1/46725       initElec [17]
+                0.00    0.00   46720/46725       UpdateOccTime [82]
+[79]     0.0    0.00    0.00   46725         PFget_XElecOn [79]
+-----------------------------------------------
+                0.00    0.00       1/46725       Pre_randomWalk [8]
+                0.00    0.00       1/46725       initFutureSite [59]
+                0.00    0.00       1/46725       randomWalk [4]
+                0.00    0.00       1/46725       initSite [9]
+                0.00    0.00       1/46725       initElec [17]
+                0.00    0.00   46720/46725       UpdateOccTime [82]
+[80]     0.0    0.00    0.00   46725         PFget_YElecOn [80]
+-----------------------------------------------
+                0.00    0.00       1/46725       Pre_randomWalk [8]
+                0.00    0.00       1/46725       initFutureSite [59]
+                0.00    0.00       1/46725       randomWalk [4]
+                0.00    0.00       1/46725       initSite [9]
+                0.00    0.00       1/46725       initElec [17]
+                0.00    0.00   46720/46725       UpdateOccTime [82]
+[81]     0.0    0.00    0.00   46725         PFget_ZElecOn [81]
+-----------------------------------------------
+                0.00    0.00   46720/46720       randomWalk [4]
+[82]     0.0    0.00    0.00   46720         UpdateOccTime [82]
+                0.00    0.00   93440/123079      getAwid [67]
+                0.00    0.00   93440/174808      getAhei [65]
+                0.00    0.00   46720/46736       PFget_Len [77]
+                0.00    0.00   46720/46736       PFget_Wid [78]
+                0.00    0.00   46720/46736       PFget_Hei [76]
+                0.00    0.00   46720/64245       getCx [70]
+                0.00    0.00   46720/59571       getCy [71]
+                0.00    0.00   46720/59571       getCz [72]
+                0.00    0.00   46720/46725       PFget_XElecOn [79]
+                0.00    0.00   46720/46725       PFget_YElecOn [80]
+                0.00    0.00   46720/46725       PFget_ZElecOn [81]
+                0.00    0.00   46605/208825      getSN [64]
+                0.00    0.00   46605/46605       addTime [83]
+-----------------------------------------------
+                0.00    0.00   46605/46605       UpdateOccTime [82]
+[83]     0.0    0.00    0.00   46605         addTime [83]
+-----------------------------------------------
+                0.00    0.00   45000/45000       printMovie [227]
+[84]     0.0    0.00    0.00   45000         getTime [84]
+-----------------------------------------------
+                0.00    0.00   44384/44384       randomWalk [4]
+[85]     0.0    0.00    0.00   44384         MinusDwel [85]
+-----------------------------------------------
+                0.00    0.00    2074/39743       SiteHop [58]
+                0.00    0.00    2700/39743       initJumPossibility_ElecX [21]
+                0.00    0.00    7969/39743       HoppingToSurroundingSites [57]
+                0.00    0.00   27000/39743       initJumPossibility [326]
+[86]     0.0    0.00    0.00   39743         getSN_p [86]
+-----------------------------------------------
+                0.00    0.00    2286/39274       getRandomSitePos [115]
+                0.00    0.00    6300/39274       initSite [9]
+                0.00    0.00   30688/39274       CorrCal [14]
+[87]     0.0    0.00    0.00   39274         getInitE [87]
+-----------------------------------------------
+                0.00    0.00       1/32227       randomWalk [4]
+                0.00    0.00       1/32227       initSite [9]
+                0.00    0.00       1/32227       initElec [17]
+                0.00    0.00      20/32227       HopToElecX [61]
+                0.00    0.00      22/32227       initJumPossibility [326]
+                0.00    0.00      52/32227       CalculateNeighSinglePYPZ [216]
+                0.00    0.00     116/32227       ClusterHop [158]
+                0.00    0.00     116/32227       OccAllCluster [162]
+                0.00    0.00     210/32227       printMovie [227]
+                0.00    0.00    2202/32227       SiteHop [58]
+                0.00    0.00    3365/32227       MakeHop [110]
+                0.00    0.00    8100/32227       CorrCal [14]
+                0.00    0.00   18021/32227       CalculateAllHops [7]
+[88]     0.0    0.00    0.00   32227         getAlen [88]
+-----------------------------------------------
+                0.00    0.00       3/32056       getClusterIDGivenSiteNodeID [255]
+                0.00    0.00      48/32056       updatePath [11]
+                0.00    0.00     116/32056       HopOffCluster [160]
+                0.00    0.00     116/32056       HopOnOffCluster [161]
+                0.00    0.00    1186/32056       randomWalk [4]
+                0.00    0.00    2337/32056       MakeHop [110]
+                0.00    0.00   28250/32056       CorrCal [14]
+[89]     0.0    0.00    0.00   32056         getSNwithInd [89]
+                0.00    0.00   32056/50434       getAtotal [74]
+-----------------------------------------------
+                0.00    0.00      12/31074       getIndexBehindP [220]
+                0.00    0.00      19/31074       getIndexLeftP [206]
+                0.00    0.00      19/31074       getIndexRightP [207]
+                0.00    0.00      24/31074       getIndexFrontP [196]
+                0.00    0.00      25/31074       getIndexBelowP [195]
+                0.00    0.00      25/31074       getIndexAboveP [194]
+                0.00    0.00   30950/31074       CorrCal [14]
+[90]     0.0    0.00    0.00   31074         getIndexPeriodic [90]
+-----------------------------------------------
+                0.00    0.00    2700/29700       initJumPossibility_ElecX [21]
+                0.00    0.00   27000/29700       initJumPossibility [326]
+[91]     0.0    0.00    0.00   29700         setSN_p [91]
+-----------------------------------------------
+                0.00    0.00     450/9450        initJumPossibility_ElecX [21]
+                0.00    0.00    4500/9450        initSite [9]
+                0.00    0.00    4500/9450        ScaleAfterCorrFunc [15]
+[92]     0.0    0.00    0.00    9450         setEnergy [92]
+-----------------------------------------------
+                0.00    0.00      20/9368        HopToElecX [61]
+                0.00    0.00      20/9368        initFutureSite [59]
+                0.00    0.00     116/9368        ClusterHop [158]
+                0.00    0.00    2202/9368        SiteHop [58]
+                0.00    0.00    2337/9368        MakeHop [110]
+                0.00    0.00    4673/9368        randomWalk [4]
+[93]     0.0    0.00    0.00    9368         ProjectChargePositionOntoSiteNodeReferenceFrame [93]
+-----------------------------------------------
+                0.00    0.00      12/8033        getIndexBehindP [220]
+                0.00    0.00      19/8033        getIndexLeftP [206]
+                0.00    0.00      19/8033        getIndexRightP [207]
+                0.00    0.00      24/8033        getIndexFrontP [196]
+                0.00    0.00      25/8033        getIndexBelowP [195]
+                0.00    0.00      25/8033        getIndexAboveP [194]
+                0.00    0.00      28/8033        CountOptions [51]
+                0.00    0.00      28/8033        CalculateProbNeighDwell [34]
+                0.00    0.00      28/8033        CalculateDwellTimeAndRateN [30]
+                0.00    0.00      28/8033        CalculateNeighSinglePYPZ [216]
+                0.00    0.00      28/8033        DetermineNodeOrientationSingleCluster [218]
+                0.00    0.00      56/8033        checkBoundsIndexFront [181]
+                0.00    0.00      56/8033        checkBoundsIndexBehind [179]
+                0.00    0.00      56/8033        checkBoundsIndexLeft [182]
+                0.00    0.00      56/8033        checkBoundsIndexRight [183]
+                0.00    0.00      56/8033        checkBoundsIndexBelow [180]
+                0.00    0.00      56/8033        checkBoundsIndexAbove [178]
+                0.00    0.00     116/8033        OccAllNeiCluster [163]
+                0.00    0.00     182/8033        CalculateProb [26]
+                0.00    0.00     194/8033        OccAllCluster [162]
+                0.00    0.00    2286/8033        getRandomSitePos [115]
+                0.00    0.00    2318/8033        randomWalk [4]
+                0.00    0.00    2337/8033        MakeHop [110]
+[94]     0.0    0.00    0.00    8033         getLoc [94]
+-----------------------------------------------
+                0.00    0.00       1/6243        initSite [9]
+                0.00    0.00       1/6243        ScaleAfterCorrFunc [15]
+                0.00    0.00       3/6243        HoppingToSurroundingSites [57]
+                0.00    0.00       4/6243        initElec [17]
+                0.00    0.00      12/6243        CalculateProb [26]
+                0.00    0.00      12/6243        CalculateDwellTimeAndRateN [30]
+                0.00    0.00      60/6243        resizeRow [24]
+                0.00    0.00      72/6243        CalculateSumAndPGivenSingleClusterLL [16]
+                0.00    0.00      80/6243        updatePath [11]
+                0.00    0.00     244/6243        deleteLL_MNode [149]
+                0.00    0.00    5754/6243        CorrCal [14]
+[95]     0.0    0.00    0.00    6243         deleteMatrix [95]
+-----------------------------------------------
+                0.00    0.00      12/5766        CalculateProb [26]
+                0.00    0.00    5754/5766        CorrCal [14]
+[96]     0.0    0.00    0.00    5766         newMatrixSet [96]
+-----------------------------------------------
+                0.00    0.00    4950/4950        newSN [98]
+[97]     0.0    0.00    0.00    4950         newPoint [97]
+-----------------------------------------------
+                0.00    0.00    4950/4950        newSNarray [258]
+[98]     0.0    0.00    0.00    4950         newSN [98]
+                0.00    0.00    4950/4950        newPoint [97]
+-----------------------------------------------
+                0.00    0.00     450/4950        initJumPossibility_ElecX [21]
+                0.00    0.00    4500/4950        initJumPossibility [326]
+[99]     0.0    0.00    0.00    4950         setsum [99]
+-----------------------------------------------
+                0.00    0.00      12/4533        setMatrixLLElem [60]
+                0.00    0.00      45/4533        updatePath [11]
+                0.00    0.00      72/4533        getIDsOfTwoOfMostFrequentlyVisitedSites [39]
+                0.00    0.00    1910/4533        incMatrixLLElem [31]
+                0.00    0.00    2494/4533        moveMatrixLLNodeToStart [130]
+[100]    0.0    0.00    0.00    4533         getMatrixLLlength [100]
+-----------------------------------------------
+                0.00    0.00    4500/4500        initSite [9]
+[101]    0.0    0.00    0.00    4500         setInitE [101]
+-----------------------------------------------
+                0.00    0.00    3776/3776        CorrCal [14]
+[102]    0.0    0.00    0.00    3776         Rfind [102]
+-----------------------------------------------
+                0.00    0.00    3600/3600        getRandomSitePos [115]
+[103]    0.0    0.00    0.00    3600         rdtsc [103]
+-----------------------------------------------
+                0.00    0.00      20/3350        initCharget0 [44]
+                0.00    0.00    3330/3350        randomWalk [4]
+[104]    0.0    0.00    0.00    3350         setDwelStat [104]
+-----------------------------------------------
+                0.00    0.00    2700/2700        CorrCal [14]
+[105]    0.0    0.00    0.00    2700         corr [105]
+-----------------------------------------------
+                0.00    0.00    2700/2700        initSite [9]
+[106]    0.0    0.00    0.00    2700         grn [106]
+-----------------------------------------------
+                0.00    0.00     232/2550        OccAllNeiCluster [163]
+                0.00    0.00    2318/2550        randomWalk [4]
+[107]    0.0    0.00    0.00    2550         getType [107]
+-----------------------------------------------
+                0.00    0.00      18/2376        ChargeElectrode [48]
+                0.00    0.00      40/2376        initCharget0 [44]
+                0.00    0.00    2318/2376        randomWalk [4]
+[108]    0.0    0.00    0.00    2376         setDwel [108]
+-----------------------------------------------
+                0.00    0.00    2337/2337        randomWalk [4]
+[109]    0.0    0.00    0.00    2337         CheckConservationCharges [109]
+                0.00    0.00    2337/2337        getElectrode_Charges [111]
+-----------------------------------------------
+                0.00    0.00    2337/2337        randomWalk [4]
+[110]    0.0    0.00    0.00    2337         MakeHop [110]
+                0.00    0.00   14022/50434       getAtotal [74]
+                0.00    0.00    4393/123079      getAwid [67]
+                0.00    0.00    3365/32227       getAlen [88]
+                0.00    0.00    3365/59571       getCz [72]
+                0.00    0.00    3365/59571       getCy [71]
+                0.00    0.00    3365/64245       getCx [70]
+                0.00    0.00    2337/174808      getAhei [65]
+                0.00    0.00    2337/9368        ProjectChargePositionOntoSiteNodeReferenceFrame [93]
+                0.00    0.00    2337/8033        getLoc [94]
+                0.00    0.00    2337/32056       getSNwithInd [89]
+                0.00    0.00    2337/47667       getDwelStat [75]
+                0.00    0.00    1028/1068        setCx [120]
+                0.00    0.00    1028/1068        setCy [121]
+                0.00    0.00    1028/1068        setCz [122]
+-----------------------------------------------
+                0.00    0.00    2337/2337        CheckConservationCharges [109]
+[111]    0.0    0.00    0.00    2337         getElectrode_Charges [111]
+-----------------------------------------------
+                0.00    0.00    2336/2336        randomWalk [4]
+[112]    0.0    0.00    0.00    2336         CheckIfElecHop [112]
+-----------------------------------------------
+                0.00    0.00    2336/2336        randomWalk [4]
+[113]    0.0    0.00    0.00    2336         Plust [113]
+-----------------------------------------------
+                0.00    0.00      20/2222        initCharget0 [44]
+                0.00    0.00    2202/2222        randomWalk [4]
+[114]    0.0    0.00    0.00    2222         getsum [114]
+-----------------------------------------------
+                0.00    0.00    1800/1800        initSite [9]
+[115]    0.0    0.00    0.00    1800         getRandomSitePos [115]
+                0.00    0.00    4086/208825      getSN [64]
+                0.00    0.00    3600/3600        rdtsc [103]
+                0.00    0.00    2286/50434       getAtotal [74]
+                0.00    0.00    2286/8033        getLoc [94]
+                0.00    0.00    2286/39274       getInitE [87]
+-----------------------------------------------
+                0.00    0.00     108/1698        CalculatePvalNeigh [27]
+                0.00    0.00     116/1698        OccAllNeiCluster [163]
+                0.00    0.00     588/1698        HopOffCluster [160]
+                0.00    0.00     886/1698        setNeighLL_addNeighNode [174]
+[116]    0.0    0.00    0.00    1698         getNeighNode_id [116]
+-----------------------------------------------
+                0.00    0.00     720/1575        getIndAboP [131]
+                0.00    0.00     855/1575        getIndBelP [129]
+[117]    0.0    0.00    0.00    1575         getIndexPeriodicZ [117]
+-----------------------------------------------
+                0.00    0.00      41/1291        deleteNeighLLAll [252]
+                0.00    0.00     108/1291        CalculatePvalNeigh [27]
+                0.00    0.00     354/1291        HopOffCluster [160]
+                0.00    0.00     788/1291        setNeighLL_addNeighNode [174]
+[118]    0.0    0.00    0.00    1291         getNextNeigh [118]
+-----------------------------------------------
+                0.00    0.00      24/1088        DetermineClusterStatus [217]
+                0.00    0.00      36/1088        updatePath [11]
+                0.00    0.00    1028/1088        randomWalk [4]
+[119]    0.0    0.00    0.00    1088         checkSNconnectedCluster [119]
+-----------------------------------------------
+                0.00    0.00      40/1068        initCharget0 [44]
+                0.00    0.00    1028/1068        MakeHop [110]
+[120]    0.0    0.00    0.00    1068         setCx [120]
+-----------------------------------------------
+                0.00    0.00      40/1068        initCharget0 [44]
+                0.00    0.00    1028/1068        MakeHop [110]
+[121]    0.0    0.00    0.00    1068         setCy [121]
+-----------------------------------------------
+                0.00    0.00      40/1068        initCharget0 [44]
+                0.00    0.00    1028/1068        MakeHop [110]
+[122]    0.0    0.00    0.00    1068         setCz [122]
+-----------------------------------------------
+                0.00    0.00      20/1032        initCharget0 [44]
+                0.00    0.00    1012/1032        randomWalk [4]
+[123]    0.0    0.00    0.00    1032         setVis [123]
+-----------------------------------------------
+                0.00    0.00    1028/1028        randomWalk [4]
+[124]    0.0    0.00    0.00    1028         PFget_NumChargesTrack [124]
+-----------------------------------------------
+                0.00    0.00    1028/1028        updatePath [11]
+[125]    0.0    0.00    0.00    1028         getChargePath [125]
+-----------------------------------------------
+                0.00    0.00    1012/1012        randomWalk [4]
+[126]    0.0    0.00    0.00    1012         incVisFreq [126]
+-----------------------------------------------
+                0.00    0.00     946/946         HopOffCluster [160]
+[127]    0.0    0.00    0.00     946         getNeighNode_p [127]
+-----------------------------------------------
+                0.00    0.00       3/922         getClusterIDGivenSiteNode [254]
+                0.00    0.00       6/922         DetermineClusterStatus [217]
+                0.00    0.00      12/922         updatePath [11]
+                0.00    0.00      89/922         randomWalk [4]
+                0.00    0.00     116/922         OccAllCluster [162]
+                0.00    0.00     116/922         HopOffCluster [160]
+                0.00    0.00     116/922         HopOnOffCluster [161]
+                0.00    0.00     232/922         ClusterHopCheck [159]
+                0.00    0.00     232/922         OccAllNeiCluster [163]
+[128]    0.0    0.00    0.00     922         getClusterList [128]
+-----------------------------------------------
+                0.00    0.00       4/855         HopToElecX [61]
+                0.00    0.00      11/855         CalculateNeighSinglePYPZ [216]
+                0.00    0.00      15/855         CalculateProb [26]
+                0.00    0.00      28/855         DetermineNodeOrientationSingleCluster [218]
+                0.00    0.00     797/855         SiteHop [58]
+[129]    0.0    0.00    0.00     855         getIndBelP [129]
+                0.00    0.00     855/1575        getIndexPeriodicZ [117]
+-----------------------------------------------
+                0.00    0.00     784/784         updatePath [11]
+[130]    0.0    0.00    0.00     784         moveMatrixLLNodeToStart [130]
+                0.00    0.00    2494/4533        getMatrixLLlength [100]
+-----------------------------------------------
+                0.00    0.00       2/720         HopToElecX [61]
+                0.00    0.00      15/720         CalculateProb [26]
+                0.00    0.00      25/720         CalculateNeighSinglePYPZ [216]
+                0.00    0.00      28/720         DetermineNodeOrientationSingleCluster [218]
+                0.00    0.00     650/720         SiteHop [58]
+[131]    0.0    0.00    0.00     720         getIndAboP [131]
+                0.00    0.00     720/1575        getIndexPeriodicZ [117]
+-----------------------------------------------
+                0.00    0.00     338/701         getIndRigP [141]
+                0.00    0.00     363/701         getIndLefP [140]
+[132]    0.0    0.00    0.00     701         getIndexPeriodicY [132]
+-----------------------------------------------
+                0.00    0.00      28/623         CountOptions [51]
+                0.00    0.00      28/623         CalculateProbNeighDwell [34]
+                0.00    0.00      28/623         CalculateDwellTimeAndRateN [30]
+                0.00    0.00      28/623         CalculateNeighSinglePYPZ [216]
+                0.00    0.00     107/623         DetermineNodeOrientationSingleCluster [218]
+                0.00    0.00     194/623         OccAllCluster [162]
+                0.00    0.00     210/623         CalculateProb [26]
+[133]    0.0    0.00    0.00     623         getNode_id [133]
+-----------------------------------------------
+                0.00    0.00     590/590         SiteHop [58]
+[134]    0.0    0.00    0.00     590         OccAllNei [134]
+                0.00    0.00    3540/208825      getSN [64]
+-----------------------------------------------
+                0.00    0.00       1/576         CalculateAllHops [7]
+                0.00    0.00       1/576         initSite [9]
+                0.00    0.00       1/576         ScaleAfterCorrFunc [15]
+                0.00    0.00       2/576         Pre_randomWalk [8]
+                0.00    0.00       2/576         initJumPossibility_ElecX [21]
+                0.00    0.00       3/576         HoppingToSurroundingSites [57]
+                0.00    0.00       4/576         initElec [17]
+                0.00    0.00      12/576         CalculateProb [26]
+                0.00    0.00      12/576         CalculateProbNeighDwell [34]
+                0.00    0.00      14/576         randomWalk [4]
+                0.00    0.00      24/576         CalculateSumAndPGivenSingleClusterLL [16]
+                0.00    0.00      24/576         CalculateDwellTimeAndRateN [30]
+                0.00    0.00      30/576         resizeRow [24]
+                0.00    0.00      42/576         duplicateMatrix [25]
+                0.00    0.00      80/576         getMatrixLLMatchAtRow [29]
+                0.00    0.00     324/576         newLL_MNode [28]
+[135]    0.0    0.00    0.00     576         newMatrix [135]
+-----------------------------------------------
+                0.00    0.00      28/562         CalculateSumAndPGivenSingleClusterLL [16]
+                0.00    0.00      28/562         CountOptions [51]
+                0.00    0.00      28/562         CalculateProbNeighDwell [34]
+                0.00    0.00      28/562         CalculateDwellTimeAndRateN [30]
+                0.00    0.00      28/562         CalculateNeighSinglePYPZ [216]
+                0.00    0.00      56/562         CalculatePvalNodes [53]
+                0.00    0.00      77/562         DetermineNodeOrientationSingleCluster [218]
+                0.00    0.00      79/562         OccAllCluster [162]
+                0.00    0.00     210/562         CalculateProb [26]
+[136]    0.0    0.00    0.00     562         getNextNode [136]
+-----------------------------------------------
+                0.00    0.00     469/469         HopOffCluster [160]
+[137]    0.0    0.00    0.00     469         getNeighNode_hoplength [137]
+-----------------------------------------------
+                0.00    0.00     450/450         initJumPossibility_ElecX [21]
+[138]    0.0    0.00    0.00     450         hoppingRateMillerAbraham [138]
+-----------------------------------------------
+                0.00    0.00     183/389         getIndFroP [154]
+                0.00    0.00     206/389         getIndBehP [153]
+[139]    0.0    0.00    0.00     389         getIndexPeriodicX [139]
+-----------------------------------------------
+                0.00    0.00       5/363         HopToElecX [61]
+                0.00    0.00      28/363         DetermineNodeOrientationSingleCluster [218]
+                0.00    0.00      66/363         CalculateProb [26]
+                0.00    0.00     264/363         SiteHop [58]
+[140]    0.0    0.00    0.00     363         getIndLefP [140]
+                0.00    0.00     363/701         getIndexPeriodicY [132]
+-----------------------------------------------
+                0.00    0.00       2/338         HopToElecX [61]
+                0.00    0.00      19/338         CalculateNeighSinglePYPZ [216]
+                0.00    0.00      28/338         DetermineNodeOrientationSingleCluster [218]
+                0.00    0.00      66/338         CalculateProb [26]
+                0.00    0.00     223/338         SiteHop [58]
+[141]    0.0    0.00    0.00     338         getIndRigP [141]
+                0.00    0.00     338/701         getIndexPeriodicY [132]
+-----------------------------------------------
+                0.00    0.00      12/296         CalculateDwellTimeAndRateN [30]
+                0.00    0.00      12/296         CalculateNeighSinglePYPZ [216]
+                0.00    0.00      12/296         DetermineNodeOrientationSingleCluster [218]
+                0.00    0.00      24/296         CalculatePvalNodes [53]
+                0.00    0.00      36/296         CalculateSumAndPGivenSingleClusterLL [16]
+                0.00    0.00      84/296         CalculateProb [26]
+                0.00    0.00     116/296         OccAllCluster [162]
+[142]    0.0    0.00    0.00     296         getStartNode [142]
+-----------------------------------------------
+                0.00    0.00      28/294         CountOptions [51]
+                0.00    0.00      28/294         CalculateProbNeighDwell [34]
+                0.00    0.00      28/294         CalculateDwellTimeAndRateN [30]
+                0.00    0.00      28/294         CalculateNeighSinglePYPZ [216]
+                0.00    0.00     182/294         CalculateProb [26]
+[143]    0.0    0.00    0.00     294         getFlagAbo [143]
+-----------------------------------------------
+                0.00    0.00      28/294         CountOptions [51]
+                0.00    0.00      28/294         CalculateProbNeighDwell [34]
+                0.00    0.00      28/294         CalculateDwellTimeAndRateN [30]
+                0.00    0.00      28/294         CalculateNeighSinglePYPZ [216]
+                0.00    0.00     182/294         CalculateProb [26]
+[144]    0.0    0.00    0.00     294         getFlagBel [144]
+-----------------------------------------------
+                0.00    0.00      28/294         CountOptions [51]
+                0.00    0.00      28/294         CalculateProbNeighDwell [34]
+                0.00    0.00      28/294         CalculateDwellTimeAndRateN [30]
+                0.00    0.00      28/294         CalculateNeighSinglePYPZ [216]
+                0.00    0.00     182/294         CalculateProb [26]
+[145]    0.0    0.00    0.00     294         getFlagFro [145]
+-----------------------------------------------
+                0.00    0.00      28/294         CountOptions [51]
+                0.00    0.00      28/294         CalculateProbNeighDwell [34]
+                0.00    0.00      28/294         CalculateDwellTimeAndRateN [30]
+                0.00    0.00      28/294         CalculateNeighSinglePYPZ [216]
+                0.00    0.00     182/294         CalculateProb [26]
+[146]    0.0    0.00    0.00     294         getFlagLef [146]
+-----------------------------------------------
+                0.00    0.00      28/294         CountOptions [51]
+                0.00    0.00      28/294         CalculateProbNeighDwell [34]
+                0.00    0.00      28/294         CalculateDwellTimeAndRateN [30]
+                0.00    0.00      28/294         CalculateNeighSinglePYPZ [216]
+                0.00    0.00     182/294         CalculateProb [26]
+[147]    0.0    0.00    0.00     294         getFlagRig [147]
+-----------------------------------------------
+                0.00    0.00      16/270         CalculateProbNeighDwell [34]
+                0.00    0.00      16/270         CalculateDwellTimeAndRateN [30]
+                0.00    0.00      28/270         CountOptions [51]
+                0.00    0.00      28/270         CalculateNeighSinglePYPZ [216]
+                0.00    0.00     182/270         CalculateProb [26]
+[148]    0.0    0.00    0.00     270         getFlagBeh [148]
+-----------------------------------------------
+                0.00    0.00     244/244         removeLL_MNodeEnd [152]
+[149]    0.0    0.00    0.00     244         deleteLL_MNode [149]
+                0.00    0.00     244/6243        deleteMatrix [95]
+-----------------------------------------------
+                0.00    0.00     244/244         getStartNeigh [151]
+[150]    0.0    0.00    0.00     244         getNeighLL_start [150]
+-----------------------------------------------
+                0.00    0.00      12/244         CalculatePvalNeigh [27]
+                0.00    0.00     116/244         OccAllNeiCluster [163]
+                0.00    0.00     116/244         HopOffCluster [160]
+[151]    0.0    0.00    0.00     244         getStartNeigh [151]
+                0.00    0.00     244/244         getNeighLL_start [150]
+-----------------------------------------------
+                0.00    0.00     244/244         updatePath [11]
+[152]    0.0    0.00    0.00     244         removeLL_MNodeEnd [152]
+                0.00    0.00     244/244         deleteLL_MNode [149]
+-----------------------------------------------
+                0.00    0.00      28/206         DetermineNodeOrientationSingleCluster [218]
+                0.00    0.00      29/206         CalculateProb [26]
+                0.00    0.00     149/206         SiteHop [58]
+[153]    0.0    0.00    0.00     206         getIndBehP [153]
+                0.00    0.00     206/389         getIndexPeriodicX [139]
+-----------------------------------------------
+                0.00    0.00       7/183         HopToElecX [61]
+                0.00    0.00      28/183         DetermineNodeOrientationSingleCluster [218]
+                0.00    0.00      29/183         CalculateProb [26]
+                0.00    0.00     119/183         SiteHop [58]
+[154]    0.0    0.00    0.00     183         getIndFroP [154]
+                0.00    0.00     183/389         getIndexPeriodicX [139]
+-----------------------------------------------
+                0.00    0.00     182/182         CalculateProb [26]
+[155]    0.0    0.00    0.00     182         setAll [155]
+-----------------------------------------------
+                0.00    0.00     118/118         randomWalk [4]
+[156]    0.0    0.00    0.00     118         PFget_PathFile [156]
+-----------------------------------------------
+                0.00    0.00     118/118         randomWalk [4]
+[157]    0.0    0.00    0.00     118         printToPathFile [157]
+-----------------------------------------------
+                0.00    0.00     116/116         randomWalk [4]
+[158]    0.0    0.00    0.00     116         ClusterHop [158]
+                0.00    0.00     116/174808      getAhei [65]
+                0.00    0.00     116/123079      getAwid [67]
+                0.00    0.00     116/32227       getAlen [88]
+                0.00    0.00     116/59571       getCz [72]
+                0.00    0.00     116/59571       getCy [71]
+                0.00    0.00     116/64245       getCx [70]
+                0.00    0.00     116/9368        ProjectChargePositionOntoSiteNodeReferenceFrame [93]
+                0.00    0.00     116/263877      getIndex [63]
+                0.00    0.00     116/116         OccAllNeiCluster [163]
+                0.00    0.00     116/116         OccAllCluster [162]
+                0.00    0.00     116/116         HopOnOffCluster [161]
+                0.00    0.00     116/116         HopOffCluster [160]
+-----------------------------------------------
+                0.00    0.00     116/116         randomWalk [4]
+[159]    0.0    0.00    0.00     116         ClusterHopCheck [159]
+                0.00    0.00     232/922         getClusterList [128]
+                0.00    0.00     116/116         checkCluster_elecYdefined [164]
+                0.00    0.00     116/116         checkCluster_elecZdefined [165]
+-----------------------------------------------
+                0.00    0.00     116/116         ClusterHop [158]
+[160]    0.0    0.00    0.00     116         HopOffCluster [160]
+                0.00    0.00     946/946         getNeighNode_p [127]
+                0.00    0.00     588/1698        getNeighNode_id [116]
+                0.00    0.00     469/469         getNeighNode_hoplength [137]
+                0.00    0.00     354/1291        getNextNeigh [118]
+                0.00    0.00     116/32056       getSNwithInd [89]
+                0.00    0.00     116/922         getClusterList [128]
+                0.00    0.00     116/244         getStartNeigh [151]
+                0.00    0.00     115/115         getNeighNode_t [167]
+-----------------------------------------------
+                0.00    0.00     116/116         ClusterHop [158]
+[161]    0.0    0.00    0.00     116         HopOnOffCluster [161]
+                0.00    0.00     116/32056       getSNwithInd [89]
+                0.00    0.00     116/922         getClusterList [128]
+                0.00    0.00     116/116         getCluster_time [166]
+-----------------------------------------------
+                0.00    0.00     116/116         ClusterHop [158]
+[162]    0.0    0.00    0.00     116         OccAllCluster [162]
+                0.00    0.00     310/208825      getSN [64]
+                0.00    0.00     194/623         getNode_id [133]
+                0.00    0.00     194/8033        getLoc [94]
+                0.00    0.00     194/47667       getDwelStat [75]
+                0.00    0.00     116/32227       getAlen [88]
+                0.00    0.00     116/123079      getAwid [67]
+                0.00    0.00     116/174808      getAhei [65]
+                0.00    0.00     116/922         getClusterList [128]
+                0.00    0.00     116/296         getStartNode [142]
+                0.00    0.00      79/562         getNextNode [136]
+-----------------------------------------------
+                0.00    0.00     116/116         ClusterHop [158]
+[163]    0.0    0.00    0.00     116         OccAllNeiCluster [163]
+                0.00    0.00     232/208825      getSN [64]
+                0.00    0.00     232/2550        getType [107]
+                0.00    0.00     232/922         getClusterList [128]
+                0.00    0.00     116/244         getStartNeigh [151]
+                0.00    0.00     116/1698        getNeighNode_id [116]
+                0.00    0.00     116/8033        getLoc [94]
+                0.00    0.00     116/47667       getDwelStat [75]
+-----------------------------------------------
+                0.00    0.00     116/116         ClusterHopCheck [159]
+[164]    0.0    0.00    0.00     116         checkCluster_elecYdefined [164]
+-----------------------------------------------
+                0.00    0.00     116/116         ClusterHopCheck [159]
+[165]    0.0    0.00    0.00     116         checkCluster_elecZdefined [165]
+-----------------------------------------------
+                0.00    0.00     116/116         HopOnOffCluster [161]
+[166]    0.0    0.00    0.00     116         getCluster_time [166]
+-----------------------------------------------
+                0.00    0.00     115/115         HopOffCluster [160]
+[167]    0.0    0.00    0.00     115         getNeighNode_t [167]
+-----------------------------------------------
+                0.00    0.00       6/113         DetermineClusterStatus [217]
+                0.00    0.00       6/113         getClusterIDGivenSiteNode [254]
+                0.00    0.00      12/113         updatePath [11]
+                0.00    0.00      89/113         randomWalk [4]
+[168]    0.0    0.00    0.00     113         getCluster_id [168]
+-----------------------------------------------
+                0.00    0.00     110/110         CalculateNeighSinglePYPZ [216]
+[169]    0.0    0.00    0.00     110         addNeighNodeToCluster [169]
+                0.00    0.00     109/109         newNeighNode [173]
+                0.00    0.00      97/97          setNeighLL_addNeighNode [174]
+                0.00    0.00      12/12          newNeighLL [221]
+                0.00    0.00      12/12          setNeighLL_start [225]
+                0.00    0.00       1/23          deleteNeighNode [197]
+-----------------------------------------------
+                0.00    0.00     110/110         setNeighNodeNew_p [171]
+[170]    0.0    0.00    0.00     110         newHop [170]
+-----------------------------------------------
+                0.00    0.00     110/110         CalculatePvalNeigh [27]
+[171]    0.0    0.00    0.00     110         setNeighNodeNew_p [171]
+                0.00    0.00     110/110         newHop [170]
+-----------------------------------------------
+                0.00    0.00     110/110         CalculatePvalNeigh [27]
+[172]    0.0    0.00    0.00     110         setNeighNode_t [172]
+-----------------------------------------------
+                0.00    0.00     109/109         addNeighNodeToCluster [169]
+[173]    0.0    0.00    0.00     109         newNeighNode [173]
+-----------------------------------------------
+                0.00    0.00      97/97          addNeighNodeToCluster [169]
+[174]    0.0    0.00    0.00      97         setNeighLL_addNeighNode [174]
+                0.00    0.00     886/1698        getNeighNode_id [116]
+                0.00    0.00     788/1291        getNextNeigh [118]
+                0.00    0.00      96/96          setNextNeighNode [175]
+-----------------------------------------------
+                0.00    0.00      96/96          setNeighLL_addNeighNode [174]
+[175]    0.0    0.00    0.00      96         setNextNeighNode [175]
+-----------------------------------------------
+                0.00    0.00      77/77          newParamFrame_File [329]
+[176]    0.0    0.00    0.00      77         match [176]
+-----------------------------------------------
+                0.00    0.00      12/72          CalculateSumAndPGivenSingleClusterLL [16]
+                0.00    0.00      24/72          CalculateDwellTimeAndRateN [30]
+                0.00    0.00      36/72          CalculateProb [26]
+[177]    0.0    0.00    0.00      72         getCluster_numNodes [177]
+-----------------------------------------------
+                0.00    0.00      28/56          CalculateProbNeighDwell [34]
+                0.00    0.00      28/56          CalculateDwellTimeAndRateN [30]
+[178]    0.0    0.00    0.00      56         checkBoundsIndexAbove [178]
+                0.00    0.00      56/8033        getLoc [94]
+-----------------------------------------------
+                0.00    0.00      28/56          CalculateProbNeighDwell [34]
+                0.00    0.00      28/56          CalculateDwellTimeAndRateN [30]
+[179]    0.0    0.00    0.00      56         checkBoundsIndexBehind [179]
+                0.00    0.00      56/8033        getLoc [94]
+-----------------------------------------------
+                0.00    0.00      28/56          CalculateProbNeighDwell [34]
+                0.00    0.00      28/56          CalculateDwellTimeAndRateN [30]
+[180]    0.0    0.00    0.00      56         checkBoundsIndexBelow [180]
+                0.00    0.00      56/8033        getLoc [94]
+-----------------------------------------------
+                0.00    0.00      28/56          CalculateProbNeighDwell [34]
+                0.00    0.00      28/56          CalculateDwellTimeAndRateN [30]
+[181]    0.0    0.00    0.00      56         checkBoundsIndexFront [181]
+                0.00    0.00      56/8033        getLoc [94]
+-----------------------------------------------
+                0.00    0.00      28/56          CalculateProbNeighDwell [34]
+                0.00    0.00      28/56          CalculateDwellTimeAndRateN [30]
+[182]    0.0    0.00    0.00      56         checkBoundsIndexLeft [182]
+                0.00    0.00      56/8033        getLoc [94]
+-----------------------------------------------
+                0.00    0.00      28/56          CalculateProbNeighDwell [34]
+                0.00    0.00      28/56          CalculateDwellTimeAndRateN [30]
+[183]    0.0    0.00    0.00      56         checkBoundsIndexRight [183]
+                0.00    0.00      56/8033        getLoc [94]
+-----------------------------------------------
+                0.00    0.00      56/56          CalculatePvalNodes [53]
+[184]    0.0    0.00    0.00      56         setNode_p [184]
+-----------------------------------------------
+                0.00    0.00      52/52          CalculateNeighSinglePYPZ [216]
+[185]    0.0    0.00    0.00      52         getIndFro [185]
+                0.00    0.00      52/263877      getIndex [63]
+-----------------------------------------------
+                0.00    0.00      43/43          newParamFrame_File [329]
+[186]    0.0    0.00    0.00      43         GrabDouble [186]
+-----------------------------------------------
+                0.00    0.00      43/43          CalculateNeighSinglePYPZ [216]
+[187]    0.0    0.00    0.00      43         getIndLef [187]
+                0.00    0.00      43/263877      getIndex [63]
+-----------------------------------------------
+                0.00    0.00      34/34          newParamFrame_File [329]
+[188]    0.0    0.00    0.00      34         GrabInt [188]
+-----------------------------------------------
+                0.00    0.00      28/28          CalculateNeighSinglePYPZ [216]
+[189]    0.0    0.00    0.00      28         getIndBeh [189]
+                0.00    0.00      28/263877      getIndex [63]
+-----------------------------------------------
+                0.00    0.00      28/28          appendClusterLL [232]
+[190]    0.0    0.00    0.00      28         getNextClusterLL [190]
+-----------------------------------------------
+                0.00    0.00      28/28          CalculatePvalNodes [53]
+[191]    0.0    0.00    0.00      28         getNode_p [191]
+-----------------------------------------------
+                0.00    0.00      27/27          CalculateNeighSinglePYPZ [216]
+[192]    0.0    0.00    0.00      27         getIndAbo [192]
+                0.00    0.00      27/263877      getIndex [63]
+-----------------------------------------------
+                0.00    0.00      25/25          CalculateNeighSinglePYPZ [216]
+[193]    0.0    0.00    0.00      25         getIndRig [193]
+                0.00    0.00      25/263877      getIndex [63]
+-----------------------------------------------
+                0.00    0.00      25/25          CalculateProbNeighDwell [34]
+[194]    0.0    0.00    0.00      25         getIndexAboveP [194]
+                0.00    0.00      25/8033        getLoc [94]
+                0.00    0.00      25/31074       getIndexPeriodic [90]
+-----------------------------------------------
+                0.00    0.00      25/25          CalculateProbNeighDwell [34]
+[195]    0.0    0.00    0.00      25         getIndexBelowP [195]
+                0.00    0.00      25/8033        getLoc [94]
+                0.00    0.00      25/31074       getIndexPeriodic [90]
+-----------------------------------------------
+                0.00    0.00      24/24          CalculateProbNeighDwell [34]
+[196]    0.0    0.00    0.00      24         getIndexFrontP [196]
+                0.00    0.00      24/8033        getLoc [94]
+                0.00    0.00      24/31074       getIndexPeriodic [90]
+-----------------------------------------------
+                0.00    0.00       1/23          addNeighNodeToCluster [169]
+                0.00    0.00      22/23          deleteNeighLLAll [252]
+[197]    0.0    0.00    0.00      23         deleteNeighNode [197]
+                0.00    0.00      22/22          deleteAllHop [198]
+-----------------------------------------------
+                0.00    0.00      22/22          deleteNeighNode [197]
+[198]    0.0    0.00    0.00      22         deleteAllHop [198]
+-----------------------------------------------
+                0.00    0.00      22/22          deleteNeighLLAll [252]
+[199]    0.0    0.00    0.00      22         setNextNeighNodeToNULL [199]
+-----------------------------------------------
+                0.00    0.00       3/21          addNodeEndClusterLL [249]
+                0.00    0.00      18/21          addNodesToClusterGivenSites [228]
+[200]    0.0    0.00    0.00      21         newNode [200]
+-----------------------------------------------
+                0.00    0.00      21/21          randomWalk [4]
+[201]    0.0    0.00    0.00      21         setDataStruc [201]
+-----------------------------------------------
+                0.00    0.00      20/20          HopToElecX [61]
+[202]    0.0    0.00    0.00      20         getElectrode_AdjacentSites [202]
+-----------------------------------------------
+                0.00    0.00      20/20          initCharget0 [44]
+[203]    0.0    0.00    0.00      20         getVisFreq [203]
+-----------------------------------------------
+                0.00    0.00      20/20          newChargeA [328]
+[204]    0.0    0.00    0.00      20         newCharge [204]
+-----------------------------------------------
+                0.00    0.00      20/20          initCharget0 [44]
+[205]    0.0    0.00    0.00      20         setVisFreq [205]
+-----------------------------------------------
+                0.00    0.00      19/19          CalculateProbNeighDwell [34]
+[206]    0.0    0.00    0.00      19         getIndexLeftP [206]
+                0.00    0.00      19/8033        getLoc [94]
+                0.00    0.00      19/31074       getIndexPeriodic [90]
+-----------------------------------------------
+                0.00    0.00      19/19          CalculateProbNeighDwell [34]
+[207]    0.0    0.00    0.00      19         getIndexRightP [207]
+                0.00    0.00      19/8033        getLoc [94]
+                0.00    0.00      19/31074       getIndexPeriodic [90]
+-----------------------------------------------
+                0.00    0.00      18/18          ElecHopOffX [23]
+[208]    0.0    0.00    0.00      18         getElectrode_HopRates [208]
+-----------------------------------------------
+                0.00    0.00      18/18          ChargeElectrode [48]
+[209]    0.0    0.00    0.00      18         getElectrode_Sum [209]
+-----------------------------------------------
+                0.00    0.00       1/17          main [3]
+                0.00    0.00       1/17          Pre_randomWalk [8]
+                0.00    0.00       1/17          randomWalk [4]
+                0.00    0.00       1/17          initSite [9]
+                0.00    0.00       1/17          initElec [17]
+                0.00    0.00       2/17          printFileEnergy [267]
+                0.00    0.00      10/17          printMovie [227]
+[210]    0.0    0.00    0.00      17         PFget_SiteDist [210]
+-----------------------------------------------
+                0.00    0.00      16/16          ChargeElectrode [48]
+[211]    0.0    0.00    0.00      16         Electrode_addCharge [211]
+-----------------------------------------------
+                0.00    0.00      16/16          ChargeSystem [49]
+[212]    0.0    0.00    0.00      16         Electrode_minusCharge [212]
+-----------------------------------------------
+                0.00    0.00      16/16          CalculateNeighSinglePYPZ [216]
+[213]    0.0    0.00    0.00      16         setCluster_elecZid [213]
+-----------------------------------------------
+                0.00    0.00      13/13          CalculateNeighSinglePYPZ [216]
+[214]    0.0    0.00    0.00      13         getIndBel [214]
+                0.00    0.00      13/263877      getIndex [63]
+-----------------------------------------------
+                0.00    0.00      12/12          randomWalk [4]
+[215]    0.0    0.00    0.00      12         CalculateNeighNodesForSingleClusterLL [215]
+                0.00    0.00      12/12          CalculateNeighSinglePYPZ [216]
+-----------------------------------------------
+                0.00    0.00      12/12          CalculateNeighNodesForSingleClusterLL [215]
+[216]    0.0    0.00    0.00      12         CalculateNeighSinglePYPZ [216]
+                0.00    0.00     110/110         addNeighNodeToCluster [169]
+                0.00    0.00      53/174808      getAhei [65]
+                0.00    0.00      52/32227       getAlen [88]
+                0.00    0.00      52/52          getIndFro [185]
+                0.00    0.00      43/43          getIndLef [187]
+                0.00    0.00      28/623         getNode_id [133]
+                0.00    0.00      28/8033        getLoc [94]
+                0.00    0.00      28/294         getFlagFro [145]
+                0.00    0.00      28/28          getIndBeh [189]
+                0.00    0.00      28/270         getFlagBeh [148]
+                0.00    0.00      28/294         getFlagLef [146]
+                0.00    0.00      28/123079      getAwid [67]
+                0.00    0.00      28/294         getFlagRig [147]
+                0.00    0.00      28/294         getFlagBel [144]
+                0.00    0.00      28/294         getFlagAbo [143]
+                0.00    0.00      28/562         getNextNode [136]
+                0.00    0.00      27/27          getIndAbo [192]
+                0.00    0.00      25/25          getIndRig [193]
+                0.00    0.00      25/720         getIndAboP [131]
+                0.00    0.00      19/338         getIndRigP [141]
+                0.00    0.00      16/16          setCluster_elecZid [213]
+                0.00    0.00      13/13          getIndBel [214]
+                0.00    0.00      12/296         getStartNode [142]
+                0.00    0.00      12/12          setCluster_elecXid [223]
+                0.00    0.00      11/855         getIndBelP [129]
+                0.00    0.00       6/6           setCluster_elecYid [233]
+-----------------------------------------------
+                0.00    0.00      12/12          randomWalk [4]
+[217]    0.0    0.00    0.00      12         DetermineClusterStatus [217]
+                0.00    0.00      24/1088        checkSNconnectedCluster [119]
+                0.00    0.00       6/113         getCluster_id [168]
+                0.00    0.00       6/922         getClusterList [128]
+-----------------------------------------------
+                0.00    0.00      12/12          randomWalk [4]
+[218]    0.0    0.00    0.00      12         DetermineNodeOrientationSingleCluster [218]
+                0.00    0.00     107/623         getNode_id [133]
+                0.00    0.00      77/562         getNextNode [136]
+                0.00    0.00      28/8033        getLoc [94]
+                0.00    0.00      28/183         getIndFroP [154]
+                0.00    0.00      28/206         getIndBehP [153]
+                0.00    0.00      28/363         getIndLefP [140]
+                0.00    0.00      28/338         getIndRigP [141]
+                0.00    0.00      28/720         getIndAboP [131]
+                0.00    0.00      28/855         getIndBelP [129]
+                0.00    0.00      12/296         getStartNode [142]
+                0.00    0.00       9/9           setFlagRig [231]
+                0.00    0.00       9/9           setFlagLef [230]
+                0.00    0.00       4/4           setFlagFro [242]
+                0.00    0.00       4/4           setFlagBeh [241]
+                0.00    0.00       3/3           setFlagAbo [259]
+                0.00    0.00       3/3           setFlagBel [260]
+-----------------------------------------------
+                0.00    0.00      12/12          randomWalk [4]
+[219]    0.0    0.00    0.00      12         PFget_Attempts [219]
+-----------------------------------------------
+                0.00    0.00      12/12          CalculateProbNeighDwell [34]
+[220]    0.0    0.00    0.00      12         getIndexBehindP [220]
+                0.00    0.00      12/8033        getLoc [94]
+                0.00    0.00      12/31074       getIndexPeriodic [90]
+-----------------------------------------------
+                0.00    0.00      12/12          addNeighNodeToCluster [169]
+[221]    0.0    0.00    0.00      12         newNeighLL [221]
+-----------------------------------------------
+                0.00    0.00      12/12          CalculateProbNeighDwell [34]
+[222]    0.0    0.00    0.00      12         setAllRowsInCol [222]
+-----------------------------------------------
+                0.00    0.00      12/12          CalculateNeighSinglePYPZ [216]
+[223]    0.0    0.00    0.00      12         setCluster_elecXid [223]
+-----------------------------------------------
+                0.00    0.00      12/12          CalculateDwellTimeAndRateN [30]
+[224]    0.0    0.00    0.00      12         setCluster_time [224]
+-----------------------------------------------
+                0.00    0.00      12/12          addNeighNodeToCluster [169]
+[225]    0.0    0.00    0.00      12         setNeighLL_start [225]
+-----------------------------------------------
+                0.00    0.00       3/12          addNodeEndClusterLL [249]
+                0.00    0.00       9/12          addNodesToClusterGivenSites [228]
+[226]    0.0    0.00    0.00      12         setNextNode [226]
+-----------------------------------------------
+                0.00    0.00      10/10          randomWalk [4]
+[227]    0.0    0.00    0.00      10         printMovie [227]
+                0.00    0.00   48000/174808      getAhei [65]
+                0.00    0.00   45000/208825      getSN [64]
+                0.00    0.00   45000/45000       getTime [84]
+                0.00    0.00   45000/47667       getDwelStat [75]
+                0.00    0.00    3200/123079      getAwid [67]
+                0.00    0.00     210/32227       getAlen [88]
+                0.00    0.00      10/17          PFget_SiteDist [210]
+                0.00    0.00      10/46736       PFget_Hei [76]
+                0.00    0.00      10/46736       PFget_Wid [78]
+                0.00    0.00      10/46736       PFget_Len [77]
+                0.00    0.00      10/50434       getAtotal [74]
+-----------------------------------------------
+                0.00    0.00       9/9           randomWalk [4]
+[228]    0.0    0.00    0.00       9         addNodesToClusterGivenSites [228]
+                0.00    0.00      18/21          newNode [200]
+                0.00    0.00       9/12          setNextNode [226]
+-----------------------------------------------
+                0.00    0.00       9/9           randomWalk [4]
+[229]    0.0    0.00    0.00       9         newClusterLL [229]
+-----------------------------------------------
+                0.00    0.00       9/9           DetermineNodeOrientationSingleCluster [218]
+[230]    0.0    0.00    0.00       9         setFlagLef [230]
+-----------------------------------------------
+                0.00    0.00       9/9           DetermineNodeOrientationSingleCluster [218]
+[231]    0.0    0.00    0.00       9         setFlagRig [231]
+-----------------------------------------------
+                0.00    0.00       8/8           randomWalk [4]
+[232]    0.0    0.00    0.00       8         appendClusterLL [232]
+                0.00    0.00      28/28          getNextClusterLL [190]
+-----------------------------------------------
+                0.00    0.00       6/6           CalculateNeighSinglePYPZ [216]
+[233]    0.0    0.00    0.00       6         setCluster_elecYid [233]
+-----------------------------------------------
+                0.00    0.00       1/5           Pre_randomWalk [8]
+                0.00    0.00       1/5           initFutureSite [59]
+                0.00    0.00       1/5           randomWalk [4]
+                0.00    0.00       2/5           printFileEnergy [267]
+[234]    0.0    0.00    0.00       5         PFget_EndX [234]
+-----------------------------------------------
+                0.00    0.00       1/5           Pre_randomWalk [8]
+                0.00    0.00       1/5           initFutureSite [59]
+                0.00    0.00       1/5           randomWalk [4]
+                0.00    0.00       2/5           printFileEnergy [267]
+[235]    0.0    0.00    0.00       5         PFget_EndY [235]
+-----------------------------------------------
+                0.00    0.00       1/5           Pre_randomWalk [8]
+                0.00    0.00       1/5           initFutureSite [59]
+                0.00    0.00       1/5           randomWalk [4]
+                0.00    0.00       2/5           printFileEnergy [267]
+[236]    0.0    0.00    0.00       5         PFget_EndZ [236]
+-----------------------------------------------
+                0.00    0.00       1/4           initFutureSite [59]
+                0.00    0.00       1/4           randomWalk [4]
+                0.00    0.00       1/4           initSite [9]
+                0.00    0.00       1/4           initElec [17]
+[237]    0.0    0.00    0.00       4         PFget_Px [237]
+-----------------------------------------------
+                0.00    0.00       1/4           initFutureSite [59]
+                0.00    0.00       1/4           randomWalk [4]
+                0.00    0.00       1/4           initSite [9]
+                0.00    0.00       1/4           initElec [17]
+[238]    0.0    0.00    0.00       4         PFget_Py [238]
+-----------------------------------------------
+                0.00    0.00       1/4           initFutureSite [59]
+                0.00    0.00       1/4           randomWalk [4]
+                0.00    0.00       1/4           initSite [9]
+                0.00    0.00       1/4           initElec [17]
+[239]    0.0    0.00    0.00       4         PFget_Pz [239]
+-----------------------------------------------
+                0.00    0.00       1/4           Pre_randomWalk [8]
+                0.00    0.00       1/4           randomWalk [4]
+                0.00    0.00       1/4           initSite [9]
+                0.00    0.00       1/4           initElec [17]
+[240]    0.0    0.00    0.00       4         PFget_reOrg [240]
+-----------------------------------------------
+                0.00    0.00       4/4           DetermineNodeOrientationSingleCluster [218]
+[241]    0.0    0.00    0.00       4         setFlagBeh [241]
+-----------------------------------------------
+                0.00    0.00       4/4           DetermineNodeOrientationSingleCluster [218]
+[242]    0.0    0.00    0.00       4         setFlagFro [242]
+-----------------------------------------------
+                0.00    0.00       1/3           Pre_randomWalk [8]
+                0.00    0.00       1/3           randomWalk [4]
+                0.00    0.00       1/3           initSite [9]
+[243]    0.0    0.00    0.00       3         PFget_AttemptToHop [243]
+-----------------------------------------------
+                0.00    0.00       1/3           randomWalk [4]
+                0.00    0.00       2/3           Pre_randomWalk [8]
+[244]    0.0    0.00    0.00       3         PFget_ClusterAlg [244]
+-----------------------------------------------
+                0.00    0.00       1/3           Pre_randomWalk [8]
+                0.00    0.00       1/3           initFutureSite [59]
+                0.00    0.00       1/3           randomWalk [4]
+[245]    0.0    0.00    0.00       3         PFget_NCh [245]
+-----------------------------------------------
+                0.00    0.00       1/3           initElec [17]
+                0.00    0.00       2/3           printFileEnergy [267]
+[246]    0.0    0.00    0.00       3         PFget_RelativePerm [246]
+-----------------------------------------------
+                0.00    0.00       1/3           Pre_randomWalk [8]
+                0.00    0.00       1/3           randomWalk [4]
+                0.00    0.00       1/3           initSite [9]
+[247]    0.0    0.00    0.00       3         PFget_gamma [247]
+-----------------------------------------------
+                0.00    0.00       1/3           main [3]
+                0.00    0.00       1/3           Pre_randomWalk [8]
+                0.00    0.00       1/3           randomWalk [4]
+[248]    0.0    0.00    0.00       3         PFget_method [248]
+-----------------------------------------------
+                0.00    0.00       3/3           randomWalk [4]
+[249]    0.0    0.00    0.00       3         addNodeEndClusterLL [249]
+                0.00    0.00       3/3           getNode_lastNode [257]
+                0.00    0.00       3/21          newNode [200]
+                0.00    0.00       3/12          setNextNode [226]
+-----------------------------------------------
+                0.00    0.00       3/3           randomWalk [4]
+[250]    0.0    0.00    0.00       3         deleteClusterLL_NeighNodes [250]
+                0.00    0.00       3/3           getNeighLL_numNeigh [256]
+                0.00    0.00       3/3           deleteNeighLLAll [252]
+-----------------------------------------------
+                0.00    0.00       3/3           deleteNeighLLAll [252]
+[251]    0.0    0.00    0.00       3         deleteNeighLL [251]
+-----------------------------------------------
+                0.00    0.00       3/3           deleteClusterLL_NeighNodes [250]
+[252]    0.0    0.00    0.00       3         deleteNeighLLAll [252]
+                0.00    0.00      41/1291        getNextNeigh [118]
+                0.00    0.00      22/22          setNextNeighNodeToNULL [199]
+                0.00    0.00      22/23          deleteNeighNode [197]
+                0.00    0.00       3/3           deleteNeighLL [251]
+-----------------------------------------------
+                0.00    0.00       3/3           randomWalk [4]
+[253]    0.0    0.00    0.00       3         getClusterGivenClusterID [253]
+-----------------------------------------------
+                0.00    0.00       3/3           getClusterIDGivenSiteNodeID [255]
+[254]    0.0    0.00    0.00       3         getClusterIDGivenSiteNode [254]
+                0.00    0.00       6/113         getCluster_id [168]
+                0.00    0.00       3/922         getClusterList [128]
+                0.00    0.00       3/138603      getEnergy [66]
+-----------------------------------------------
+                0.00    0.00       3/3           randomWalk [4]
+[255]    0.0    0.00    0.00       3         getClusterIDGivenSiteNodeID [255]
+                0.00    0.00       3/32056       getSNwithInd [89]
+                0.00    0.00       3/3           getClusterIDGivenSiteNode [254]
+-----------------------------------------------
+                0.00    0.00       3/3           deleteClusterLL_NeighNodes [250]
+[256]    0.0    0.00    0.00       3         getNeighLL_numNeigh [256]
+-----------------------------------------------
+                0.00    0.00       3/3           addNodeEndClusterLL [249]
+[257]    0.0    0.00    0.00       3         getNode_lastNode [257]
+-----------------------------------------------
+                0.00    0.00       1/3           Pre_randomWalk [8]
+                0.00    0.00       2/3           initJumPossibility_ElecX [21]
+[258]    0.0    0.00    0.00       3         newSNarray [258]
+                0.00    0.00    4950/4950        newSN [98]
+-----------------------------------------------
+                0.00    0.00       3/3           DetermineNodeOrientationSingleCluster [218]
+[259]    0.0    0.00    0.00       3         setFlagAbo [259]
+-----------------------------------------------
+                0.00    0.00       3/3           DetermineNodeOrientationSingleCluster [218]
+[260]    0.0    0.00    0.00       3         setFlagBel [260]
+-----------------------------------------------
+                0.00    0.00       1/2           initSite [9]
+                0.00    0.00       1/2           ScaleAfterCorrFunc [15]
+[261]    0.0    0.00    0.00       2         PFget_E0 [261]
+-----------------------------------------------
+                0.00    0.00       2/2           initElec [17]
+[262]    0.0    0.00    0.00       2         PFget_ImageCharge [262]
+-----------------------------------------------
+                0.00    0.00       1/2           initSite [9]
+                0.00    0.00       1/2           ScaleAfterCorrFunc [15]
+[263]    0.0    0.00    0.00       2         PFget_sigma [263]
+-----------------------------------------------
+                0.00    0.00       2/2           initJumPossibility_ElecX [21]
+[264]    0.0    0.00    0.00       2         getElectrode_FermiEnergy [264]
+-----------------------------------------------
+                0.00    0.00       2/2           initJumPossibility_ElecX [21]
+[265]    0.0    0.00    0.00       2         getElectrode_alpha [265]
+-----------------------------------------------
+                0.00    0.00       2/2           initElec [17]
+[266]    0.0    0.00    0.00       2         newElectrode [266]
+-----------------------------------------------
+                0.00    0.00       1/2           main [3]
+                0.00    0.00       1/2           Pre_randomWalk [8]
+[267]    0.0    0.00    0.00       2         printFileEnergy [267]
+                0.00    0.00   18000/138603      getEnergy [66]
+                0.00    0.00    9000/208825      getSN [64]
+                0.00    0.00       2/46736       PFget_Len [77]
+                0.00    0.00       2/46736       PFget_Wid [78]
+                0.00    0.00       2/46736       PFget_Hei [76]
+                0.00    0.00       2/5           PFget_EndX [234]
+                0.00    0.00       2/5           PFget_EndY [235]
+                0.00    0.00       2/5           PFget_EndZ [236]
+                0.00    0.00       2/17          PFget_SiteDist [210]
+                0.00    0.00       2/3           PFget_RelativePerm [246]
+                0.00    0.00       2/50434       getAtotal [74]
+-----------------------------------------------
+                0.00    0.00       2/2           initJumPossibility_ElecX [21]
+[268]    0.0    0.00    0.00       2         setElectrode_AdjacentSites [268]
+-----------------------------------------------
+                0.00    0.00       2/2           initElec [17]
+[269]    0.0    0.00    0.00       2         setElectrode_FermiEnergy [269]
+-----------------------------------------------
+                0.00    0.00       2/2           initJumPossibility_ElecX [21]
+[270]    0.0    0.00    0.00       2         setElectrode_HopRates [270]
+-----------------------------------------------
+                0.00    0.00       2/2           initJumPossibility_ElecX [21]
+[271]    0.0    0.00    0.00       2         setElectrode_Sum [271]
+-----------------------------------------------
+                0.00    0.00       2/2           initElec [17]
+[272]    0.0    0.00    0.00       2         setElectrode_alpha [272]
+-----------------------------------------------
+                0.00    0.00       1/1           Pre_randomWalk [8]
+[273]    0.0    0.00    0.00       1         CheckPt_Cluster_TOF [273]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[274]    0.0    0.00    0.00       1         CheckPt_Test_TOF [274]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[275]    0.0    0.00    0.00       1         CheckPt_exist [275]
+-----------------------------------------------
+                0.00    0.00       1/1           Pre_randomWalk [8]
+[276]    0.0    0.00    0.00       1         PFget_ClusterAlgRec [276]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[277]    0.0    0.00    0.00       1         PFget_ClusterAlgTrigger [277]
+-----------------------------------------------
+                0.00    0.00       1/1           initSite [9]
+[278]    0.0    0.00    0.00       1         PFget_CutOff [278]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[279]    0.0    0.00    0.00       1         PFget_CutOffTime [279]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[280]    0.0    0.00    0.00       1         PFget_D [280]
+-----------------------------------------------
+                0.00    0.00       1/1           initSite [9]
+[281]    0.0    0.00    0.00       1         PFget_Etrap [281]
+-----------------------------------------------
+                0.00    0.00       1/1           initSite [9]
+[282]    0.0    0.00    0.00       1         PFget_FracSeed [282]
+-----------------------------------------------
+                0.00    0.00       1/1           initSite [9]
+[283]    0.0    0.00    0.00       1         PFget_FracTrap [283]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[284]    0.0    0.00    0.00       1         PFget_MovieFrames [284]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[285]    0.0    0.00    0.00       1         PFget_Nstep_av [285]
+-----------------------------------------------
+                0.00    0.00       1/1           Pre_randomWalk [8]
+[286]    0.0    0.00    0.00       1         PFget_Ntot [286]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[287]    0.0    0.00    0.00       1         PFget_Rcount [287]
+-----------------------------------------------
+                0.00    0.00       1/1           initSite [9]
+[288]    0.0    0.00    0.00       1         PFget_ScaleAfterCorr [288]
+-----------------------------------------------
+                0.00    0.00       1/1           initSite [9]
+[289]    0.0    0.00    0.00       1         PFget_SeedProt [289]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[290]    0.0    0.00    0.00       1         PFget_TCount [290]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[291]    0.0    0.00    0.00       1         PFget_TStep [291]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[292]    0.0    0.00    0.00       1         PFget_Tcv [292]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[293]    0.0    0.00    0.00       1         PFget_TempInc [293]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[294]    0.0    0.00    0.00       1         PFget_TempStart [294]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[295]    0.0    0.00    0.00       1         PFget_TempStep [295]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[296]    0.0    0.00    0.00       1         PFget_Time_check [296]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[297]    0.0    0.00    0.00       1         PFget_Tlag [297]
+-----------------------------------------------
+                0.00    0.00       1/1           initSite [9]
+[298]    0.0    0.00    0.00       1         PFget_Tsigma [298]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[299]    0.0    0.00    0.00       1         PFget_VStepX [299]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[300]    0.0    0.00    0.00       1         PFget_VStepY [300]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[301]    0.0    0.00    0.00       1         PFget_VStepZ [301]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[302]    0.0    0.00    0.00       1         PFget_Vcv [302]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[303]    0.0    0.00    0.00       1         PFget_VincX [303]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[304]    0.0    0.00    0.00       1         PFget_VincY [304]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[305]    0.0    0.00    0.00       1         PFget_VincZ [305]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[306]    0.0    0.00    0.00       1         PFget_VoltageX [306]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[307]    0.0    0.00    0.00       1         PFget_VoltageY [307]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[308]    0.0    0.00    0.00       1         PFget_VoltageZ [308]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[309]    0.0    0.00    0.00       1         PFget_XFermiB [309]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[310]    0.0    0.00    0.00       1         PFget_XFermiF [310]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[311]    0.0    0.00    0.00       1         PFget_YFermiL [311]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[312]    0.0    0.00    0.00       1         PFget_YFermiR [312]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[313]    0.0    0.00    0.00       1         PFget_ZFermiA [313]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[314]    0.0    0.00    0.00       1         PFget_ZFermiB [314]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[315]    0.0    0.00    0.00       1         PFget_alphaxb [315]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[316]    0.0    0.00    0.00       1         PFget_alphaxf [316]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[317]    0.0    0.00    0.00       1         PFget_alphayl [317]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[318]    0.0    0.00    0.00       1         PFget_alphayr [318]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[319]    0.0    0.00    0.00       1         PFget_alphaza [319]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[320]    0.0    0.00    0.00       1         PFget_alphazb [320]
+-----------------------------------------------
+                0.00    0.00       1/1           initSite [9]
+[321]    0.0    0.00    0.00       1         PFget_lambda [321]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[322]    0.0    0.00    0.00       1         PFget_vX [322]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[323]    0.0    0.00    0.00       1         PFget_vY [323]
+-----------------------------------------------
+                0.00    0.00       1/1           initElec [17]
+[324]    0.0    0.00    0.00       1         PFget_vZ [324]
+-----------------------------------------------
+                0.00    0.00       1/1           initCharget0 [44]
+[325]    0.0    0.00    0.00       1         getUnOccYZplane [325]
+                0.00    0.00     450/263877      getIndex [63]
+                0.00    0.00     225/208825      getSN [64]
+-----------------------------------------------
+                0.00    0.00       1/1           initSite [9]
+[326]    0.0    0.00    0.00       1         initJumPossibility [326]
+                0.00    0.00   54000/138603      getEnergy [66]
+                0.00    0.00   31500/208825      getSN [64]
+                0.00    0.00   27000/56700       hoppingRate [73]
+                0.00    0.00   27000/29700       setSN_p [91]
+                0.00    0.00   27000/39743       getSN_p [86]
+                0.00    0.00    4801/174808      getAhei [65]
+                0.00    0.00    4500/4950        setsum [99]
+                0.00    0.00     321/123079      getAwid [67]
+                0.00    0.00      22/32227       getAlen [88]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[327]    0.0    0.00    0.00       1         newArbArray [327]
+-----------------------------------------------
+                0.00    0.00       1/1           initCharget0 [44]
+[328]    0.0    0.00    0.00       1         newChargeA [328]
+                0.00    0.00      20/20          newCharge [204]
+-----------------------------------------------
+                0.00    0.00       1/1           main [3]
+[329]    0.0    0.00    0.00       1         newParamFrame_File [329]
+                0.00    0.00      77/77          match [176]
+                0.00    0.00      43/43          GrabDouble [186]
+                0.00    0.00      34/34          GrabInt [188]
+-----------------------------------------------
+                0.00    0.00       1/1           randomWalk [4]
+[330]    0.0    0.00    0.00       1         setArbElement [330]
+-----------------------------------------------
+                0.00    0.00       1/1           initSite [9]
+[331]    0.0    0.00    0.00       1         setDefaultSNa [331]
+                0.00    0.00    4500/208825      getSN [64]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+   [7] CalculateAllHops      [263] PFget_sigma           [118] getNextNeigh
+  [30] CalculateDwellTimeAndRateN [322] PFget_vX         [136] getNextNode
+ [215] CalculateNeighNodesForSingleClusterLL [323] PFget_vY [133] getNode_id
+ [216] CalculateNeighSinglePYPZ [324] PFget_vZ           [257] getNode_lastNode
+  [26] CalculateProb         [113] Plust                 [191] getNode_p
+  [34] CalculateProbNeighDwell [8] Pre_randomWalk        [115] getRandomSitePos
+  [27] CalculatePvalNeigh     [93] ProjectChargePositionOntoSiteNodeReferenceFrame [62] getRows
+  [53] CalculatePvalNodes    [102] Rfind                  [64] getSN
+  [16] CalculateSumAndPGivenSingleClusterLL [22] SaveDataPoint [86] getSN_p
+  [48] ChargeElectrode        [15] ScaleAfterCorrFunc     [89] getSNwithInd
+  [49] ChargeSystem           [58] SiteHop               [151] getStartNeigh
+ [109] CheckConservationCharges [40] SumOfCol            [142] getStartNode
+ [112] CheckIfElecHop         [82] UpdateOccTime          [84] getTime
+ [273] CheckPt_Cluster_TOF    [47] addLL_MNode           [107] getType
+ [274] CheckPt_Test_TOF       [33] addLL_MNodeBegin      [325] getUnOccYZplane
+ [275] CheckPt_exist         [169] addNeighNodeToCluster [203] getVisFreq
+ [158] ClusterHop            [249] addNodeEndClusterLL   [114] getsum
+ [159] ClusterHopCheck       [228] addNodesToClusterGivenSites [106] grn
+  [14] CorrCal                [83] addTime                [73] hoppingRate
+  [51] CountOptions          [232] appendClusterLL       [138] hoppingRateMillerAbraham
+ [217] DetermineClusterStatus [178] checkBoundsIndexAbove [31] incMatrixLLElem
+ [218] DetermineNodeOrientationSingleCluster [179] checkBoundsIndexBehind [126] incVisFreq
+  [56] DivideEachElement     [180] checkBoundsIndexBelow  [32] incrementE
+  [36] DivideEachElementCol  [181] checkBoundsIndexFront  [43] initChargeArrayPath
+  [23] ElecHopOffX           [182] checkBoundsIndexLeft   [42] initChargePath
+ [211] Electrode_addCharge   [183] checkBoundsIndexRight  [44] initCharget0
+ [212] Electrode_minusCharge [164] checkCluster_elecYdefined [17] initElec
+  [35] FindRowOfMatchInCol   [165] checkCluster_elecZdefined [59] initFutureSite
+ [186] GrabDouble            [119] checkSNconnectedCluster [326] initJumPossibility
+ [188] GrabInt               [105] corr                   [21] initJumPossibility_ElecX
+ [160] HopOffCluster         [198] deleteAllHop            [9] initSite
+ [161] HopOnOffCluster       [250] deleteClusterLL_NeighNodes [10] insertDwelltimePos
+  [61] HopToElecX            [149] deleteLL_MNode        [176] match
+  [57] HoppingToSurroundingSites [95] deleteMatrix       [130] moveMatrixLLNodeToStart
+ [110] MakeHop               [251] deleteNeighLL         [327] newArbArray
+  [85] MinusDwel             [252] deleteNeighLLAll      [204] newCharge
+ [162] OccAllCluster         [197] deleteNeighNode       [328] newChargeA
+ [134] OccAllNei              [25] duplicateMatrix       [229] newClusterLL
+ [163] OccAllNeiCluster       [65] getAhei               [266] newElectrode
+ [243] PFget_AttemptToHop     [88] getAlen               [170] newHop
+ [219] PFget_Attempts         [74] getAtotal              [28] newLL_MNode
+ [244] PFget_ClusterAlg       [67] getAwid               [135] newMatrix
+ [276] PFget_ClusterAlgRec    [69] getCharge              [96] newMatrixSet
+ [277] PFget_ClusterAlgTrigger [125] getChargePath        [52] newMatrix_LinkList
+ [278] PFget_CutOff          [253] getClusterGivenClusterID [221] newNeighLL
+ [279] PFget_CutOffTime      [254] getClusterIDGivenSiteNode [173] newNeighNode
+ [280] PFget_D               [255] getClusterIDGivenSiteNodeID [200] newNode
+ [261] PFget_E0              [128] getClusterList        [329] newParamFrame_File
+ [234] PFget_EndX            [168] getCluster_id          [97] newPoint
+ [235] PFget_EndY            [177] getCluster_numNodes    [98] newSN
+ [236] PFget_EndZ            [166] getCluster_time       [258] newSNarray
+ [281] PFget_Etrap             [1] getCols                [45] partition
+ [282] PFget_FracSeed         [70] getCx                  [12] printCharge
+ [283] PFget_FracTrap         [71] getCy                  [41] printChargeA
+  [76] PFget_Hei              [72] getCz                   [2] printClusterLL
+ [262] PFget_ImageCharge      [68] getDwel               [267] printFileEnergy
+  [77] PFget_Len              [75] getDwelStat            [50] printMatrix
+ [284] PFget_MovieFrames       [5] getE                   [13] printMatrixLL
+ [245] PFget_NCh             [202] getElectrode_AdjacentSites [227] printMovie
+ [285] PFget_Nstep_av        [111] getElectrode_Charges  [157] printToPathFile
+ [286] PFget_Ntot            [264] getElectrode_FermiEnergy [46] quickSort
+ [124] PFget_NumChargesTrack [208] getElectrode_HopRates   [4] randomWalk
+ [156] PFget_PathFile        [209] getElectrode_Sum      [103] rdtsc
+ [237] PFget_Px              [265] getElectrode_alpha    [152] removeLL_MNodeEnd
+ [238] PFget_Py               [66] getEnergy              [54] resetChargePathVisit
+ [239] PFget_Pz              [143] getFlagAbo             [24] resizeRow
+ [287] PFget_Rcount          [148] getFlagBeh            [155] setAll
+ [246] PFget_RelativePerm    [144] getFlagBel            [222] setAllRowsInCol
+ [288] PFget_ScaleAfterCorr  [145] getFlagFro            [330] setArbElement
+ [289] PFget_SeedProt        [146] getFlagLef            [223] setCluster_elecXid
+ [210] PFget_SiteDist        [147] getFlagRig            [233] setCluster_elecYid
+ [290] PFget_TCount           [39] getIDsOfTwoOfMostFrequentlyVisitedSites [213] setCluster_elecZid
+ [291] PFget_TStep           [192] getIndAbo             [224] setCluster_time
+ [292] PFget_Tcv             [131] getIndAboP            [120] setCx
+ [293] PFget_TempInc         [189] getIndBeh             [121] setCy
+ [294] PFget_TempStart       [153] getIndBehP            [122] setCz
+ [295] PFget_TempStep        [214] getIndBel             [201] setDataStruc
+ [296] PFget_Time_check      [129] getIndBelP            [331] setDefaultSNa
+ [297] PFget_Tlag            [185] getIndFro             [108] setDwel
+ [298] PFget_Tsigma          [154] getIndFroP            [104] setDwelStat
+ [299] PFget_VStepX          [187] getIndLef               [6] setE
+ [300] PFget_VStepY          [140] getIndLefP            [268] setElectrode_AdjacentSites
+ [301] PFget_VStepZ          [193] getIndRig             [269] setElectrode_FermiEnergy
+ [302] PFget_Vcv             [141] getIndRigP            [270] setElectrode_HopRates
+ [303] PFget_VincX            [63] getIndex              [271] setElectrode_Sum
+ [304] PFget_VincY           [194] getIndexAboveP        [272] setElectrode_alpha
+ [305] PFget_VincZ           [220] getIndexBehindP        [92] setEnergy
+ [306] PFget_VoltageX        [195] getIndexBelowP        [259] setFlagAbo
+ [307] PFget_VoltageY        [196] getIndexFrontP        [241] setFlagBeh
+ [308] PFget_VoltageZ        [206] getIndexLeftP         [260] setFlagBel
+  [78] PFget_Wid              [90] getIndexPeriodic      [242] setFlagFro
+  [79] PFget_XElecOn         [139] getIndexPeriodicX     [230] setFlagLef
+ [309] PFget_XFermiB         [132] getIndexPeriodicY     [231] setFlagRig
+ [310] PFget_XFermiF         [117] getIndexPeriodicZ     [101] setInitE
+  [80] PFget_YElecOn         [207] getIndexRightP         [60] setMatrixLLElem
+ [311] PFget_YFermiL          [87] getInitE               [55] setMatrixLLValueAtRow
+ [312] PFget_YFermiR          [94] getLoc                [174] setNeighLL_addNeighNode
+  [81] PFget_ZElecOn          [18] getMatrixLLLastMatchAtRow [225] setNeighLL_start
+ [313] PFget_ZFermiA          [29] getMatrixLLMatchAtRow [171] setNeighNodeNew_p
+ [314] PFget_ZFermiB          [38] getMatrixLLNodeElem   [172] setNeighNode_t
+ [315] PFget_alphaxb          [19] getMatrixLLNumberElemGreaterThanMatchAtRow [175] setNextNeighNode
+ [316] PFget_alphaxf          [37] getMatrixLLNumberMatchAtRow [199] setNextNeighNodeToNULL
+ [317] PFget_alphayl         [100] getMatrixLLlength     [226] setNextNode
+ [318] PFget_alphayr         [256] getNeighLL_numNeigh   [184] setNode_p
+ [319] PFget_alphaza         [150] getNeighLL_start       [91] setSN_p
+ [320] PFget_alphazb         [137] getNeighNode_hoplength [123] setVis
+ [247] PFget_gamma           [116] getNeighNode_id       [205] setVisFreq
+ [321] PFget_lambda          [127] getNeighNode_p         [99] setsum
+ [248] PFget_method          [167] getNeighNode_t         [20] triggerMatch
+ [240] PFget_reOrg           [190] getNextClusterLL       [11] updatePath

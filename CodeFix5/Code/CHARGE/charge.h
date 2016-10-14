@@ -1,7 +1,8 @@
 #ifndef _CHARGE_H_
 #define _CHARGE_H_
 
-#include "../SITENODE/sitenode.h"
+#include "../MATRIX_LINKLIST/matrix_linklist.h"
+
 /* The type declartion of the ADT
  */
 typedef struct _Charge * Charge;
@@ -55,6 +56,10 @@ int getChargeA_len(ChargeArray chA);
    the range or chA is NULL. 
  */
 Charge getCharge(const_ChargeArray chA, int i);
+
+/* Grabs the Charge path if the charge has one
+ */
+matrix_linklist getChargePath(Charge ch);
 
 /* Print properties of Charge ch which includes
    x, y and z position
@@ -154,6 +159,11 @@ int setCz(Charge ch, int cz);
 //returns the total x distance travelled if successful, -1 if ch is NULL
 int getXdist(const_Charge ch);
 
+/* This function will get the number of visits at the position
+ * in the path matrix_linklist defined by seq
+ */
+double getChargePathVisits(Charge ch, int seq);
+
 /* This function works by reseting the number of times that the 
  * charge remembers visiting a site to value of visit
  */
@@ -163,16 +173,6 @@ int resetChargePathVisit(Charge ch, int visit);
  * recorded in the path linklist.
  */
 double getChargePathVisitsForSite(Charge ch, int SiteID);
-
-/* This function will update the charge path structure so that
- * the site the charge most recently hopped to is at the forefront
- * of the path linklist. If the site was already in the linklist
- * it will increment the number of the times the site was visited
- * as well.
- * If the site is part of the same cluster as other sites in the 
- * linklist all sites that are part of the cluster are incremented. 
- */
-int updatePath(SNarray snA, Charge ch, int SiteID,int ClusterID);
 
 /* Count the total number of times a site within the path linklist
  * has exceded the threshold defined by match and return this value

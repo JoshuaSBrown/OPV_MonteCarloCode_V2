@@ -478,9 +478,24 @@ void getClusterPvalLow(SNarray snA,int i1,int j1,int k1, double * pvalLow,long d
 */
 int HopOffCluster(SNarray snA, int ID, double position2, int * newID, double * timeOff){
 
-	if(snA==NULL || ID<0 || position2<0 || position2>1.001){
-		return -1;
+  #ifdef _ERROR_CHECKING_ON_
+	if(snA==NULL){
+    fprintf(stderr,"ERROR snA is NULL in HopOffCluster\n");
+    return return_error_val();
+  }
+  if(ID<0){
+    fprintf(stderr,"ERROR ID is less than 0 in HopOffCluster\n");
+    return return_error_val();
+  }
+  if(position2<0){
+    fprintf(stderr,"ERROR position2 is less than 0 in HopOffCluster\n");
+    return return_error_val();
+  }
+  if(position2>1.001){
+    fprintf(stderr,"ERROR position2 is greater than 1.001 in HopOffCluster\n");
+		return return_error_val();
 	}
+  #endif
 
 	SiteNode sn = getSNwithInd(snA,ID);
 	ClusterLL ClLL = (ClusterLL) getClusterList(sn);
@@ -488,7 +503,7 @@ int HopOffCluster(SNarray snA, int ID, double position2, int * newID, double * t
 	int elem;
 	NeighNode NeighNod = getStartNeigh(ClLL);
 	//Grab the nodes neighboring the cluster
-
+  printNeighNodesClusterLL(ClLL);
 	while(NeighNod!=NULL){
 
 		//Also must cycle through the different hops
@@ -496,17 +511,22 @@ int HopOffCluster(SNarray snA, int ID, double position2, int * newID, double * t
 
 		for(elem=1;elem<(hops+1);elem++){
 			
-			printf("Value rand %g ID of node %d Pval node %g\n",position2,getNeighNode_id(NeighNod),getNeighNode_p(NeighNod,elem));
+			printf("Value rand %g ID of node %d Pval node %g elem %d hops+1 %d\n",position2,getNeighNode_id(NeighNod),getNeighNode_p(NeighNod,elem),elem,(hops+1));
 			if(position2<getNeighNode_p(NeighNod, elem)){
 				*newID = getNeighNode_id(NeighNod);
 				*timeOff = getNeighNode_t(NeighNod, elem);
-				return 0;
+				if(*timeOff<=0){
+          printf("1 timeOff in HopOffCluster 0 or negative %g\n",*timeOff);
+          exit(1);
+        }else{
+          printf("2 timeOff HopOffCluster %g\n",*timeOff);
+        }
+        return 0;
 			}
 		}
 
 		NeighNod = getNextNeigh(NeighNod);
 	}
-
 	//If no neighboring site has been returned at this point
 	//there is a problem
 	return -1;

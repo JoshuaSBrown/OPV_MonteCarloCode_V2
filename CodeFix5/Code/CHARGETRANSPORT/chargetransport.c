@@ -12,6 +12,7 @@
 #include "chargetransport.h"
 #include "../PARAMETERS/read.h"
 #include "../CHARGE/charge.h"
+#include "../CHARGESITENODE/chargesitenode.h"
 #include "../SITENODE/sitenode.h"
 #include "../CLUSTER/cluster.h"
 #include "../CLUSTERFUNCTIONS/clusterfunctions.h"
@@ -23,7 +24,15 @@
 #include "../IO/io.h"
 #include "../ERROR/error.h"
 
+// Why can we not hop past the edges? What if it is periodic?
+// I think the reason for this is in the case that there
+// are also electrodes defined in the y and z axis if that
+// is the case then we would not be hopping to a site but an
+// electrode. This needs to be fixed
 int HopToElecX(SNarray snA, Electrode elXb, Charge * one, int * future, int EndY, int EndZ){
+  // Warning if you have more than one pair of electrodes
+  // you will need to make adjustments to this code
+
   //Elecid defines which electrode could be hopping too
   //where:
   //	getAtotal(snA) + 0 - (-x)
@@ -33,10 +42,14 @@ int HopToElecX(SNarray snA, Electrode elXb, Charge * one, int * future, int EndY
   //	getAtotal(snA) + 4 - (-z)
   //	getAtotal(snA) + 5 - (+z)
 
+  #ifdef _ERROR_CHECKING_ON_
   if(elXb==NULL){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR elXb is NULL in HopToElecX\n");
     #endif 
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
     return -1;
   }
   
@@ -44,6 +57,9 @@ int HopToElecX(SNarray snA, Electrode elXb, Charge * one, int * future, int EndY
     #ifdef _ERROR_
     fprintf(stderr,"ERROR snA is NULL in HopToElecX\n");
     #endif 
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
     return -1;
   }
   
@@ -51,6 +67,9 @@ int HopToElecX(SNarray snA, Electrode elXb, Charge * one, int * future, int EndY
     #ifdef _ERROR_
     fprintf(stderr,"ERROR Charge *one is NULL in HopToElecX\n");
     #endif 
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
     return -1;
   }	
   
@@ -58,6 +77,9 @@ int HopToElecX(SNarray snA, Electrode elXb, Charge * one, int * future, int EndY
     #ifdef _ERROR_
     fprintf(stderr,"ERROR EndY is less than 0 in HopToElecX\n");
     #endif 
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
     return -1;
   }
   
@@ -65,10 +87,12 @@ int HopToElecX(SNarray snA, Electrode elXb, Charge * one, int * future, int EndY
     #ifdef _ERROR_
     fprintf(stderr,"ERROR EndZ is less than 0 in HopToElecX\n");
     #endif 
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
     return -1;
   }
-
-  SNarray snAelec = (SNarray) getElectrode_AdjacentSites(elXb);
+  #endif
 
   int SLength = getAlen(snA);
   int SWidth  = getAwid(snA);
@@ -99,7 +123,8 @@ int HopToElecX(SNarray snA, Electrode elXb, Charge * one, int * future, int EndY
   if(xx==0){
     //Posibility to jump to (-x) electrode
 
-    //Have to ensure that charge is not at the edge of the system in the y and z directon
+    //Have to ensure that charge is not at 
+    //the edge of the system in the y and z directon
     if(yy == 0 && zz == 0){
       //Next to the bottom left corner
       codeY = 1;
@@ -139,7 +164,7 @@ int HopToElecX(SNarray snA, Electrode elXb, Charge * one, int * future, int EndY
   //5 - above	 		z+
 
   //Need to grab the correct site
-  snAelec       = (SNarray) getElectrode_AdjacentSites(elXb);
+  SNarray snAelec       = (SNarray) getElectrode_AdjacentSites(elXb);
   SiteNode site = getSN(snAelec,0,j,k);
   l             = HoppingToSurroundingSites(site,codeX,codeY,codeZ);
 
@@ -789,9 +814,16 @@ int SiteHop(SNarray snA        , Charge * one     , SiteNode site      , int * f
 
 int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 
-	if (snA==NULL || ch==NULL ){
-		return -1;
+  #ifdef _ERROR_CHECKING_ON_
+	if (snA==NULL){
+    fprintf(stderr,"ERROR snA is NULL in ClusterHop\n");
+    return return_error_val();
+  }
+  if(ch==NULL){
+    fprintf(stderr,"ERROR ch is NULL in ClusterHop\n");
+		return return_error_val();
 	}
+  #endif
 
 	//Flags determine what options a charge has if it is in a cluster
 	int flag1;
@@ -806,7 +838,7 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 	double position;
 	double position2;
 
-	double timeflag;
+	int timeflag;
 
 	flag1 = 0;
 	flag2 = 0;
@@ -837,6 +869,8 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 	//unoccupied
 	//1 - no available sites within the cluster
 	//-1 - malformed input or not part of a cluster
+
+  printf("Cluster hop flag1 %d flag2 %d\n",flag1,flag2);
 
 	if(flag1==0 && flag2==0){
 		//Hopping within cluster and to neighbors is allowed
@@ -918,14 +952,24 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 		return -1;
 	}
 
+
+  printf("ClusterHop timeflag %d\n",timeflag);
 	if(timeflag==0){
 		SiteNode sn    = getSNwithInd(snA,ID);
 		ClusterLL ClLL = (ClusterLL) getClusterList(sn);
 		*tim           = getCluster_time(ClLL);
+    if(*tim <= 0){
+      printf("Cluster Hopping time is less than or equal to 0\n");
+      exit(1);
+    }
 	}else if(timeflag==1){
 		SiteNode sn    = getSNwithInd(snA,ID);
 		ClusterLL ClLL = (ClusterLL) getClusterList(sn);
 		*tim           = getCluster_time(ClLL)*20;
+    if(*tim <= 0){
+      printf("Cluster Hopping time is less than or equal to 0\n");
+      exit(1);
+    }
 	}
 
 	return 0;
@@ -1657,30 +1701,31 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	//n - Number of time steps that have passed where charges are injected
 	//nc - Number of charges in the system
 	//nca - Number of charges that are currently active
-	int method             = PFget_method(PF);
-	double Tcv             = PFget_Tcv(PF);
-	double Vcv             = PFget_Vcv(PF);
-	double Tlag            = PFget_Tlag(PF);
-	double TStep           = PFget_TStep(PF);
-	int TCount             = PFget_TCount(PF);
-	int Time_check         = PFget_Time_check(PF);
-	int Nstep_av           = PFget_Nstep_av(PF);
-	int NCh                = PFget_NCh(PF);
-	double D               = PFget_D(PF);
-	int XElecOn            = PFget_XElecOn(PF);
-	int YElecOn            = PFget_YElecOn(PF);
-	int ZElecOn            = PFget_ZElecOn(PF);
-	int EndX               = PFget_EndX(PF);
-	int EndY               = PFget_EndY(PF);
-	int EndZ               = PFget_EndZ(PF);
-	int PeriodicX          = PFget_Px(PF);
-	int PeriodicY          = PFget_Py(PF);
-	int PeriodicZ          = PFget_Pz(PF);
-	double SiteDistance    = PFget_SiteDist(PF);
-	int MovieFrames        = PFget_MovieFrames(PF);
-  long double CutOffTime = (long double) PFget_CutOffTime(PF);
-  int ClusterAlg         = PFget_ClusterAlg(PF);
-  int ClusterAlgTrigger  = PFget_ClusterAlgTrigger(PF);
+	int    method       = PFget_method(PF);
+	double Tcv          = PFget_Tcv(PF);
+	double Vcv          = PFget_Vcv(PF);
+	double Tlag         = PFget_Tlag(PF);
+	double TStep        = PFget_TStep(PF);
+	int    TCount       = PFget_TCount(PF);
+	int    Time_check   = PFget_Time_check(PF);
+	int    Nstep_av     = PFget_Nstep_av(PF);
+	int    NCh          = PFget_NCh(PF);
+	double D            = PFget_D(PF);
+	int    XElecOn      = PFget_XElecOn(PF);
+	int    YElecOn      = PFget_YElecOn(PF);
+	int    ZElecOn      = PFget_ZElecOn(PF);
+	int    EndX         = PFget_EndX(PF);
+	int    EndY         = PFget_EndY(PF);
+	int    EndZ         = PFget_EndZ(PF);
+	int    PeriodicX    = PFget_Px(PF);
+	int    PeriodicY    = PFget_Py(PF);
+	int    PeriodicZ    = PFget_Pz(PF);
+	double SiteDistance = PFget_SiteDist(PF);
+	int    MovieFrames  = PFget_MovieFrames(PF);
+  
+  long double CutOffTime         = (long double) PFget_CutOffTime(PF);
+  int         ClusterAlg         = PFget_ClusterAlg(PF);
+  int         ClusterAlgTrigger  = PFget_ClusterAlgTrigger(PF);
 	//FILE * EndPtFile = NULL;
 	//FILE * PathFile = NULL;
 	//FILE * LogFile = NULL;
@@ -1700,14 +1745,98 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	printf("will crash here if MovieFrames is 0\n");
 	assert(MovieFrames!=0);
 
-	if(snA==NULL || TCount<0 || TStep < 0 || Nstep_av < 0 ||\
-			NCh<0 || D < 0 || XElecOn<0 || YElecOn < 0 || ZElecOn <0 ||\
-			XElecOn > 1 || YElecOn > 1 || ZElecOn > 1 ||\
-			EndX<0 || EndY<0 || EndZ<0 || PeriodicX<0 || PeriodicY<0 ||\
-			PeriodicZ<0 || PeriodicX>1 || PeriodicY>1 || PeriodicZ>1 ||\
-			t<0){
-		return -1;
-	}
+  #ifdef _ERROR_CHECKING_ON_
+  /* Check inputs */
+	if(snA==NULL){
+    fprintf(stderr,"ERROR snA is NULL in randomWalk\n");
+    return return_error_val();
+  }
+	if(t<0){
+    fprintf(stderr,"ERROR t is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(PeriodicZ>1){
+    fprintf(stderr,"ERROR PeriodicZ is greater than 1 in randomWalk\n");
+    return return_error_val();
+  }
+	if(PeriodicY>1){
+    fprintf(stderr,"ERROR PeriodicY is greater than 1 in randomWalk\n");
+    return return_error_val();
+  }
+	if(PeriodicX>1){
+    fprintf(stderr,"ERROR PeriodicX is greater than 1 in randomWalk\n");
+    return return_error_val();
+  }
+	if(PeriodicZ<0){
+    fprintf(stderr,"ERROR PeriodicZ is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(PeriodicY<0){
+    fprintf(stderr,"ERROR PeriodicY is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(PeriodicX<0){
+    fprintf(stderr,"ERROR PeriodicX is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(EndZ<0){
+    fprintf(stderr,"ERROR EndZ is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(EndY<0){
+    fprintf(stderr,"ERROR EndY is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(EndX<0){
+    fprintf(stderr,"ERROR EndX is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(ZElecOn>1){
+    fprintf(stderr,"ERROR ZElecOn is greater than 1 in randomWalk\n");
+    return return_error_val();
+  }
+	if(YElecOn>1){
+    fprintf(stderr,"ERROR YElecOn is greater than 1 in randomWalk\n");
+    return return_error_val();
+  }
+	if(XElecOn>1){
+    fprintf(stderr,"ERROR XElecOn is greater than 1 in randomWalk\n");
+    return return_error_val();
+  }
+	if(ZElecOn<0){
+    fprintf(stderr,"ERROR ZElecOn is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(YElecOn<0){
+    fprintf(stderr,"ERROR YElecOn is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(XElecOn<0){
+    fprintf(stderr,"ERROR XElecOn is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(D<0){
+    fprintf(stderr,"ERROR D is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(NCh<0){
+    fprintf(stderr,"ERROR number of charges is less than 0"
+                   " in randomWalk\n");
+    return return_error_val();
+  }
+	if(Nstep_av<0){
+    fprintf(stderr,"ERROR Nstep_av is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(TStep<0){
+    fprintf(stderr,"ERROR TStep is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+	if(TCount<0){
+    fprintf(stderr,"ERROR TCount is less than 0 in randomWalk\n");
+    return return_error_val();
+  }
+  #endif  
 
 	//TCount - is the number of time increments that charges are injected
 	//TStep - is the size of the time step
@@ -1775,14 +1904,14 @@ int randomWalk( SNarray snA,int CheckptNum,\
   int trigger;
 
 	long double SaveTime;
-	double ran;
+	double      ran;
 
 	int TrackX;
 	int TrackY;
 	int TrackZ;
 
 	long double TimeTrack1;
-	int NumAvgVel;
+	int         NumAvgVel;
 	long double TotalVelX;
 	long double TotalVelY;
 	long double TotalVelZ;
@@ -1801,14 +1930,14 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	double tim;
 	long double CELIV_totalT = (long double)(Tlag + Tcv);
 
-	int      ID;
-	int      ID2;
-	int      SiteID;
-  int      SiteID_1;
-  int      SiteID_2;
-  int      ClusterID;
-  int      Global_ClusterID;          //Keeps track of the ids of the 
-  int      ConsecutiveFlag;
+	int ID;
+	int ID2;
+	int SiteID;
+  int SiteID_1;
+  int SiteID_2;
+  int ClusterID;
+  int Global_ClusterID;   //Keeps track of the ids of the 
+  int ConsecutiveFlag;
                                       //clusters as they are created
   ClusterLL AllClLL;
   ClusterLL ClLL;
@@ -1868,7 +1997,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	matrix timeArray = newMatrix(8,1);
 
 	printf("Initialization Complete!\n");
-	//printf("Value of nca %d\n",nca);
 	//Initilize number of charges reaching source
 	//and drian to 0
 	Xdrain  = 0;
@@ -1898,20 +2026,24 @@ int randomWalk( SNarray snA,int CheckptNum,\
   electricEnergyY = SiteDistance*ElectricFieldY;
   electricEnergyZ = SiteDistance*ElectricFieldZ;
 	
-  //If CELIV method is specified calculate ramp rate
+  /* If CELIV method is specified calculate ramp rate */
 	if(method==1){
+
 		Vramp = Vcv/Tcv;
 		KT = kB*Temperature;
 		//is equivalent to the marcus coefficient at 300 K
 		MarcusJ0 = pow( PFget_AttemptToHop(PF)*hbar*pow(4*PFget_reOrg(PF)*kB*300/M_PI,1/2),1/2);
 		//Calculating full Marcus Coefficient;
-		MarcusCoeff = pow(MarcusJ0,2)/hbar * pow(M_PI/(4*PFget_reOrg(PF)*KT),1/2)*exp(-2*PFget_gamma(PF)*PFget_SiteDist(PF));
+		MarcusCoeff = pow(MarcusJ0,2)/hbar* 
+                  pow(M_PI/(4*PFget_reOrg(PF)*KT),1/2)*
+                  exp(-2*PFget_gamma(PF)*PFget_SiteDist(PF));
 		//Need to define matrices containing energies of sites next to electrodes
 		Xb1 = newMatrix(SWidth,SHeight);
 		Xb2 = newMatrix(SWidth,SHeight);
 
 		for(j=0;j<SWidth;j++){
 			for(k=0;k<SHeight;k++){
+
 				sn = getSN(snA,0,j,k);
 				Energy = getEnergy(sn);
 				//Energies of first plane
@@ -1955,18 +2087,47 @@ int randomWalk( SNarray snA,int CheckptNum,\
   //This is only needed if the second cluster Alg
   //is turned on
   if (ClusterAlg==2){
-    MasterM = CalculateAllHops(snA, electricEnergyX, electricEnergyY, electricEnergyZ,\
-          kB*Temperature,PFget_reOrg(PF), SiteDistance, PFget_AttemptToHop(PF), PFget_gamma(PF),\
-                PeriodicX, PeriodicY, PeriodicZ);
+    MasterM = CalculateAllHops(snA, 
+                               electricEnergyX, 
+                               electricEnergyY, 
+                               electricEnergyZ,
+                               kB*Temperature,
+                               PFget_reOrg(PF), 
+                               SiteDistance, 
+                               PFget_AttemptToHop(PF), 
+                               PFget_gamma(PF),
+                               PeriodicX, 
+                               PeriodicY, 
+                               PeriodicZ);
   }
 
-	while( (n<TCount || nca>0) && t<CutOffTime && ((t<=CELIV_totalT && method==1) || method==0) ){
+
+  /*************************************************
+   *                     KEY LOOP
+   *************************************************/
+  /* Charge transport simulation will run as long as:
+   * 1 The number of charges in the system is not 0
+   *   and we have not finished inserting charges
+   * 2 The time has not reached the cutoff time
+   * 3 The total CELIV ramp time has not been reached
+   *   or we are using the TOF method
+   */
+	while( (n<TCount || nca>0)             &&  
+         t<CutOffTime                    && 
+         ((t<=CELIV_totalT && method==1) || 
+         method==0)){
 
 		//If no charges have been inserted in the system we will
 		//simply increment the time
-		CheckConservationCharges(elXb   , elYl    , elZb   ,\
-                             nca    , XElecOn , YElecOn,\
-                             ZElecOn, nc);
+		CheckConservationCharges(elXb, 
+                             elYl, 
+                             elZb,
+                             nca, 
+                             XElecOn, 
+                             YElecOn,
+                             ZElecOn, 
+                             nc);
+
     if (nca==0){
 
 			//Should be the Step time
@@ -2007,18 +2168,43 @@ int randomWalk( SNarray snA,int CheckptNum,\
 						printf("electricEnergyX %g Vx %g Vramp %g t %g\n",electricEnergyX,Vx,Vramp,(double)t);
 						exit(1);
 					}
-					//Update hop rates
-					//	printf("Vramp %g t %g Vx %g SLength %d SiteDistance %g electricField %g electricEnergyX %g\n",Vramp,(double)t,Vx,SLength,SiteDistance,ElectricFieldX,electricEnergyX);				
-					//exit(1);
+					//Update hop rates of the core system
+					initJumPossibility(electricEnergyX, 
+                             electricEnergyY, 
+                             electricEnergyZ,
+                             MarcusCoeff, 
+                             KT,
+                             PFget_reOrg(PF), 
+                             snA,
+                             PeriodicX, 
+                             PeriodicY, 
+                             PeriodicZ, 
+                             XElecOn, 
+                             YElecOn, 
+                             ZElecOn);
+			
+          /* Update hop rates of the electrodes */	
+					Update_initJumPossibility_ElecX(electricEnergyX, 
+                                          electricEnergyY,
+                                          electricEnergyZ, 
+                                          MarcusCoeff, 
+                                          KT, 
+                                          Xb1, 
+                                          Xb2, 
+                                          elXb, 
+                                          0 , 
+                                          PF);
 
-					initJumPossibility(electricEnergyX, electricEnergyY, electricEnergyZ,\
-							MarcusCoeff, KT,PFget_reOrg(PF), snA,\
-							PeriodicX, PeriodicY, PeriodicZ, XElecOn, YElecOn, ZElecOn);
-				
-					Update_initJumPossibility_ElecX( electricEnergyX, electricEnergyY,\
-							electricEnergyZ, MarcusCoeff, KT, Xb1, Xb2, elXb, 0 , PF);
-					Update_initJumPossibility_ElecX( electricEnergyX, electricEnergyY,\
-							electricEnergyZ, MarcusCoeff, KT, Xf1, Xf2, elXf, 1 , PF);
+					Update_initJumPossibility_ElecX(electricEnergyX, 
+                                          electricEnergyY,
+                                          electricEnergyZ, 
+                                          MarcusCoeff, 
+                                          KT, 
+                                          Xf1, 
+                                          Xf2, 
+                                          elXf, 
+                                          1 , 
+                                          PF);
 
 				}
 
@@ -2109,7 +2295,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
       //it will however only move if the future site is not already occupied.
       //flag - 0 if sucessful
       //flag - 1 if site is already occupied
-	
 			flag = MakeHop(snA, getE(FutureSite,ChargeID+1,1),\
 					&one, &TotalXtemp, &TotalYtemp, &TotalZtemp,\
 					PeriodicX, PeriodicY, PeriodicZ,\
@@ -2124,7 +2309,12 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			}else if(tim<=0){
 				printChargeA(*chA);
 				printf("time equal or less than 0 tim %g\n",tim);
-				exit(1);
+				printf("time equal or less than 0 tim %g\n",getDwel(one));
+				printf("Charge ID %d\n",ChargeID);
+        if(one==NULL){
+          printf("Charge is NULL\n");
+        }
+        exit(1);
 			}
 			//Cannot simply increase the time by the dwelstat if not
 			//all the charges have yet been inserted
@@ -2441,7 +2631,9 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			for( i = 1; i<nca; i++ ){
 				two = getCharge(*chA,getE(Sequence,i,1));
 				if(getDwel(two)>1){
+				  printChargeA(*chA);
 					printf("Dwelltime excessive %g\n",getDwel(two));
+					printf("tim to be minused %g\n",tim);
 					exit(1);
 				}
 				MinusDwel(two,tim);
@@ -2564,12 +2756,20 @@ int randomWalk( SNarray snA,int CheckptNum,\
               getLoc(&x,&y,&z,future,snA);
               tim = 1/getsum(getSN(snA,x,y,z));
             }
+            if(tim==0){
+              printf("tim==0 C\n");
+              exit(1);
+            }
 
           }else{
             //Future Hop To Cluster or Site using cluster algorithm
             ClusterHop(snA, &one, &tim, &future);
             printf("Future Hop %d\n",future);
             getLoc(&x,&y,&z,future,snA);
+            if(tim==0){
+              printf("tim==0 B\n");
+              exit(1);
+            }
           }
 
         }else{
@@ -2578,7 +2778,10 @@ int randomWalk( SNarray snA,int CheckptNum,\
               XElecOn,YElecOn,ZElecOn, PeriodicX,PeriodicY, PeriodicZ);
           getLoc(&x,&y,&z,future,snA);
           tim = 1/getsum(getSN(snA,x,y,z));
-
+          if(tim==0){
+            printf("tim==0 A\n");
+            exit(1);
+          }
         }
 
         //Having chosen future site recording it
@@ -2588,6 +2791,10 @@ int randomWalk( SNarray snA,int CheckptNum,\
         //The waiting time of the charge is updated based on
         //it's location and a random number
         //printf("Setting dwel site %lg\n",tim);
+        if(-log((double)ran/RAND_MAX)*tim<=0){
+          printf("ERROR dweltime is less than or equal to 0 and tim is %g\n",tim);
+          exit(1);
+        }
         setDwel(one, -log((double) ran/RAND_MAX)*tim);
 
         if(tim>1){
@@ -3751,6 +3958,11 @@ int Load_CheckPt(long double * t     , SNarray * snA      , ChargeArray * chA   
 				setCx(ch,ii);
 				setCy(ch,jj);
 				setCz(ch,kk);
+        
+        if(dwellTime<=0){
+          printf("ERROR dweltime is less than or equal to 0\n");
+          exit(1);
+        }
 				setDwel(ch,dwellTime);
 				i++;
 				setE(*Sequence,i,1,ChargeID);
@@ -4154,6 +4366,10 @@ int Load_CheckPt_Data_TOF(long double * t, SNarray * snA, ChargeArray * chA, mat
 				setCx(ch,ii);
 				setCy(ch,jj);
 				setCz(ch,kk);
+        if(dwellTime<=0){
+          printf("ERROR dwelltime is less than or equal to 0\n");
+          exit(1);
+        }
 				setDwel(ch,dwellTime);
 				i++;
 				setE(*Sequence,i,1,ChargeID);
@@ -5015,6 +5231,10 @@ int ChargeElectrode(Electrode el, Charge * one, matrix * Sequence, ChargeArray c
 	}
 	//Set Dwell time to that of the electrode
 	double tim = 1/getElectrode_Sum(el); 
+  if(-log((double)rand()/RAND_MAX)*tim<=0){
+    printf("ERROR in ChargeElectrode dwelltime less than or equal to 0\n");
+    exit(1);
+  }
 	setDwel(*one, -log((double)rand()/RAND_MAX)*tim);
 
 	if(tim>1){
@@ -5484,11 +5704,18 @@ int ClusterHopCheck(const int PeriodicX, const int PeriodicY, const int Periodic
 
 int HoppingToSurroundingSites(SiteNode site, int codeX, int codeY, int codeZ){
 
+  #ifdef _ERROR_CHECKING_ON_
 	if(site==NULL || codeX<0 || codeY<0 || codeZ<0 ||\
 			codeX>2 || codeY>2 || codeZ>2){
+    #ifdef _ERROR_
 		printf("ERROR incorrect input parameters detected in HoppingToSurroundingSites\n");
-		return -1;
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
 	}
+  #endif
 	//codeX values:
 	//0 - can hop to +x and -X
 	//1 - cannot hop to -x
@@ -5516,6 +5743,8 @@ int HoppingToSurroundingSites(SiteNode site, int codeX, int codeY, int codeZ){
 			l++;
 		}
 
+  // This means we are next to one of the 
+  // x electrodes
 	}else if(codeX>0 && codeY==0 && codeZ==0){
 		position = (double) rand() /RAND_MAX;
 		//Need to redefine the pvals
@@ -6061,10 +6290,15 @@ int CheckConservationCharges( Electrode elXb,Electrode elYl,Electrode elZb,\
   return 0;
 }
 
+/* This function is responsible for projecting
+ * a position (xx,yy,zz) that may be outside the boundaries
+ * of (SLength,SWidth,SHeight) so that it is within those
+ * defined boundaries. The new position is described
+ * with (x,y,z) pointers
+ */
 int ProjectChargePositionOntoSiteNodeReferenceFrame(int *x     , int *y    , int *z     ,\
                                                     int xx     , int yy    , int zz     ,\
                                                     int SLength, int SWidth, int SHeight){
-
   int factorX = 0;
   int factorY = 0;
   int factorZ = 0;

@@ -352,6 +352,28 @@ int printNodesClusterLL(const_ClusterLL clLL){
 	return 0;
 }
 
+int printNeighNodesClusterLL(const_ClusterLL clLL){
+
+	if(clLL==NULL){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR clLL in printNeighNodesClusterLL is NULL\n");
+    #endif
+		return -1;
+	}
+
+	NeighLL neighLL;
+  printf("\nNeighbor Nodes within Cluster id %d",clLL->id);
+  printf("Time %g\n",clLL->time);
+  if(clLL->Neigh==NULL){
+    printf("No Neighboring node list\n");
+  }else{
+    neighLL = clLL->Neigh;
+    printNeighLL(neighLL);
+  }
+	return 0;
+}
+
+
 int printClusterLL(const_ClusterLL clLL){
 
 	if(clLL==NULL){

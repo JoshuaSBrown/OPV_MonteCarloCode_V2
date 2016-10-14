@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm -f Movies
-rm -f CHECKPOINT
+rm -rf Movies
+rm -rf CHECKPOINT
 rm -f Data*
 

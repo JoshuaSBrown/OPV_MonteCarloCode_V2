@@ -36,25 +36,25 @@ int main(void){
 	//static const double kB = 8.6173324E-5;
 
 	//Variables from ParameterFrame
-	int method;
-	int SLength;
-	int SWidth;
-	int SHeight;
+	int    method;
+	int    SLength;
+	int    SWidth;
+	int    SHeight;
 	double VoltageX;
 	double VoltageY;
 	double VoltageZ;
-	int VStepX;
-	int VStepY;
-	int VStepZ;
+	int    VStepX;
+	int    VStepY;
+	int    VStepZ;
 	double VincX;
 	double VincY;
 	double VincZ;
 	double SiteDistance;
-	int Rcount;
+	int    Rcount;
 	double TempStart;
-	int TemperatureStep;
+	int    TemperatureStep;
 	double TemperatureInc;
-	int r;
+	int    r;
 	double Vx;
 	double Vy;
 	double Vz;
@@ -66,6 +66,7 @@ int main(void){
 	int CheckFileExist;
 	int CheckPointNum;
 	int count;
+
 	//int OrderL;
 	double electricFieldX;
 	double electricFieldY;
@@ -73,9 +74,9 @@ int main(void){
 	double electricEnergyX;
 	double electricEnergyY;
 	double electricEnergyZ;
-	int Vxcount;
-	int Vycount;
-	int Vzcount;
+	int    Vxcount;
+	int    Vycount;
+	int    Vzcount;
 	
 	Electrode elXb = NULL;
 	Electrode elXf = NULL;
@@ -85,16 +86,16 @@ int main(void){
 	Electrode elZa = NULL;
 
 	//Variables needed by RandomWalk
-	int FileNameSize;
-	long int n;
-	int nc;
-	int nca;
-	long double t;
-	matrix Sequence;
-	matrix FutureSite;
-	SNarray snA;
-	ArbArray ClArLL = NULL;
-	ChargeArray chA;
+	int            FileNameSize;
+	long int       n;
+	int            nc;
+	int            nca;
+	long double    t;
+	matrix         Sequence;
+	matrix         FutureSite;
+	SNarray        snA;
+	ArbArray       ClArLL = NULL;
+	ChargeArray    chA;
 	ParameterFrame PF;
 	
 	FileNameSize = 256;
@@ -103,15 +104,15 @@ int main(void){
 	char FileNameCheckPt[FileNameSize];
 	char FileNameCheckPtVersion[FileNameSize];
 
-	n = 0;
-	nc = 0;
+	n   = 0;
+	nc  = 0;
 	nca = 0;
-	t = 0;
+	t   = 0;
 	//KT = 0;
 
-	PF = NULL;
-	FileName[0] = '\0';
-	FileNameCheckPt[0] = '\0';
+	PF                        = NULL;
+	FileName[0]               = '\0';
+	FileNameCheckPt[0]        = '\0';
 	FileNameCheckPtVersion[0] = '\0';
 
 	//Check first to see if a CheckPoint file exists 
@@ -130,24 +131,24 @@ int main(void){
 	}
 
 	//Initializing ParameterFrame Variables
-	method = PFget_method(PF);
-	SLength = PFget_Len(PF);
-	SWidth = PFget_Wid(PF);
-	SHeight = PFget_Hei(PF);
-	VoltageX = PFget_VoltageX(PF);
-	VoltageY = PFget_VoltageY(PF);
-	VoltageZ = PFget_VoltageZ(PF);
-	VStepX = PFget_VStepX(PF);
-	VStepY = PFget_VStepY(PF);
-	VStepZ = PFget_VStepZ(PF);
-	VincX = PFget_VincX(PF);
-	VincY = PFget_VincY(PF);
-	VincZ = PFget_VincZ(PF);
-	SiteDistance = PFget_SiteDist(PF);
-	Rcount = PFget_Rcount(PF);
-	TempStart = PFget_TempStart(PF);
+	method          = PFget_method(PF);
+	SLength         = PFget_Len(PF);
+	SWidth          = PFget_Wid(PF);
+	SHeight         = PFget_Hei(PF);
+	VoltageX        = PFget_VoltageX(PF);
+	VoltageY        = PFget_VoltageY(PF);
+	VoltageZ        = PFget_VoltageZ(PF);
+	VStepX          = PFget_VStepX(PF);
+	VStepY          = PFget_VStepY(PF);
+	VStepZ          = PFget_VStepZ(PF);
+	VincX           = PFget_VincX(PF);
+	VincY           = PFget_VincY(PF);
+	VincZ           = PFget_VincZ(PF);
+	SiteDistance    = PFget_SiteDist(PF);
+	Rcount          = PFget_Rcount(PF);
+	TempStart       = PFget_TempStart(PF);
 	TemperatureStep = PFget_TempStep(PF);
-	TemperatureInc = PFget_TempInc(PF);
+	TemperatureInc  = PFget_TempInc(PF);
 
 	Vx = VoltageX;
 	Vy = VoltageY;
@@ -160,12 +161,12 @@ int main(void){
 		//Cycle through Xvoltages
 		//	mem_check();
 		while(Vxcount<=VStepX){
-			Vy = VoltageY;
+			Vy      = VoltageY;
 			Vycount = 0;
 
 			//Cycle through Yvoltages
 			while(Vycount<=VStepY){
-				Vz = VoltageZ;
+				Vz      = VoltageZ;
 				Vzcount = 0;
 
 				//Cycle through Zvoltages
@@ -190,33 +191,89 @@ int main(void){
 
 							printf("Calculating .ckpt status\n");
 							CheckPtStatus = -1;
-							CheckPtStatus = CheckPt_Test_TOF(&CheckPointNum, CheckFileExist, FileNameCheckPtVersion,\
-									FileNameSize,Vx, Vy, Vz, Temperature);
+							CheckPtStatus = CheckPt_Test_TOF(&CheckPointNum, 
+                                               CheckFileExist, 
+                                               FileNameCheckPtVersion,
+									                             FileNameSize,
+                                               Vx, Vy, Vz, 
+                                               Temperature);
 
 							sprintf(FileName,"DataT%gVx%gVy%gVz%gR%d",Temperature,Vx,Vy,Vz,r);
 
-							Pre_randomWalk(CheckPtStatus, FileNameCheckPtVersion,FileName, &t, &Sequence, &chA,\
-									&FutureSite,&ClArLL, &snA, PF,\
-									electricEnergyX, electricEnergyY, electricEnergyZ,r,Vx,Vy,Vz, Temperature,\
-									&n, &nc, &nca, &elXb, &elXf, &elYl, &elYr, &elZb, &elZa);	
+							Pre_randomWalk(CheckPtStatus, 
+                             FileNameCheckPtVersion,
+                             FileName, 
+                             &t, 
+                             &Sequence, 
+                             &chA,
+									           &FutureSite,
+                             &ClArLL, 
+                             &snA, 
+                             PF,
+									           electricEnergyX, 
+                             electricEnergyY, 
+                             electricEnergyZ,
+                             r,
+                             Vx,Vy,Vz, 
+                             Temperature,
+                             &n, 
+                             &nc, 
+                             &nca, 
+                             &elXb, 
+                             &elXf, 
+                             &elYl, 
+                             &elYr, 
+                             &elZb, 
+                             &elZa);	
 
 							if(FutureSite==NULL){
 								printf("FutureSite matrix NULL\n");
 								exit(1);
 							}
 
-							printFileEnergy(snA, &FileName[0],electricEnergyX, electricEnergyY, electricEnergyZ, PF);
+							printFileEnergy(snA, 
+                              &FileName[0],
+                              electricEnergyX, 
+                              electricEnergyY, 
+                              electricEnergyZ, 
+                              PF);
+
 							printMatrix(FutureSite);
 
-							randomWalk(snA, CheckPointNum, &FileName[0],\
-									electricFieldX,	electricFieldY, electricFieldZ,\
-									elXb, elXf, elYl, elYr, elZb, elZa, PF, t, Sequence,\
-									FutureSite, &chA, n, nc, nca, Temperature,&ClArLL); 
+							randomWalk(snA, 
+                         CheckPointNum, 
+                         &FileName[0],
+									       electricFieldX,	
+                         electricFieldY, 
+                         electricFieldZ,
+                         elXb, 
+                         elXf, 
+                         elYl, 
+                         elYr, 
+                         elZb, 
+                         elZa, 
+                         PF, 
+                         t, 
+                         Sequence,
+                         FutureSite, 
+                         &chA, 
+                         n, 
+                         nc, 
+                         nca, 
+                         Temperature,&ClArLL); 
 
 							printf("Printing Visit Freq files\n");
 							printVisitFreq(snA,&FileName[0]);
 
-							Post_randomWalk(ClArLL, snA, elXb, elXf, elYl, elYr, elZb, elZa,PF);
+							Post_randomWalk(ClArLL, 
+                              snA, 
+                              elXb, 
+                              elXf, 
+                              elYl, 
+                              elYr, 
+                              elZb, 
+                              elZa,
+                              PF);
 
 						}
 
@@ -252,37 +309,80 @@ int main(void){
 
 				printf("Calculating .ckpt status\n");
 				CheckPtStatus = -1;
-				CheckPtStatus = CheckPt_Test_CELIV( &CheckPointNum,\
-          CheckFileExist          , FileNameCheckPtVersion,\
-					FileNameSize            , Temperature           );
+				CheckPtStatus = CheckPt_Test_CELIV(&CheckPointNum,
+                                           CheckFileExist, 
+                                           FileNameCheckPtVersion,
+                                           FileNameSize, 
+                                           Temperature);
 
 				sprintf(FileName,"DataT%gR%d",Temperature,r);
 
-				Pre_randomWalk(CheckPtStatus       , FileNameCheckPtVersion,\
-          FileName       , &t              , &Sequence             ,\
-          &chA           , &FutureSite     , &ClArLL               ,\
-          &snA           , PF              , electricEnergyX       ,\
-          electricEnergyY, electricEnergyZ , r                     ,\
-          Vx             , Vy              , Vz                    ,\
-          Temperature    , &n              , &nc                   ,\
-          &nca           , &elXb           , &elXf                 ,\
-          &elYl          , &elYr           , &elZb                 ,\
-          &elZa          );	
+				Pre_randomWalk(CheckPtStatus, 
+                       FileNameCheckPtVersion,
+                       FileName, 
+                       &t, 
+                       &Sequence,
+                       &chA, 
+                       &FutureSite, 
+                       &ClArLL,
+                       &snA, 
+                       PF, 
+                       electricEnergyX,
+                       electricEnergyY, 
+                       electricEnergyZ, 
+                       r,
+                       Vx, Vy, Vz,
+                       Temperature, 
+                       &n, 
+                       &nc,
+                       &nca, 
+                       &elXb, 
+                       &elXf,
+                       &elYl, 
+                       &elYr, 
+                       &elZb,
+                       &elZa);	
 
 				if(FutureSite==NULL){
 					printf("FutureSite matrix NULL\n");
 					exit(1);
 				}
 
-				randomWalk(snA, CheckPointNum, &FileName[0],\
-						electricFieldX,	electricFieldY, electricFieldZ,\
-						elXb, elXf, elYl, elYr, elZb, elZa, PF, t, Sequence,\
-						FutureSite, &chA, n, nc, nca, Temperature,&ClArLL); 
+				randomWalk(snA, 
+                   CheckPointNum, 
+                   &FileName[0],
+                   electricFieldX,	
+                   electricFieldY, 
+                   electricFieldZ,
+                   elXb, 
+                   elXf, 
+                   elYl, 
+                   elYr, 
+                   elZb, 
+                   elZa, 
+                   PF, 
+                   t, 
+                   Sequence,
+                   FutureSite, 
+                   &chA, 
+                   n, 
+                   nc, 
+                   nca, 
+                   Temperature,
+                   &ClArLL); 
 
 				printf("Printing Visit Freq files\n");
 				printVisitFreq(snA,&FileName[0]);
 
-				Post_randomWalk(ClArLL, snA, elXb, elXf, elYl, elYr, elZb, elZa,PF);
+				Post_randomWalk(ClArLL, 
+                        snA, 
+                        elXb, 
+                        elXf, 
+                        elYl, 
+                        elYr, 
+                        elZb, 
+                        elZa,
+                        PF);
 
 			}
 

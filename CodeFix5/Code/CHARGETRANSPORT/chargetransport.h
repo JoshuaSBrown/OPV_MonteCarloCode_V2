@@ -268,7 +268,6 @@ int SaveDataPoint(int * CurrentInc, int * NumAvgVel      , int nc               
      const double ElectricFieldX, const double ElectricFieldY, const double ElectricFieldZ,\
 	   char * FileName);
 
-
 /* For a SiteNode which has surrouding sites determines which of the 8 
 	 surrounding sites a charge is randomly likely to land on
  */
