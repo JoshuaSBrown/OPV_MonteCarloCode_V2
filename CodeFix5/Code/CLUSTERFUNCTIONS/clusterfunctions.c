@@ -2830,6 +2830,7 @@ int CalculateSumAndPGivenSingleClusterLL(const_SNarray snA, ClusterLL TempClLL,\
   CalculatePvalNodes(&TempClLL, mtxProb, mtxDwellTime);
   printf("ClusterFunctionsStep53\n");
 
+  printf("SumAndPofCluster\n");
 
 
   //Delete Matrices
@@ -2952,6 +2953,8 @@ matrix CalculateProb(const_ClusterLL TempClLL, matrix mtxHopOpt, const_SNarray s
 		tempNode= getStartNode(TempClLL);
 		inc = 1;
 
+    printf("attempt %d\n",attempt);
+
 		while (tempNode!=NULL){
 
 			//1 hop behind     	index - 0 
@@ -3044,7 +3047,7 @@ matrix CalculateProb(const_ClusterLL TempClLL, matrix mtxHopOpt, const_SNarray s
 
 	}
 
-	printMatrix(mtxProbNew);
+	printMatrix(mtxProb);
   deleteMatrix(&mtxProbNew);
 	
 	return mtxProb;
@@ -3315,13 +3318,27 @@ int CalculatePvalNeigh(ClusterLL * TempClLL,const_matrix mtxTimes, const_matrix 
 	}
 	NeighNode NeighNod = getStartNeigh((*TempClLL));
 	double val=0;
+	double temp_val=0;
 	double time;
 	int inc;
 	int inc2;
 	int ID;
 	int Node_ID;
+  double total;
 
-	inc =1;
+  /* Calculate the total */
+	while(NeighNod!=NULL){
+		ID = getNeighNode_id(NeighNod);
+		for(inc=1;inc<=getRows(mtxProbNeighDwell);inc++){
+			Node_ID = getE(mtxProbNeighDwell,inc,2);
+			if(ID==Node_ID){
+				total += getE(mtxProbNeighDwell,inc,1);
+			}
+		}
+		NeighNod = getNextNeigh(NeighNod);
+	}
+
+	NeighNod = getStartNeigh((*TempClLL));
 
 	while(NeighNod!=NULL){
 
@@ -3330,10 +3347,14 @@ int CalculatePvalNeigh(ClusterLL * TempClLL,const_matrix mtxTimes, const_matrix 
 		for(inc=1;inc<=getRows(mtxProbNeighDwell);inc++){
 			Node_ID = getE(mtxProbNeighDwell,inc,2);
 			if(ID==Node_ID){
-				//printf("rows %d inc2 %d\n",getRows(mtxProbNeighDwell),inc2);
-				val += getE(mtxProbNeighDwell,inc,1);
-				//printf("\nSetting pval of Node %d with val %g\n",Node_ID, val);
-				setNeighNodeNew_p(NeighNod,val);
+				
+        temp_val = getE(mtxProbNeighDwell,inc,1);
+        if(val>1.01){
+          printf("ERROR val is greater than 1.01 in CalculatePvalNeigh val %g\n",val);
+          exit(1);
+        }
+        setNeighNodeNew_p(NeighNod,temp_val/total+val);
+        val += temp_val/total;
 				time = getE(mtxTimes,inc2,1);
 				setNeighNode_t(NeighNod, time, inc2);
 				inc2++;
@@ -3371,8 +3392,12 @@ int CalculatePvalNodes(ClusterLL * TempClLL, matrix mtxProb, matrix mtxDwellTime
 	//Normalize
 	while(tempNode!=NULL){
 
+    printf("getNode_p %g\n",getNode_p(tempNode));
 		val += getNode_p(tempNode)/total;
 		setNode_p(tempNode,val);	
+    
+    //setNode_p(tempNode,val+getNode_p(tempNode)/total);
+    //val += getNode_p(tempNode)/total;
 		tempNode = getNextNode(tempNode);
 	}
 

@@ -309,8 +309,8 @@ int printCharge(const_Charge ch) {
 	printf("tot_x: %d\n",ch->tot_x);
 	printf("t: %g\n",ch->t);
 	printf("dwelltime: %g\n",ch->dwelltime);
-  if(ch->dwelltime<=0){
-    printf("ERROR dwelltime less than or equal to 0\n");
+  if(ch->dwelltime<0){
+    printf("ERROR dwelltime less than 0\n");
     exit(1);
   }
   if(ch->path!=NULL){

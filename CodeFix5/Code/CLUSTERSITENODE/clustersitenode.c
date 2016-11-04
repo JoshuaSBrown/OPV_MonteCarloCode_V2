@@ -511,7 +511,6 @@ int HopOffCluster(SNarray snA, int ID, double position2, int * newID, double * t
 
 		for(elem=1;elem<(hops+1);elem++){
 			
-			printf("Value rand %g ID of node %d Pval node %g elem %d hops+1 %d\n",position2,getNeighNode_id(NeighNod),getNeighNode_p(NeighNod,elem),elem,(hops+1));
 			if(position2<getNeighNode_p(NeighNod, elem)){
 				*newID = getNeighNode_id(NeighNod);
 				*timeOff = getNeighNode_t(NeighNod, elem);

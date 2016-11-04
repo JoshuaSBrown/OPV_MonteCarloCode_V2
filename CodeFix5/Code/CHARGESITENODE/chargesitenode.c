@@ -87,18 +87,26 @@ int updatePath(SNarray snA, Charge ch, int SiteID, int ClusterID){
       //Cycle through the path
       for(inc = 1; inc<=getMatrixLLlength(mtxll);inc++){
         SiteID2 = getMatrixLLNodeElem(mtxll,inc,1);
-        //Check if part of a cluster
-        if (checkSNconnectedCluster(getSNwithInd(snA,SiteID2))==1){
-          //Determine the Cluster ID
-          ClusterID2 = getCluster_id(getClusterList(getSNwithInd(snA,SiteID)));
-          //Update the Elem in the path to 
-          //show it is attached to the ClusterID2
-          setMatrixLLElem(mtxll,inc,3,ClusterID2);
+        
+        //The data structure that stores which sites
+        //a charge has visited initiales all of the 
+        //nodes to -1. This means if SiteID2 is -1 
+        //the charge simply has not made enough unique
+        //new hops to have overwritten the element
+        //containing -1. Thus we can ignore it
+        if(SiteID2!=-1){
+          printf("SiteID %d SiteID2 %d inc %d\n",SiteID,SiteID2,inc);
+          //Check if part of a cluster
+          if (checkSNconnectedCluster(getSNwithInd(snA,SiteID2))==1){
+            //Determine the Cluster ID
+            ClusterID2 = getCluster_id(getClusterList(getSNwithInd(snA,SiteID)));
+            //Update the Elem in the path to 
+            //show it is attached to the ClusterID2
+            setMatrixLLElem(mtxll,inc,3,ClusterID2);
+          }
         }
       }
     }
-
-    printCharge(ch);
 
     //If some of the sites the charge has been hopping
     //to belong to the same cluster we will increment

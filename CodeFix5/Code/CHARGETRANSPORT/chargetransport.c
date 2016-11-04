@@ -808,6 +808,12 @@ int SiteHop(SNarray snA        , Charge * one     , SiteNode site      , int * f
 		*future = getIndAboP(snA,x,y,z);
 	}
 
+
+  if(*future==-1){
+    printf("Future set to -1 exiting this is in SiteHop\n");
+    exit(1);
+  }
+
 	return 0;
 
 }
@@ -855,7 +861,7 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 	position2 = (double)((double)rand()/(double)RAND_MAX);
 
 	*tim = 0;
-
+  printf("Setting tim to 0 in ClusterHop\n");
 	flag1 = OccAllNeiCluster(snA,x,y,z);
 	flag2 = OccAllCluster(snA, x,y,z);
 
@@ -886,7 +892,7 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 			//Hopped off cluster determining which neighboring 
 			//site hopped to as well as the time it takes
 			HopOffCluster(snA, ID, position2, newID, tim);
-
+      printf("1 Calling HopOffCluster tim %g\n",*tim);
 		}else if(rv==0){
 			timeflag = 0;
 			//Stayed within cluster now will determine which
@@ -917,6 +923,7 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 			//Hopped off cluster determining which neighboring 
 			//site hopped to as well as the time it takes
 			HopOffCluster(snA, ID, position2, newID, tim);
+      printf("2 Calling HopOffCluster tim %g\n",*tim);
 		}
 
 
@@ -940,18 +947,24 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 		}
 
 
-	}else if(flag1==1 && flag2==1){
+    printf("1 HoppingWithinCluster tim %g\n",*tim);
+	
+  }else if(flag1==1 && flag2==1){
 		//Hopping to neighbors or within cluster
 		//is not allowed
 		timeflag = 0;
 		//printf("Hopping is not allowed\n");
 		//Should use tcluster to increment the time
 
+    printf("2 HoppingWithinCluster tim %g\n",*tim);
 	}else{
 		//malformed input or not part of a cluster
+    printf("Malformed input  tim %g\n",*tim);
 		return -1;
 	}
 
+
+  printf("timeflag %d\n",timeflag);
 
   printf("ClusterHop timeflag %d\n",timeflag);
 	if(timeflag==0){
@@ -2300,17 +2313,19 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					PeriodicX, PeriodicY, PeriodicZ,\
 					XElecOn, YElecOn, ZElecOn);
 
+    
 			//Get the time it took to make the hop
-			tim = getDwel(one);
+      tim = getDwel(one);
+			
 			if(tim>1){
 				printf("time to large %g for charge located at (%d,%d,%d)\n",tim,PrevX,PrevY,PrevZ);
 				printChargeA(*chA);
 				exit(1);
 			}else if(tim<=0){
-				printChargeA(*chA);
 				printf("time equal or less than 0 tim %g\n",tim);
 				printf("time equal or less than 0 tim %g\n",getDwel(one));
 				printf("Charge ID %d\n",ChargeID);
+				printChargeA(*chA);
         if(one==NULL){
           printf("Charge is NULL\n");
         }
@@ -2323,6 +2338,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				//This means at maximum can only increase the time by the 
 				//TStep because more charges need to be inserted. 
 				tim = TStep;
+        printf("tim %lg TStep %g\n",tim,TStep);
 				//Because the site does not hop we just make it progress
 				//in time a little we set the flag to -1
 				flag = -1;
@@ -2330,6 +2346,10 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 			TotalHopAttempt++;
 
+      if(getDwel(one)<0){
+        printf("2 getDwel %g\n",getDwel(one));
+        exit(1);
+      }
 			if(flag==0){
 				//it did hop
 				
@@ -2377,7 +2397,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
             }
             printf("SiteID %d, ClusterID %d\n",SiteID,ClusterID);
             updatePath(snA, one,SiteID,ClusterID);   
-            //Testing to see if the chargte has been hopping back and
+            //Testing to see if the charge has been hopping back and
             //forth between sites and is stuck, ClusterAlgTrigger indicates
             //how many hops need to occur back and forth before something
             //is done.
@@ -2392,7 +2412,10 @@ int randomWalk( SNarray snA,int CheckptNum,\
               //Step 1 is to determine if the sites are located right 
               //next to each other as well as their IDs.
               ConsecutiveFlag = getIDsOfTwoOfMostFrequentlyVisitedSites(one, &SiteID_1,&SiteID_2);
+       
+              printf("sn1 id %d\n",SiteID_1);
               sn1 = getSNwithInd(snA,SiteID_1);
+              printf("sn2 id %d total getAtotal %d\n",SiteID_2,getAtotal(snA));
               sn2 = getSNwithInd(snA,SiteID_2);
                
               if(ConsecutiveFlag==0){
@@ -2519,7 +2542,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
         }//End of ClusterAlg==2 segment
 			}else{
 				//Hop failed because site was occupied
-				printf("Failed Hop\n");
+				//printf("Failed Hop %d flag %d\n",FailedHop,flag);
         FailedHop++;
 			}
 				
@@ -2630,12 +2653,12 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			UpdateOccTime(&snA,&one,tim, PF);
 			for( i = 1; i<nca; i++ ){
 				two = getCharge(*chA,getE(Sequence,i,1));
-				if(getDwel(two)>1){
-				  printChargeA(*chA);
+				/*if(getDwel(two)>1){
 					printf("Dwelltime excessive %g\n",getDwel(two));
 					printf("tim to be minused %g\n",tim);
+				  printChargeA(*chA);
 					exit(1);
-				}
+				}*/
 				MinusDwel(two,tim);
 				UpdateOccTime(&snA, &two,tim, PF);
 			}
@@ -2722,7 +2745,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
         ClusterYes=getType(site);
         //Determine future hopping site
         if(ClusterYes==1){
-          printf("Site Part of Cluster\n");
           //If site is part of a cluster ensure that the site
           //is not next to an electrode
           ClusterHopCheck(PeriodicX, PeriodicY, PeriodicZ,\
@@ -2731,7 +2753,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
               x, y, z, site,\
               xx, yy, zz,\
               &CheckX, &CheckY, &CheckZ);
-          printf("CheckX %d CheckY %d CheckZ %d\n",CheckX,CheckY,CheckZ);
           if(CheckX==1 || CheckY==1 || CheckZ==1){
             //This means near the edge of a sample where 
             //there is an electrode cannot use cluster 
@@ -2741,50 +2762,48 @@ int randomWalk( SNarray snA,int CheckptNum,\
               HopToElecX(snA, elXb, &one, &future, EndY, EndZ);
               getLoc(&x,&y,&z,future,snA);
               tim = 1/getsum(getSN(snA,x,y,z));
+          printf("6 ste\n");
             }else if( y==0 && YElecOn==1){
               HopToElecY(snA, elYl, &one, &future, EndX, EndZ);
               getLoc(&x,&y,&z,future,snA);
               tim = 1/getsum(getSN(snA,x,y,z));
+          printf("5 ste\n");
             }else if( z==0 && ZElecOn==1){
               HopToElecZ(snA, elZb, &one, &future, EndX, EndY);
               getLoc(&x,&y,&z,future,snA);
               tim = 1/getsum(getSN(snA,x,y,z));
+          printf("4 ste\n");
             }else{
               
+          printf("3 ste\n");
               SiteHop(snA, &one, site, &future, EndX, EndY,EndZ,\
                   XElecOn,YElecOn,ZElecOn, PeriodicX,PeriodicY, PeriodicZ);
               getLoc(&x,&y,&z,future,snA);
               tim = 1/getsum(getSN(snA,x,y,z));
             }
-            if(tim==0){
-              printf("tim==0 C\n");
-              exit(1);
-            }
 
           }else{
             //Future Hop To Cluster or Site using cluster algorithm
+          printf("2 ste\n");
             ClusterHop(snA, &one, &tim, &future);
-            printf("Future Hop %d\n",future);
             getLoc(&x,&y,&z,future,snA);
-            if(tim==0){
-              printf("tim==0 B\n");
-              exit(1);
-            }
           }
 
         }else{
           //Future Hop To Cluster or Site
+          printf("1 ste\n");
           SiteHop(snA, &one, site, &future, EndX, EndY,EndZ,\
               XElecOn,YElecOn,ZElecOn, PeriodicX,PeriodicY, PeriodicZ);
           getLoc(&x,&y,&z,future,snA);
           tim = 1/getsum(getSN(snA,x,y,z));
-          if(tim==0){
-            printf("tim==0 A\n");
-            exit(1);
-          }
         }
 
         //Having chosen future site recording it
+        if(future==getAtotal(snA)){
+          printf("ERROR future must be less than total sites future %d total %d",future,getAtotal(snA));
+          exit(1);
+        }
+
         setE(FutureSite,ChargeID+1,1,future);
 
         do{ran = rand();}while(ran == 0 || ran == RAND_MAX);
@@ -2796,12 +2815,13 @@ int randomWalk( SNarray snA,int CheckptNum,\
           exit(1);
         }
         setDwel(one, -log((double) ran/RAND_MAX)*tim);
+        
 
         if(tim>1){
           printf("tim %g\n",tim);
-          printf("WARNING setDwel huge\n");
+          printf("WARNING setDwel huge %g\n",getDwel(one));
         }
-
+      
         //The location of the charge in the sequence is updated
         insertDwelltimePos(nca, *chA, &Sequence);
       }else{
@@ -2910,6 +2930,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			}
 
 		}	
+
 
 		////////////////////////////////////////////////////////////////////////
 		//Regardless of whether a charge hopped or not need to 
@@ -3028,12 +3049,22 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 int UpdateOccTime(SNarray * snA,Charge * ch, double time, ParameterFrame PF){
 
-	if(snA==NULL || ch == NULL){
+  #ifdef _ERROR_CHECKING_ON_
+	if(snA==NULL ){
+    fprintf(stderr,"ERROR snA is NULL in UpdateOccTime\n");
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1;
 	}
-	if(*snA==NULL || *ch==NULL){
+	if(ch==NULL){
+    fprintf(stderr,"ERROR ch is NULL in UpdateOccTime\n");
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
 		return -1;
 	}
+  #endif
 
 	int SLength;
 	int SWidth;
