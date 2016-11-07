@@ -143,16 +143,16 @@ int main(void){
   assert(rv==0);
    
   printClusterLL(ClLLAll);
-  
+  /*
   //Do book keeping connect sites (0,1,1) and (1,1,1) with cluster
   tempSN =  getSNwithInd(snA,Site1);
   setDataStruc(&tempSN,1,(void *)ClLLAll);
   tempSN =  getSNwithInd(snA,Site2);
   setDataStruc(&tempSN,1,(void *)ClLLAll);
-
+*/
   //Now we are going to go ahead and add the second cluster and then
   //see what happens if we append a site to the cluster
-  ClusterLL ClLL2 = newClusterLL(2);
+/*  ClusterLL ClLL2 = newClusterLL(2);
   rv = getCluster_id(ClLL2);
   assert(rv==2);
   rv = addNodesToClusterGivenSites(ClLL2, Site3, Site4);
@@ -165,31 +165,34 @@ int main(void){
   assert(rv==0);
 
   rv = appendClusterLL(ClLLAll,ClLL2);
-  assert(rv==0);
-  tempSN = getSNwithInd(snA,Site3);
+  assert(rv==0);*/
+  /* Get the sitenodes to point to the correct cluster */
+/*  tempSN = getSNwithInd(snA,Site3);
   setDataStruc(&tempSN,1,(void *)ClLL2);
   tempSN = getSNwithInd(snA,Site4);
   setDataStruc(&tempSN,1,(void *)ClLL2);
+
   printf("Cluster id %d\n",getCluster_id(ClLL2));
   rv = getClusterIDGivenSiteNode(getSNwithInd(snA,Site3));
   assert(rv==2);
   rv = getClusterIDGivenSiteNode(getSNwithInd(snA,Site4));
   assert(rv==2);
 
-
   //Clear the Cluster from ClLL2 pointer
   ClLL2 = NULL;
   //Grab it now assuming we just have the site
   int ClusterID2;
   ClusterID2 = getClusterIDGivenSiteNodeID(snA,Site4);
-  printClusterLL(ClLLAll);
-  assert(ClusterID2 == 2);
-  ClLL2 = getClusterGivenClusterID(ClLLAll,ClusterID2);
-  assert(ClLL2!=NULL);
-
-  printf("Testing: mergeClusterLLGivenSiteNodeIDs\n");
   
-  printf("Creating ParameterFrame\n");
+  printf("********************************\n\n");
+  printClusterLL(ClLLAll);
+  //assert(ClusterID2 == 2);
+  //ClLL2 = getClusterGivenClusterID(ClLLAll,ClusterID2);
+  //assert(ClLL2!=NULL);
+
+  //printf("Testing: mergeClusterLLGivenSiteNodeIDs\n");
+  
+  //printf("Creating ParameterFrame\n");
   ParameterFrame PF = newParamFrame();
   
   //Just need these functions for when calling merge
@@ -197,8 +200,12 @@ int main(void){
   PFset_Py(PF,PeriodicY);
   PFset_Pz(PF,PeriodicZ);
 
-  //rv = mergeClusterLLGivenSiteNodeIDs( ArClLL, snA, MasterM, PF);
-  deleteParamFrame(&PF);
+  //rv = mergeClusterLLGivenSiteNodeIDs( ClLLAll, 
+  //                                     snA,
+  //                                     MasterM, 
+  //                                     PF);
+  
+  deleteParamFrame(&PF);*/
   deleteAllClusterLL(&ClLLAll);
   deleteMatrix(&MasterM);	
  	deleteSNarray(&snA);

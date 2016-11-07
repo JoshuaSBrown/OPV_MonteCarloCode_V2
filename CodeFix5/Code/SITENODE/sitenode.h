@@ -17,6 +17,9 @@ typedef struct _Point const * const_Point;
 	 0 - single points
 	 1 - part of a cluster
 
+   The site can have an index which is any numner from
+   0 < total Site Nodes
+
 	 Will return NULL if was unable to allocate memory
 */
 SiteNode newSN(void);

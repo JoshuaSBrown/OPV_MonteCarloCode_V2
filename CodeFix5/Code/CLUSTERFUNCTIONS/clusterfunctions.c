@@ -19,6 +19,10 @@
 #include "../CLUSTER/cluster.h"
 #include "../ARBARRAY/arbarray.h"
 #include "../PARAMETERS/read.h"
+#include "../CHARGE/charge.h"
+#include "../MATRIX_LINKLIST/matrix_linklist.h"
+#include "../CLUSTERSITENODE/clustersitenode.h"
+#include "../CHARGESITENODE/chargesitenode.h"
 
 matrix CalculateAllHops(const_SNarray snA,const double electricEnergyX, \
 		const double electricEnergyY, const double electricEnergyZ, \
@@ -3074,8 +3078,6 @@ matrix CalculateProbNeighDwell(const int countNeighOpts,\
 	int Check;
 	int Row;
 
-	printf("\n****************Creating mtxProbNeighDwell Matrix ***************\n\n");
-
 	while(tempNode!=NULL){
 
 		Node_ID = getNode_id(tempNode);
@@ -3619,6 +3621,242 @@ int FindCluster( int * OrderL, SNarray snA, double electricEnergyX,\
 	*OrderL = orderLow;
 	return 0;
 }
+
+/* The purpose of this function is to update the charge
+ * path datastructure if using the Cluster Algorithm
+ * (ClusterAlg==2) with the ToF method (method==2)
+ *
+ *  Step 1 Determine if site is hopping to a site
+ *         that is part of a cluster
+ *  Step 2 Update the charges path to record this
+ *         information
+ */
+int ClusterChargePath(Charge one,    
+                      int ChargeID,    
+                      matrix FutureSite,
+                      SNarray snA,
+                      matrix MasterM,
+                      ParameterFrame PF,
+                      ClusterLL AllClLL,
+                      ArbArray * ClArLL,
+                      int Global_ClusterID
+                      ){
+ 
+  int trigger;
+  int SiteID;
+  int SiteID_1;
+  int SiteID_2;
+  int ClusterID;
+  int ClusterFlag;
+  int ConsecutiveFlag;
+  int ClusterAlgTrigger;
+  int PeriodicX;
+  int PeriodicY;
+  int PeriodicZ;
+  
+  ClusterLL ClLL;
+
+  SiteNode sn1;
+  SiteNode sn2;
+  SiteNode tempSN; 
+
+  ClusterAlgTrigger = PFget_ClusterAlgTrigger(PF);
+  PeriodicX = PFget_Px(PF);
+  PeriodicY = PFget_Py(PF);
+  PeriodicZ = PFget_Pz(PF);
+
+  /* Here we are going to ignore the electrodes
+   * this means we should be treating the cluster as an
+   * individual site if it is next to an electrode
+   * The electrodes have IDs above and equal to getAtotal(snA)
+   */
+  if(getE(FutureSite,ChargeID+1,1)<getAtotal(snA)){
+    /* Next we are updating the charge path linklist
+     */
+    SiteID = getE(FutureSite,ChargeID+1,1);
+
+    /* Determine if the site is connected to a cluster
+     */
+    if( checkSNconnectedCluster(getSNwithInd(snA,SiteID))==1){
+      /* Now that we know that it is connected we 
+       * will grab the cluste id
+       */
+      ClusterID = getCluster_id(getClusterList(getSNwithInd(snA,SiteID)));
+    }else{
+      /* The SN is not connected to a cluster so we will use
+       * the default cluster id -1
+       */
+      ClusterID = -1;
+    }
+
+    /* We will update the path based on this information */
+    updatePath(snA,one,SiteID,ClusterID);
+
+    /* Will now check if the site is not connected to a cluster
+     * if it needs to be turned into one */
+    trigger = triggerMatch(one, ClusterAlgTrigger);
+    if(trigger>=2){
+      /* This means the site can be turned into a cluster
+       */
+      ConsecutiveFlag = getIDsOfTwoOfMostFrequentlyVisitedSites(one, &SiteID_1, &SiteID_2);
+
+      sn1 = getSNwithInd(snA,SiteID_1);
+      sn2 = getSNwithInd(snA,SiteID_2);
+
+      if(ConsecutiveFlag==0){
+
+        /* Determine if both sites are part of a cluster or
+         * not */
+        ClusterFlag = DetermineClusterStatus(sn1,sn2);
+
+        if(ClusterFlag==0){
+          /* This means both sites are part of a cluster
+           * now we need to check if they are part of the
+           * same cluster or not. If they are not we can
+           * merge the clusters together. */
+          if(checkSNconnectedSameCluster(sn1,sn2)==0){
+            /* They are part of different clusters so 
+             * we will proceed to merge them. */
+            mergeClusterLLGivenSiteNodeIDs(AllClLL,
+                                           snA, 
+                                           MasterM,
+                                           SiteID_1,
+                                           SiteID_2,
+                                           PF);
+            /* We will also reset the memory of the charge
+             * this is so the charge does get triggered the
+             * next round. Once we have created the cluster
+             * we should reset the memory of the charge */
+            resetChargePathVisit(one,1.0);
+          }
+
+        }else if(ClusterFlag==1){
+          /* This means the first site is part of a cluster
+           * and the second site is not */
+          ClLL = getClusterGivenClusterID(
+                    AllClLL,
+                    getClusterIDGivenSiteNodeID(snA,SiteID_1));
+         
+          addNodeEndClusterLL(ClLL,SiteID_2);
+
+          /* Initialize the SN that was not part of the cluster
+           * so that it now points to a cluster that it is joining
+           */
+          tempSN = getSNwithInd(snA,SiteID_2);
+          setDataStruc(&tempSN,1,(void *)ClLL);
+            
+          /* Reset the memory of the charge this is important
+           * so that during the next iteration we do not try
+           * to look for a cluster.*/
+          resetChargePathVisit(one,1.0);
+
+          /* Remove all evidence of neighbor nodes because the
+           * pvals associated with them need to be recalculated
+           * from scratch */
+          deleteClusterLL_NeighNodes(&ClLL);
+
+          /* Determine how nodes within Cluster are orientated to
+           * each other. */
+          DetermineNodeOrientationSingleCluster(&ClLL, snA);
+
+          /* Determine and calculate the neighbor nodes of the
+           * cluster */
+          CalculateNeighNodesForSingleClusterLL(ClLL,snA,
+                                                PeriodicX,
+                                                PeriodicY,
+                                                PeriodicZ);
+
+          /* Calculate the sum and pvals for the Cluster */
+          CalculateSumAndPGivenSingleClusterLL(snA,ClLL,
+                                               MasterM,
+                                               PFget_Attempts(PF),
+                                               PeriodicX,
+                                               PeriodicY,
+                                               PeriodicZ);
+
+
+        }else if(ClusterFlag==2){
+          /* This means the second site is part of a cluster and
+           * the first site is not. Thus we must join the first 
+           * site to the cluster the second site is attached too */
+          ClLL = getClusterGivenClusterID(AllClLL,
+                    getClusterIDGivenSiteNodeID(snA,SiteID_2));
+          addNodeEndClusterLL(ClLL,SiteID_1);
+          tempSN = getSNwithInd(snA,SiteID_1);
+          setDataStruc(&tempSN,1,(void *)ClLL);
+          resetChargePathVisit(one,1.0);
+          deleteClusterLL_NeighNodes(&ClLL);
+          DetermineNodeOrientationSingleCluster(&ClLL,snA);
+          CalculateNeighNodesForSingleClusterLL(ClLL,snA,
+                                                PeriodicX,
+                                                PeriodicY,
+                                                PeriodicZ);
+          CalculateSumAndPGivenSingleClusterLL(snA,ClLL,
+                                               MasterM,
+                                               PFget_Attempts(PF),
+                                               PeriodicX,
+                                               PeriodicY,
+                                               PeriodicZ);
+        }else if(ClusterFlag==3){
+          /* This means that neigher site is part of a Cluster 
+           * both site will be used to create a new cluster */
+          
+          /* Creating new cluster */
+          ClLL = newClusterLL(Global_ClusterID);
+
+          /* Add the two nodes to the cluster */
+          addNodesToClusterGivenSites(ClLL,SiteID_1,SiteID_2);
+
+          /* Determine how the Nodes within the cluster are
+           * connected */
+          DetermineNodeOrientationSingleCluster(&ClLL,snA);
+
+          /* Calculate the neighbor nodes of the Cluster */
+          CalculateNeighNodesForSingleClusterLL(ClLL,snA,
+                                                PeriodicX,
+                                                PeriodicY,
+                                                PeriodicZ);
+          
+          /* Calculate the sum and Pvals of the cluster */
+          CalculateSumAndPGivenSingleClusterLL(snA, ClLL,
+                                               MasterM,
+                                               PFget_Attempts(PF),
+                                               PeriodicX,
+                                               PeriodicY,
+                                               PeriodicZ);
+          Global_ClusterID++;
+          if(AllClLL==NULL){
+            /* This means it is the first cluster to be stored */
+            *ClArLL = newArbArray(1,1);
+            AllClLL = ClLL;
+            setArbElement(*ClArLL,0,(void *) AllClLL);
+          }else{
+            /* Not the first cluster created will append to our 
+             * list */
+            appendClusterLL(AllClLL,ClLL);
+          }
+
+          /* Now we need to acknowledge that both sites are now
+           * connected to cluster */
+          tempSN = getSNwithInd(snA,SiteID_1);
+          setDataStruc(&tempSN,1,(void *)ClLL);
+          tempSN = getSNwithInd(snA,SiteID_2);
+          setDataStruc(&tempSN,1,(void *)ClLL);
+
+          /* Finally we need to reset the memory of the charge */
+          resetChargePathVisit(one,1.0);
+  
+        }
+ 
+      }
+
+    }
+  }
+
+  return 0;
+}
+
+
 
 int SaveCluster( char * FileName, int OrderL, SNarray snA, double electricEnergyX,\
 								double electricEnergyY, double electricEnergyZ,\

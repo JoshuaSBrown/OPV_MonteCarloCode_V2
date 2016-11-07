@@ -5,11 +5,11 @@ CFLAGS = -lm -Wall -Wextra -std=gnu99 -pedantic -g
 # Targets
 ALL : test_clustersitenode test_clustersitenode2
 
-test_clustersitenode : test_clustersitenode.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o
-	$(CC) $(CFLAGS) test_clustersitenode.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o -o test_clustersitenode
+test_clustersitenode : test_clustersitenode.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o chargesitenode.o matrix_linklist.o charge.o error.o
+	$(CC) $(CFLAGS) test_clustersitenode.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o chargesitenode.o  matrix_linklist.o charge.o error.o -o test_clustersitenode
 
-test_clustersitenode2 : test_clustersitenode2.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o
-	$(CC) $(CFLAGS) test_clustersitenode2.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o -o test_clustersitenode2
+test_clustersitenode2 : test_clustersitenode2.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o chargesitenode.o matrix_linklist.o charge.o  error.o
+	$(CC) $(CFLAGS) test_clustersitenode2.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o chargesitenode.o  matrix_linklist.o charge.o error.o -o test_clustersitenode2
 
 clustersitenode.o : clustersitenode.c
 	$(CC) $(CFLAGS) -c clustersitenode.c -o clustersitenode.o
@@ -52,6 +52,18 @@ arbarray.o : ../ARBARRAY/arbarray.c
 
 omll.o : ../OMLL/omll.c
 	$(CC) $(CFLAGS) -c ../OMLL/omll.c -o omll.o
+
+chargesitenode.o : ../CHARGESITENODE/chargesitenode.c
+	$(CC) $(CFLAGS) -c ../CHARGESITENODE/chargesitenode.c -o chargesitenode.o 
+
+charge.o : ../CHARGE/charge.c
+	$(CC) $(CFLAGS) -c ../CHARGE/charge.c -o charge.o
+
+matrix_linklist.o : ../MATRIX_LINKLIST/matrix_linklist.c
+	$(CC) $(CFLAGS) -c ../MATRIX_LINKLIST/matrix_linklist.c -o matrix_linklist.o
+
+error.o : ../ERROR/error.c
+	$(CC) $(CFLAGS) -c ../ERROR/error.c -o error.o
 
 read.o : ../PARAMETERS/read.c
 	$(CC) $(CFLAGS) -c ../PARAMETERS/read.c -o read.o

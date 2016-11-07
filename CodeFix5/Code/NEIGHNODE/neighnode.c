@@ -69,7 +69,7 @@ int printNeighNode(const_NeighNode NeighNod){
     #endif
 		return -1;
 	}
-	printf("NeighNode id %d HopLength %d\n",NeighNod->id,NeighNod->hoplength);
+	printf("NeighNode id %d\n HopLength %d\n",NeighNod->id,NeighNod->hoplength);
 
 	Hop h = NeighNod->start;
 	while(h!=NULL){

@@ -600,10 +600,6 @@ int printMatrixLL(matrix_linklist LL){
   count = 1;
 	while(node!=NULL){
     rows = getRows(node->data);
-    if(LL->length<4){
-      printf("Nodes less than 4\n");
-      exit(1);
-    }
 		printf("Sequence %d \t Rows of Data %d\n",count,rows);
     for(i=1;i<=rows;i++){
       printf("Row %d %g\n",i,getE(node->data,i,1));

@@ -11,6 +11,7 @@
 #include "../MATRIX/matrix.h"
 #include "../PARAMETERS/read.h"
 #include "../ERROR/error.h"
+#include "../CHARGESITENODE/chargesitenode.h"
 
 int printSNfun(SiteNode sn, int (*printfunc)(void *)) {
 

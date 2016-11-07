@@ -61,15 +61,6 @@ int initChargePath(Charge * ch, int NumNodes){
     #endif
     return -1;
   }
-  if(*ch==NULL){
-		#ifdef _ERROR_
-    fprintf(stderr,"ERROR *ch is NULL in setChargePath\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1;
-  }
   if(NumNodes<2){
 		#ifdef _ERROR_
     fprintf(stderr,"ERROR NumNodes is less than two in setChargePath ");
@@ -194,8 +185,10 @@ int deleteCharge(Charge ch) {
   }
   #endif
   if(ch->path!=NULL){
+    fprintf(stderr,"Deleting paht\n");
 	  deleteMatrixLL(&(ch->path)); 
   }
+  fprintf(stderr,"Freeing charge\n");
 	free(ch);
 	return 0; 
 }
@@ -314,6 +307,7 @@ int printCharge(const_Charge ch) {
     exit(1);
   }
   if(ch->path!=NULL){
+    fprintf(stderr,"Printing charge path\n");
     printMatrixLL(ch->path);
   }else{
     printf("ch->path is NULL\n");

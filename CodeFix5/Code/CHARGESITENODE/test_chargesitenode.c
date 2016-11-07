@@ -122,6 +122,10 @@ int main(void){
   rvd = getChargePathVisits(ch,4);
   assert(rvd==1);
   
-
+  /* Deleting ChargeArray */
+  deleteChargeA(chA);
+  /* Delete SNarray */
+  deleteSNarray(&snA);
+  printf("Testing Completed\n");
   return 0;
 }

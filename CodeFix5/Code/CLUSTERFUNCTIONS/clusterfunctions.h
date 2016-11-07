@@ -6,6 +6,7 @@
 #include "../MATRIX/matrix.h"
 #include "../PARAMETERS/read.h"
 #include "../ARBARRAY/arbarray.h"
+#include "../CHARGE/charge.h"
 
 /* Calculates and returns the hops of every jump in the
 	 form of a matrix
@@ -172,6 +173,18 @@ int FindCluster( int * OrderL, SNarray snA, double electricEnergyX, \
 								 ArbArray * ClArLL1,\
 								 double kT, ParameterFrame PF);
 
+
+/* This is designed to find Clusters as we are running the MC
+ * simulations, using the memory of the charges */
+int ClusterChargePath(Charge one,
+                      int ChargeID,
+                      matrix FutureSite,
+                      SNarray snA,
+                      matrix MasterM,
+                      ParameterFrame PF,
+                      ClusterLL ArClLL,
+                      ArbArray * ClArLL,
+                      int GlobalClusterID);
 
 /* This function will save all the cluster information so that it does
 	 not have to be recalculated

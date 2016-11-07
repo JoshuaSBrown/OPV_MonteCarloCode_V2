@@ -2346,10 +2346,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 			TotalHopAttempt++;
 
-      if(getDwel(one)<0){
-        printf("2 getDwel %g\n",getDwel(one));
-        exit(1);
-      }
 			if(flag==0){
 				//it did hop
 				
@@ -2377,168 +2373,16 @@ int randomWalk( SNarray snA,int CheckptNum,\
          * cluster algorithm 
          */
         if(ClusterAlg==2 && method==0){
-          //At this point we want to ignore the electrodes
+         //At this point we want to ignore the electrodes
           //the electrodes all have id's greater than getAtotal(snA)
-          if(getE(FutureSite,ChargeID+1,1)<getAtotal(snA)){
-            //We are updating the charge path linklist
-            //getE(FutureSite,ChargeID+1,1) contains the id of the site that
-            //the charge just hopped to
-
-            //If the site is already a cluster use the cluster id
-            SiteID = getE(FutureSite,ChargeID+1,1);
-          
-            if( checkSNconnectedCluster(getSNwithInd(snA,SiteID))==1){
-              //The sitenode is connected to a cluster
-              ClusterID = getCluster_id(getClusterList(getSNwithInd(snA,SiteID)));
-            }else{
-              //The SN is not connected to a cluster so the default
-              //ClusterID of -1 is used
-              ClusterID=-1;
-            }
-            printf("SiteID %d, ClusterID %d\n",SiteID,ClusterID);
-            updatePath(snA, one,SiteID,ClusterID);   
-            //Testing to see if the charge has been hopping back and
-            //forth between sites and is stuck, ClusterAlgTrigger indicates
-            //how many hops need to occur back and forth before something
-            //is done.
-            trigger = triggerMatch(one, ClusterAlgTrigger);
-            if(trigger>=2){
-              printf("Trigger Pulled\n");
-              //This means this is a good spot to look for a cluster
-              //hopefully by doing this the code will be more optimized
-              //and it will prevent charges from constantly hopping back
-              //and forth between sites.
-              
-              //Step 1 is to determine if the sites are located right 
-              //next to each other as well as their IDs.
-              ConsecutiveFlag = getIDsOfTwoOfMostFrequentlyVisitedSites(one, &SiteID_1,&SiteID_2);
-       
-              printf("sn1 id %d\n",SiteID_1);
-              sn1 = getSNwithInd(snA,SiteID_1);
-              printf("sn2 id %d total getAtotal %d\n",SiteID_2,getAtotal(snA));
-              sn2 = getSNwithInd(snA,SiteID_2);
-               
-              if(ConsecutiveFlag==0){
-                //Step 2 is to determine if one or both of the sites are already
-                //considered part of a cluster.
-                ClusterFlag = DetermineClusterStatus(sn1,sn2);   
-
-                if(ClusterFlag==0){
-                   printf("Both sites part of cluster %d %d\n",SiteID_1,SiteID_2);
-                //A. If both are part of a different cluster
-                //Step 3 Join the clusters, when joined
-                //the clusters will take the smallest id
-                  if(checkSNconnectedSameCluster(sn1,sn2)==0){
-                    printf("Merging Clusters\n");
-                    mergeClusterLLGivenSiteNodeIDs(AllClLL,snA,MasterM,SiteID_1,\
-                                SiteID_2,PF);
-                    //We also need to reset the memory of the charge
-                    //so it does not keep triggering the cluster algorithme
-                    //We will do this by setting all the visit values to 1
-                    resetChargePathVisit(one,1.0); 
-                  printf("ClusterAlgStep 0\n");
-                  }
-                }else if(ClusterFlag==1){
-                //B. If the first site is part of a cluster
-                //Step 3 Join the site too the cluster
-                  printf("Site %d part of cluster Site %d not\n",SiteID_1,SiteID_2);
-                  printf("ClusterAlgStep 1\n");
-                  ClLL = getClusterGivenClusterID(AllClLL,getClusterIDGivenSiteNodeID(snA,SiteID_1));
-                  addNodeEndClusterLL(ClLL,SiteID_2); 
-                  
-                  //Initialize sitenode so it points to a cluter
-                  tempSN = getSNwithInd(snA,SiteID_2);
-                  setDataStruc(&tempSN,1,(void *)ClLL);
-                  //We also need to reset the memory of the charge
-                  //so it does not keep triggering the cluster algorithme
-                  //We will do this by setting all the visit values to 1
-                  resetChargePathVisit(one,1.0); 
-
-                  //Remove all evidence of nieghbor nodes because they need to 
-                  //be recalculated from scratch
-                  deleteClusterLL_NeighNodes(&ClLL);
-                  //Determine how nodes within Cluster are orientated to
-                  //each other.
-                  DetermineNodeOrientationSingleCluster(&ClLL, snA );
-                //Calculate the Neighboring Nodes for the Cluster
-                  CalculateNeighNodesForSingleClusterLL(ClLL,snA,PeriodicX,PeriodicY,PeriodicZ);
-                //Caluculate the sum And P values of the Cluster
-                  CalculateSumAndPGivenSingleClusterLL(snA, ClLL, MasterM, PFget_Attempts(PF),\
-                                                    PeriodicX, PeriodicY, PeriodicZ); 
-                }else if(ClusterFlag==2){
-                //C. If the second site is part of a cluster
-                //Step 3 Join the site too the cluster
-                  printf("Site %d part of cluster Site %d not\n",SiteID_2,SiteID_1);
-                  printf("ClusterAlgStep 2\n");
-                  ClLL = getClusterGivenClusterID(AllClLL,getClusterIDGivenSiteNodeID(snA,SiteID_2));
-                  addNodeEndClusterLL(ClLL,SiteID_1);
-                  
-                  //Initialize sitenode so it points to a cluter
-                  tempSN = getSNwithInd(snA,SiteID_1);
-                  setDataStruc(&tempSN,1,(void *)ClLL);
-                  //We also need to reset the memory of the charge
-                  //so it does not keep triggering the cluster algorithme
-                  //We will do this by setting all the visit values to 1
-                  resetChargePathVisit(one,1.0); 
-
-                  //Remove all evidence of neighbor nodes because they need to 
-                  //be recalculated from scratch
-                  deleteClusterLL_NeighNodes(&ClLL);
-                  //Determine how nodes within Cluster are orientated to
-                  //each other.
-                  DetermineNodeOrientationSingleCluster(&ClLL, snA );
-
-                //Calculate the Neighboring Nodes for the Cluster
-                  CalculateNeighNodesForSingleClusterLL(ClLL,snA,PeriodicX,PeriodicY,PeriodicZ);
-                //Caluculate the sum And P values of the Cluster
-                  CalculateSumAndPGivenSingleClusterLL(snA, ClLL, MasterM, PFget_Attempts(PF),\
-                                                    PeriodicX, PeriodicY, PeriodicZ); 
-                }else if(ClusterFlag==3){
-                  printf("Neither site %d or site %d part of cluster\n",SiteID_1,SiteID_2);
-                  printf("ClusterAlgStep 3\n");
-                //D. If none are part of the cluster
-                //Step 3 create a new cluster
-                  ClLL = newClusterLL(Global_ClusterID);
-                  addNodesToClusterGivenSites(ClLL,SiteID_1,SiteID_2);
-                //Determine how nodes within Cluster are orientated to
-                //each other.
-                  DetermineNodeOrientationSingleCluster(&ClLL, snA );
-                //Calculate the Neighboring Nodes for the Cluster
-                  CalculateNeighNodesForSingleClusterLL(ClLL,snA,PeriodicX,PeriodicY,PeriodicZ);
-                //Caluculate the sum And P values of the Cluster
-                  CalculateSumAndPGivenSingleClusterLL(snA, ClLL, MasterM, PFget_Attempts(PF),\
-                                                    PeriodicX, PeriodicY, PeriodicZ); 
-                  Global_ClusterID++;
-                  if(AllClLL==NULL){
-                    //This would mean it is the first cluster to be
-                    //stored
-                    *ClArLL = newArbArray(1,1);
-                    AllClLL = ClLL;
-                    setArbElement(*ClArLL,0,(void *) AllClLL);
-                  }else{
-                    //If it is not the first cluster to be stored
-                    //we will append it to the end of the cluster 
-                    //link list
-                    appendClusterLL(AllClLL,ClLL);
-                  }
-
-                  //Finally we need to now acknowledge that the sites
-                  //are connected to clusters
-                  tempSN = getSNwithInd(snA,SiteID_1);
-                  setDataStruc(&tempSN,1,(void *)ClLL);
-                  tempSN = getSNwithInd(snA,SiteID_2);
-                  setDataStruc(&tempSN,1,(void *)ClLL);
-                  //We also need to reset the memory of the charge
-                  //so it does not keep triggering the cluster algorithme
-                  //We will do this by setting all the visit values to 1
-                  resetChargePathVisit(one,1.0); 
-                }
-                //If none of the above if statements were triggered it
-                //means that the flag==4 and both sites are already connected
-                //to the same cluster we will do nothing
-              }
-            }
-          }
+          ClusterChargePath(one,
+                            ChargeID,
+                            FutureSite,
+                            snA,
+                            MasterM,
+                            PF,
+                            ArClLL);
+           
         }//End of ClusterAlg==2 segment
 			}else{
 				//Hop failed because site was occupied

@@ -177,7 +177,7 @@ reOrgEnergy 0.1
 gamma 2
 
 //Movie Frames 
-MovieFrames 300
+MovieFrames 30
 
 //Cutoff Time of Simulation [s]
 //value of 0 means there is no cut off time

@@ -233,12 +233,14 @@ int main(void){
   fprintf(stderr,"Should print ERROR message: ");
   rv = initChargePath(&ch2,1);
   assert(rv==-1);
+  fprintf(stderr,"initializing same charge again with 2 nodes\n");
   rv = initChargePath(&ch2,2);
   assert(rv==0);
   printCharge(ch2);
   fprintf(stderr,"Should print ERROR message: ");
   rv = initChargePath(&ch2,2);
   assert(rv==-1);
+  fprintf(stderr,"Deleting ch2\n");
   rv= deleteCharge(ch2);
 
   printf("Testing: initChargeArrayPath\n");
