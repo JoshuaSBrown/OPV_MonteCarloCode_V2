@@ -1087,10 +1087,18 @@ int MakeHop(SNarray snA, int newID          , Charge *ch         , int * totalX 
 				}
 			}
 
-			if(XDiff<-2 || XDiff>2){
+    //This is allowed if moving from a cluster
+		/*	if(XDiff<-2 || XDiff>2){
 				printf("ERROR XDiff %d is greater or less than 2\n",XDiff);
-				exit(1);
-			}
+				printf("x1 %d x %d\n",x1,x);
+        if(checkSNconnectedCluster(getSN(snA,x,y,z))){
+          printf("x y and z connected to cluster\n");
+        }
+        if(checkSNconnectedCluster(getSN(snA,x1,y1,z1))){
+          printf("x1 y1 and z1 connected to cluster\n");
+        }
+        exit(1);
+			}*/
 
 			*totalX = *totalX+XDiff;
 			*totalY = *totalY+YDiff;
@@ -2115,6 +2123,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
          ((t<=CELIV_totalT && method==1) || 
          method==0)){
 
+    getchar();
 		//If no charges have been inserted in the system we will
 		//simply increment the time
 		CheckConservationCharges(elXb, 

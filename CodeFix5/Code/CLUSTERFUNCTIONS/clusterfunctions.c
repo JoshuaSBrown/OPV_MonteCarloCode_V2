@@ -2632,7 +2632,8 @@ int CalculateSumAndP(const int TotalOrders, const_SNarray snA, ArbArray * ClArLL
 
 				CalculatePvalNodes(&TempClLL, mtxProb, mtxDwellTime);
 
-
+        /*printClusterLL(TempClLL);
+        getchar();*/
 
 				//Delete Matrices
 				deleteMatrix(&mtxHopOpt);
@@ -2826,14 +2827,26 @@ int CalculateSumAndPGivenSingleClusterLL(const_SNarray snA, ClusterLL TempClLL,\
   //pval - Hop off cluster
   //pval - sites off cluster
   //pval - sites within cluster
+  //
+  //
   CalculatePvalNeigh(&TempClLL, mtxTimes, mtxProbNeighDwell);
 
   printf("ClusterFunctionsStep52\n");
   CalculatePvalNodes(&TempClLL, mtxProb, mtxDwellTime);
   printf("ClusterFunctionsStep53\n");
 
+  /*printClusterLL(TempClLL);
+  getchar();*/
+
   printf("SumAndPofCluster\n");
 
+  printf("mtxHopOpt\n");
+  printMatrix(mtxHopOpt);
+  printf("mtxProbNeighDwell\n");
+  printMatrix(mtxProbNeighDwell);
+  printf("mtxProb\n");
+  printMatrix(mtxProb);
+  printClusterLL(TempClLL);
 
   //Delete Matrices
   deleteMatrix(&mtxHopOpt);
@@ -3144,6 +3157,7 @@ matrix CalculateProbNeighDwell(const int countNeighOpts,\
 			if(getFlagAbo(tempNode)!=1){
 				Val2 = getE(mtxProb,Row,1)*getE(MasterM, getIndex(snA,i,j,k)+1,12)*\
 							 (1/rateN)*dwelltemp;
+
 				setE(mtxProbNeighDwell,inc2,1,Val2);
 				setE(mtxProbNeighDwell,inc2,2,getIndexAboveP(snA,Node_ID));
 				inc2++;
@@ -3210,6 +3224,8 @@ matrix CalculateDwellTimeAndRateN(ClusterLL *  TempClLL, matrix * mtxTimes  ,\
 		Node_ID = getNode_id(tempNode);	
 		getLoc( &i, &j, &k, Node_ID, snA);
 
+    printf("inc2 %d ",inc2);
+
 		if(checkBoundsIndexFront(snA, Node_ID)==1 || PeriodicX!=0 ){
 			if(getFlagFro(tempNode)!=1){
 				//Hopping off the cluster
@@ -3217,7 +3233,8 @@ matrix CalculateDwellTimeAndRateN(ClusterLL *  TempClLL, matrix * mtxTimes  ,\
 				Val+=tempVal*getE(mtxProbNeigh,inc,1);
 				setE(mtxRates,inc,1,tempVal+getE(mtxRates,inc,1));
 				//printf("Node_ID %d Matrix val %g Time %g 8\n",Node_ID, getE(MasterM, Node_ID+1,8),1/tempVal);
-				setE((*mtxTimes),inc2,1,1/tempVal);
+				printf("NodeID %d 1/tempVal %g indexFront %d\n",Node_ID,1/tempVal,getIndexFrontP(snA,Node_ID));
+        setE((*mtxTimes),inc2,1,1/tempVal);
 				inc2++;
 			}
 			dwelltemp += 1/getE(MasterM, getIndex(snA,i,j,k)+1,8);
@@ -3229,6 +3246,7 @@ matrix CalculateDwellTimeAndRateN(ClusterLL *  TempClLL, matrix * mtxTimes  ,\
 				Val+=tempVal*getE(mtxProbNeigh,inc,1);
 				setE(mtxRates,inc,1,tempVal+getE(mtxRates,inc,1));
 				//printf("Node_ID %d Matrix val %g Time %g 7\n",Node_ID, getE(MasterM, Node_ID+1,7),1/tempVal);
+				printf("NodeID %d 1/tempVal %g index behind %d\n",Node_ID,1/tempVal, getIndexBehindP(snA,Node_ID));
 				setE((*mtxTimes),inc2,1,1/tempVal);
 				inc2++;
 			}
@@ -3241,6 +3259,7 @@ matrix CalculateDwellTimeAndRateN(ClusterLL *  TempClLL, matrix * mtxTimes  ,\
 				Val+=tempVal*getE(mtxProbNeigh,inc,1);
 				setE(mtxRates,inc,1,tempVal+getE(mtxRates,inc,1));
 				//printf("Node_ID %d Matrix val %g Time %g 9\n",Node_ID, getE(MasterM, Node_ID+1,9),1/tempVal);
+				printf("NodeID %d 1/tempVal %g left %d\n",Node_ID,1/tempVal,getIndexLeftP(snA,Node_ID));
 				setE((*mtxTimes),inc2,1,1/tempVal);
 				inc2++;
 			}
@@ -3253,6 +3272,7 @@ matrix CalculateDwellTimeAndRateN(ClusterLL *  TempClLL, matrix * mtxTimes  ,\
 				Val+=tempVal*getE(mtxProbNeigh,inc,1);
 				setE(mtxRates,inc,1,tempVal+getE(mtxRates,inc,1));
 				//printf("Node_ID %d Matrix val %g Time %g 10\n",Node_ID, getE(MasterM, Node_ID+1,10),1/tempVal);
+				printf("NodeID %d 1/tempVal %g getIndexRight %d\n",Node_ID,1/tempVal,getIndexRightP(snA,Node_ID));
 				setE((*mtxTimes),inc2,1,1/tempVal);
 				inc2++;
 			}
@@ -3265,6 +3285,7 @@ matrix CalculateDwellTimeAndRateN(ClusterLL *  TempClLL, matrix * mtxTimes  ,\
 				Val+=tempVal*getE(mtxProbNeigh,inc,1);
 				setE(mtxRates,inc,1,tempVal+getE(mtxRates,inc,1));
 				//printf("Node_ID %d Matrix val %g Time %g 11\n",Node_ID, getE(MasterM, Node_ID+1,11),1/tempVal);
+				printf("NodeID %d 1/tempVal %g indexBelow %d\n",Node_ID,1/tempVal,getIndexBelowP(snA,Node_ID));
 				setE((*mtxTimes),inc2,1,1/tempVal);
 				inc2++;
 			} 
@@ -3279,6 +3300,7 @@ matrix CalculateDwellTimeAndRateN(ClusterLL *  TempClLL, matrix * mtxTimes  ,\
 				tempVal = getE(MasterM, Node_ID+1,12);
 				Val+=tempVal*getE(mtxProbNeigh,inc,1);
 				//printf("Node_ID %d Matrix val %g Time %g 11\n",Node_ID, getE(MasterM, Node_ID+1,11),1/tempVal);
+				printf("NodeID %d 1/tempVal %g indexAbove %d\n",Node_ID,1/tempVal,getIndexAboveP(snA,Node_ID));
 				setE(mtxRates,inc,1,tempVal+getE(mtxRates,inc,1));
 				setE((*mtxTimes),inc2,1,1/tempVal);
 				inc2++;
@@ -3357,17 +3379,23 @@ int CalculatePvalNeigh(ClusterLL * TempClLL,const_matrix mtxTimes, const_matrix 
 
 	NeighNod = getStartNeigh((*TempClLL));
 
+  /*printMatrix(mtxTimes);
+  getchar();*/
+
 	while(NeighNod!=NULL){
 
-		inc2 =1;
+	  inc2 =1;
 		ID = getNeighNode_id(NeighNod);
 		for(inc=1;inc<=getRows(mtxProbNeighDwell);inc++){
 			Node_ID = getE(mtxProbNeighDwell,inc,2);
 			if(ID==Node_ID){
 				temp_val = getE(mtxProbNeighDwell,inc,1);
-				setNeighNodeNew_p(NeighNod,temp_val/total+val);
+        //This will put the pval in a new hop
+		    printf("temp_val %g total %g val %g pval %g\n",temp_val,total,val,temp_val/total+val);
+    		setNeighNodeNew_p(NeighNod,temp_val/total+val);
 				val += temp_val/total;
-				time = getE(mtxTimes,inc2,1);
+				time = getE(mtxTimes,inc,1);
+        printf("inc %d inc2 %d ID %d Node_ID %d time %g\n",inc,inc2,ID,Node_ID,time);
 				setNeighNode_t(NeighNod, time, inc2);
 				inc2++;
 			}
@@ -3694,8 +3722,9 @@ int ClusterChargePath(Charge one,
      */
     if( checkSNconnectedCluster(getSNwithInd(snA,SiteID))==1){
       /* Now that we know that it is connected we 
-       * will grab the cluste id
+       * will grab the cluster id
        */
+      printf("checkSNconnected yes\n");
       ClusterID = getCluster_id(getClusterList(getSNwithInd(snA,SiteID)));
     }else{
       /* The SN is not connected to a cluster so we will use
@@ -3710,7 +3739,7 @@ int ClusterChargePath(Charge one,
     /* Will now check if the site is not connected to a cluster
      * if it needs to be turned into one */
     trigger = triggerMatch(one, ClusterAlgTrigger);
-	printf("trigger %d\n",trigger);
+	printf("trigger %d ClusterID %d\n",trigger,ClusterID);
 	  if(trigger>=2){
       /* This means the site can be turned into a cluster
        */
@@ -3719,7 +3748,7 @@ int ClusterChargePath(Charge one,
       sn1 = getSNwithInd(snA,SiteID_1);
       sn2 = getSNwithInd(snA,SiteID_2);
 
-	  printf("ConsecutiveFlag %d\n",ConsecutiveFlag);
+	  printf("ConsecutiveFlag %d SiteID_1 %d SiteID_2 %d\n",ConsecutiveFlag,SiteID_1,SiteID_2);
 
       if(ConsecutiveFlag==0){
 
@@ -3844,6 +3873,10 @@ int ClusterChargePath(Charge one,
                                                PeriodicX,
                                                PeriodicY,
                                                PeriodicZ);
+
+          /*printClusterLL(ClLL);
+          getchar();*/
+
           (*Global_ClusterID)++;
           if(AllClLL==NULL){
             /* This means it is the first cluster to be stored */
@@ -3864,8 +3897,9 @@ int ClusterChargePath(Charge one,
           setDataStruc(&tempSN,1,(void *)ClLL);
 
           /* Finally we need to reset the memory of the charge */
+          printClusterLL(ClLL);
           resetChargePathVisit(one,1.0);
-  
+         
         }
  
       }
@@ -5982,6 +6016,7 @@ int CalculateNeighPXPZ(ClusterLL TempClLL, SNarray snA){
         if(Elec_Lef==-1) {
           setCluster_elecYid(&TempClLL,0);
         }else{
+          printf("Lef Node_ID %d\n",Node_IDLef);
           addNeighNodeToCluster(&TempClLL, Node_IDLef);
         }
       }else{
@@ -6001,6 +6036,7 @@ int CalculateNeighPXPZ(ClusterLL TempClLL, SNarray snA){
         if(Elec_Rig==-1) {
           setCluster_elecYid(&TempClLL,1);
         }else{
+          printf("Rig Node_ID %d\n",Node_IDRig);
           addNeighNodeToCluster(&TempClLL, Node_IDRig);
         }
       }else{
@@ -6017,6 +6053,7 @@ int CalculateNeighPXPZ(ClusterLL TempClLL, SNarray snA){
         //Neighbor that is below
         Node_IDBel=getIndBelP(snA, i, j, k);
         //If ID is -1 means it's outside the boundaries
+          printf("Bel Node_ID %d\n",Node_IDBel);
         addNeighNodeToCluster(&TempClLL, Node_IDBel);
         if(Elec_Bel==-1){
           setCluster_elecZid(&TempClLL,0);
@@ -6035,6 +6072,7 @@ int CalculateNeighPXPZ(ClusterLL TempClLL, SNarray snA){
         //Neighbor that is above
         Node_IDAbo=getIndAboP(snA, i, j, k);
         //If ID is -1 means it's outside the boundaries
+          printf("Abo Node_ID %d\n",Node_IDAbo);
         addNeighNodeToCluster(&TempClLL, Node_IDAbo);
         if(Elec_Abo==-1) {
           setCluster_elecZid(&TempClLL,1);
@@ -6090,6 +6128,7 @@ int CalculateNeighPYPZ(ClusterLL TempClLL, SNarray snA){
           //Add the Front Electrode as a neighbor to the cluster
           setCluster_elecXid(&TempClLL,1);
         }else{
+          printf("Fro Node_ID %d\n",Node_IDFro);
           addNeighNodeToCluster(&TempClLL, Node_IDFro);
         }
       }else{
@@ -6112,6 +6151,7 @@ int CalculateNeighPYPZ(ClusterLL TempClLL, SNarray snA){
           //Identify left Electrode as a neighbor to the cluster
           setCluster_elecXid(&TempClLL,0);
         }else{
+          printf("Beh Node_ID %d\n",Node_IDBeh);
           addNeighNodeToCluster(&TempClLL, Node_IDBeh);
         }
       }else{

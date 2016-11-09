@@ -146,6 +146,7 @@ int main() {
 	printClusterLL(ClLLAll);
 	printCharge(one);
 
+  /* Add a site to the current cluster */
 	for(int i=0;i<10;i++){
 		updatePath(snA,one,Site7,ClusterID);
 		updatePath(snA,one,Site6,1);
@@ -158,12 +159,12 @@ int main() {
 
 	ClusterChargePath(one,
                       0,
-					  FutureSites,
+					            FutureSites,
                       snA,
                       MasterM,
                       PF,
                       &ArClLL,
-				      &GlobalClusterID);
+				              &GlobalClusterID);
 	
 	printClusterLL(ClLLAll);
 	printCharge(one);

@@ -51,7 +51,7 @@ int deleteNeighNode(NeighNode NeighNod){
 
 	if(NeighNod->start!=NULL){
 		if(NeighNod->hoplength>0){
-			printf("Hop length %d\n",NeighNod->hoplength);
+			//printf("Hop length %d\n",NeighNod->hoplength);
 			deleteAllHop(NeighNod->start);
 			NeighNod->start=NULL;
 			NeighNod->hoplength=0;

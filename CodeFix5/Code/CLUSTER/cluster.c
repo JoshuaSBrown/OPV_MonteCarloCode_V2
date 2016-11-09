@@ -129,7 +129,7 @@ int deleteClusterLL_NeighNodes(ClusterLL * clLL){
 
   NeighLL neighLL = (*clLL)->Neigh;
   if (neighLL !=NULL){
-    printf("Number of Neighbors %d",getNeighLL_numNeigh(neighLL));
+    //printf("Number of Neighbors %d",getNeighLL_numNeigh(neighLL));
     deleteNeighLLAll(neighLL); 
     //Delete neighLL
     (*clLL)->Neigh=NULL;

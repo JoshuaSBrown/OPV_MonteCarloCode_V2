@@ -225,7 +225,7 @@ int main(void){
                              &elYr, 
                              &elZb, 
                              &elZa);	
-						/*
+						
 							if(FutureSite==NULL){
 								printf("FutureSite matrix NULL\n");
 								exit(1);
@@ -264,7 +264,7 @@ int main(void){
 
 							printf("Printing Visit Freq files\n");
 							printVisitFreq(snA,&FileName[0]);
-*/
+
 							Post_randomWalk(ClArLL, 
                               snA, 
                               elXb, 
@@ -409,8 +409,6 @@ int main(void){
 	}
 	
 	deleteParamFrame(&PF);
-
-	//atexit(mem_term);
 
 	return 0;
 }
