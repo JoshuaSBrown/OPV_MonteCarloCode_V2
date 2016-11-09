@@ -6,10 +6,10 @@ CFLAGS = -lm -Wall -Wextra -std=gnu99 -pedantic -g
 ALL : test_clustersitenode test_clustersitenode2
 
 test_clustersitenode : test_clustersitenode.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o chargesitenode.o matrix_linklist.o charge.o error.o
-	$(CC) $(CFLAGS) test_clustersitenode.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o chargesitenode.o  matrix_linklist.o charge.o error.o -o test_clustersitenode
+	$(CC) $(CFLAGS) test_clustersitenode.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o chargesitenode.o  matrix_linklist.o charge.o error.o -o test_clustersitenode -lm
 
 test_clustersitenode2 : test_clustersitenode2.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o chargesitenode.o matrix_linklist.o charge.o  error.o
-	$(CC) $(CFLAGS) test_clustersitenode2.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o chargesitenode.o  matrix_linklist.o charge.o error.o -o test_clustersitenode2
+	$(CC) $(CFLAGS) test_clustersitenode2.c clustersitenode.o omll.o neighll.o neighnode.o midpoint.o electrode.o read.o node.o arbarray.o cluster.o sitenode.o clusterfunctions.o matrix.o linklist.o montecarlo.o chargesitenode.o  matrix_linklist.o charge.o error.o -o test_clustersitenode2 -lm
 
 clustersitenode.o : clustersitenode.c
 	$(CC) $(CFLAGS) -c clustersitenode.c -o clustersitenode.o

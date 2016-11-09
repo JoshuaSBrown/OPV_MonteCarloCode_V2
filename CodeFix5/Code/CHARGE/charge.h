@@ -188,4 +188,8 @@ int triggerMatch(Charge ch, double match);
  */
 int getIDsOfTwoOfMostFrequentlyVisitedSites(Charge ch, int * ID_1, int * ID_2); 
 
+/* Does the same thing as the above but ensures that the sites are part of unique
+ * clusters as well will return 1 if they are all of the same cluster type
+ */
+int getIDsOfTwoOfMostFrequentlyVisitedSitesUniqueClusters(Charge ch, int * ID_1, int * ID_2); 
 #endif

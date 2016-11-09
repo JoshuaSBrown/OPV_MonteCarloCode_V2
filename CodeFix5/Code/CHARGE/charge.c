@@ -17,7 +17,8 @@ struct _Charge {
   //path is used to keep track of where charges have hopped
   //The first column stores the id of the site the second 
 	//column stores the number of times the charge has hopped
-	//to the site
+	//to the site, the last column designates whether the charge
+    // has hopped to sites on the same cluster or not
 	matrix_linklist path;		
 };				
   
@@ -984,13 +985,101 @@ int getIDsOfTwoOfMostFrequentlyVisitedSites(Charge ch, int * ID_1, int * ID_2){
       max_visits2 = max_visits1;
       ID2         = ID1;
       max_visits1 = getMatrixLLNodeElem(ch->path,seq,2); 
-      ID1         = getMatrixLLNodeElem(ch->path,seq,2);
+      ID1         = getMatrixLLNodeElem(ch->path,seq,1);
       flag        = 1; 
     }else if( getMatrixLLNodeElem(ch->path,seq,2)>max_visits2){
       max_visits2 = getMatrixLLNodeElem(ch->path,seq,2); 
-      ID2         = getMatrixLLNodeElem(ch->path,seq,2); 
+      ID2         = getMatrixLLNodeElem(ch->path,seq,1); 
       flag        = 1;
     }
+  }
+  *ID_1 = ID1;
+  *ID_2 = ID2;
+  return flag;
+}
+
+int getIDsOfTwoOfMostFrequentlyVisitedSitesUniqueClusters(Charge ch, int * ID_1, int * ID_2){
+
+	#ifdef _ERROR_CHECKING_ON_
+  if(ch==NULL){
+		#ifdef _ERROR_
+    fprintf(stderr,"ERROR in getIDsOfTwoOfMostFrequentlyVisitedSites ");
+    fprintf(stderr,"ch is NULL\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
+  #endif
+  int max_visits1;
+  int max_visits2;
+  int ID1;
+  int ID2;
+  int ClusterID1;
+  int ClusterID2;
+  int ClusterID1new;
+  int ClusterID2new;
+  int seq;
+  int flag;
+
+  max_visits1 = 0;
+  max_visits2 = 0;
+  ID1 = -1;
+  ID2 = -1;
+
+  max_visits1 = getMatrixLLNodeElem(ch->path,1,2);
+  max_visits1 = getMatrixLLNodeElem(ch->path,1,2);
+  ID1         = getMatrixLLNodeElem(ch->path,1,1);
+  ClusterID1  = getMatrixLLNodeElem(ch->path,1,3);
+  ID2         = getMatrixLLNodeElem(ch->path,1,1);
+  ClusterID2  = getMatrixLLNodeElem(ch->path,1,3);
+ 
+  flag = 1;
+
+  if( getMatrixLLNodeElem(ch->path,2,2) >= max_visits1){
+    max_visits1 = getMatrixLLNodeElem(ch->path,2,2); 
+    ID1         = getMatrixLLNodeElem(ch->path,2,1);
+    ClusterID1  = getMatrixLLNodeElem(ch->path,2,3); 
+  }else{
+    max_visits2 = getMatrixLLNodeElem(ch->path,2,2); 
+    ID2         = getMatrixLLNodeElem(ch->path,2,1); 
+    ClusterID2  = getMatrixLLNodeElem(ch->path,2,3); 
+  }
+  
+  if(ClusterID1!=ClusterID2 || (ClusterID1==-1 && ClusterID2==-1)){
+	flag = 0;
+  }
+
+  ClusterID1new = ClusterID1;
+  ClusterID2new = ClusterID2;
+
+  for(seq=3;seq<=getMatrixLLlength(ch->path);seq++){ 
+    if( getMatrixLLNodeElem(ch->path,seq,2)>max_visits1){
+      max_visits2 = max_visits1;
+      ID2         = ID1;
+	  ClusterID2new = ClusterID1new;
+      max_visits1 = getMatrixLLNodeElem(ch->path,seq,2); 
+      ID1         = getMatrixLLNodeElem(ch->path,seq,1);
+	  ClusterID1new = getMatrixLLNodeElem(ch->path,seq,3);
+	  if(ClusterID1==ClusterID2 && 
+         ClusterID1new!=ClusterID2new &&
+         (ClusterID1!=-1 && ClusterID2!=-1)){
+		ClusterID1 = ClusterID1new;
+		ClusterID2 = ClusterID2new;
+		flag = 0;
+	  }
+    }else if( getMatrixLLNodeElem(ch->path,seq,2)>max_visits2){
+		max_visits2 = getMatrixLLNodeElem(ch->path,seq,2); 
+		ID2         = getMatrixLLNodeElem(ch->path,seq,1); 
+		ClusterID2new  = getMatrixLLNodeElem(ch->path,seq,3);
+		if(ClusterID1==ClusterID2 && 
+           ClusterID1new!=ClusterID2new &&
+          (ClusterID1!=-1 && ClusterID2!=-1)){
+			ClusterID2 = ClusterID2new;
+			flag = 0;
+		}
+	}
   }
   *ID_1 = ID1;
   *ID_2 = ID2;

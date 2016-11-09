@@ -21,9 +21,9 @@ struct _Hop{
 //Tools for accessing Neigh Nodes
 NeighNode newNeighNode(int N_ID){
 	if(N_ID<0){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR N_ID is less than 0 in newNeighNode\n");
-    #endif
+	    #ifdef _ERROR_
+		fprintf(stderr,"ERROR N_ID is less than 0 in newNeighNode\n");
+		#endif
 		return NULL;
 	}
 	NeighNode NeighNod = (NeighNode) malloc(sizeof(struct _NeighNode)); 
@@ -460,9 +460,9 @@ int deleteAllHop(Hop h){//come back to deleteNeighNode
 int printHop(Hop h){
 
 	if(h==NULL){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR h is NULL in printHop\n");
-    #endif
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR h is NULL in printHop\n");
+		#endif
 		return -1;
 	}
 

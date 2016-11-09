@@ -407,30 +407,38 @@ int printClusterLL(const_ClusterLL clLL){
 			printf("No Neighboring node list\n");
 		}else{
 			neighLL = tempclLL->Neigh;
-      printNeighLL(neighLL);
+			printf("*****************printNeighLL************\n");
+			printNeighLL(neighLL);
 		}
 
 		if(tempclLL->elecXF!=NULL){
+			printf("Printing XF Electrode\n");
 			printElectrode(tempclLL->elecXF);
 		}
 		if(tempclLL->elecXB!=NULL){
+			printf("Printing XB Electrode\n");
 			printElectrode(tempclLL->elecXB);
 		}
 		if(tempclLL->elecYL!=NULL){
+			printf("Printing YL Electrode\n");
 			printElectrode(tempclLL->elecYL);
 		}
 		if(tempclLL->elecYR!=NULL){
+			printf("Printing YR Electrode\n");
 			printElectrode(tempclLL->elecYR);
 		}
 		if(tempclLL->elecZA!=NULL){
+			printf("Printing ZA Electrode\n");
 			printElectrode(tempclLL->elecZA);
 		}
 		if(tempclLL->elecZB!=NULL){
+			printf("Printing ZB Electrode\n");
 			printElectrode(tempclLL->elecZB);
 		}
 		tempclLL=getNextClusterLL(tempclLL);
 	}
-
+	
+	printf("Returning from PrintClusterLL\n");
 	return 0;
 }
 
@@ -2137,15 +2145,21 @@ int addNodeToCluster( ClusterLL clLL, MidPoint mp){
 int addNeighNodeToCluster( ClusterLL* clLL, int Neigh_ID){
 
 	if((*clLL)==NULL){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR *clLL is NULL in addNeighNodeToCluster\n");
-    #endif
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR *clLL is NULL in addNeighNodeToCluster\n");
+		#endif
+		#ifdef _FORCE_HARD_CRASH_
+		exit(1);
+		#endif
 		return -1;
 	}
 	if(Neigh_ID<0){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR Neigh_ID is less than 0 in addNeighNodeToCluster\n");
-    #endif
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR Neigh_ID is less than 0 in addNeighNodeToCluster\n");
+		#endif
+		#ifdef _FORCE_HARD_CRASH_
+		exit(1);
+		#endif
 		return -1;
 	}
 
@@ -2163,7 +2177,7 @@ int addNeighNodeToCluster( ClusterLL* clLL, int Neigh_ID){
   if(rv==-2){
     deleteNeighNode(Nei); 
     #ifdef _ERROR_
-    fprintf(stderr,"ERROR cannot add NeighNode to clLL in addNieghNodeToCluster because a NeighNode with the Neigh_ID is already defined in the Cluster link list\n");
+    fprintf(stderr,"WARNING cannot add NeighNode to clLL in addNieghNodeToCluster because a NeighNode with the Neigh_ID is already defined in the Cluster link list\n");
     #endif
     return -1;
   }

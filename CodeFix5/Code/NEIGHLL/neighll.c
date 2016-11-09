@@ -85,8 +85,10 @@ int printNeighLL(const_NeighLL neighLL){
 			printNeighNode(NeighNod);
 			NeighNod = getNextNeigh(NeighNod);
 		}
+		printf("Last Neighbor Node\n");
 		printNeighNode(NeighNod);
 	}
+	printf("Returning from printNeighLL\n");
 	return 0;
 }
 

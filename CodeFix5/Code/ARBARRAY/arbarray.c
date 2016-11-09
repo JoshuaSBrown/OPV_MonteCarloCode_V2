@@ -153,7 +153,7 @@ int deleteArbArray(ArbArray * Arb){
 		ClusterLL clLL;
 		for(i=0;i<(*Arb)->reserved;i++){
 			if ((*Arb)->Num[i]!=NULL){
-				clLL = (*Arb)->Num[i];
+				clLL = (ClusterLL) (*Arb)->Num[i];
 				deleteAllClusterLL(&clLL );
 				(*Arb)->Num[i]=NULL;
 			}

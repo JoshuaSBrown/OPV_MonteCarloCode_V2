@@ -662,6 +662,37 @@ int mergeClusterLLGivenSiteNodeIDs( ClusterLL ClLLAll, SNarray snA,matrix Master
     #endif
     return -1;
   }
+  if((ClusterLL)getClusterList(getSNwithInd(snA,SiteID1))==NULL){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR SiteID1 is not attached to a cluster. By calling" 
+                   "mergeClusterLLGivenSiteNodeIDs it is inferred that both sites are"
+                   " a part of clusters\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
+  if((ClusterLL)getClusterList(getSNwithInd(snA,SiteID2))==NULL){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR SiteID2 is not attached to a cluster. By calling" 
+                   "mergeClusterLLGivenSiteNodeIDs it is inferred that both sites are"
+                   " a part of clusters\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
+  if(SiteID1==SiteID2){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR SiteID2==SiteID1 in mergeClusterLLGivenSiteNodeID\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+    return -1;
+  }
   #endif
 
   //If we get to this point it means that we found
@@ -678,57 +709,67 @@ int mergeClusterLLGivenSiteNodeIDs( ClusterLL ClLLAll, SNarray snA,matrix Master
   ClusterID2           = getClusterIDGivenSiteNodeID(snA,SiteID2);
   ClusterLL clLL1      = getClusterGivenClusterID(ClLLAll, ClusterID1);
   ClusterLL clLL2      = getClusterGivenClusterID(ClLLAll, ClusterID2);
-  Node startNode       = getStartNode(clLL2);
-  addClusterLLNode(&clLL1, startNode);
+
   //Increasing size of cluster to account for new nodes
   int numNodes1;
   int numNodes2;
-
-  SiteNode tempSN = NULL;
-
   numNodes1 = getCluster_numNodes(clLL1);
   numNodes2 = getCluster_numNodes(clLL2);
-  printf("MergeStep1\n");
-  setCluster_NumNodes(clLL1,numNodes1+numNodes2);
-  //We want to fill the hole in ClLLAll because ClLL2 is 
-  //being removed from the link list
-  printf("Cluster id1 %d Cluster id2 %d\n",ClusterID1,ClusterID2);
-  removeClusterLLfromClusterLL(&ClLLAll, clLL2);
-  printf("MergeStep2\n");
-
+  printf("DeletingCluster in merge\n");
   deleteClusterLL_NeighNodes(&clLL1);
   deleteClusterLL_NeighNodes(&clLL2);
-  
+
+  printClusterLL(clLL1);
+  printClusterLL(clLL2); 
+  printf("SiteID1 %d ClusterID1 %d\n",SiteID1,ClusterID1); 
+  printf("SiteID2 %d ClusterID2 %d\n",SiteID2,ClusterID2); 
+  if(ClusterID1 < ClusterID2 ){
+	Node startNode       = getStartNode(clLL2);
+	addClusterLLNode(&clLL1, startNode);
+	setCluster_NumNodes(clLL1,numNodes1+numNodes2);
+	//We want to fill the hole in ClLLAll because ClLL2 is 
+	//being removed from the link list
+	removeClusterLLfromClusterLL(&ClLLAll, clLL2);
+  }else{
+	Node startNode       = getStartNode(clLL1);
+	addClusterLLNode(&clLL2, startNode);
+	setCluster_NumNodes(clLL2,numNodes1+numNodes2);
+	//We want to fill the hole in ClLLAll because ClLL1 is 
+	//being removed from the link list
+	removeClusterLLfromClusterLL(&ClLLAll, clLL1);
+  }
+
+  SiteNode tempSN = NULL;
   printf("MergeStep3\n");
   //Remove the dependence of the SiteNode on the obsolete 
   //cluster and replace it with the correct one
   if(ClusterID1<ClusterID2){
-  printf("MergeStep4\n");
-    tempSN = getSNwithInd(snA,SiteID2);
-    setDataStruc(&tempSN,1,(void *)clLL1);
-    //Determine orientation of nodes with respect to each other
-  printf("MergeStep5\n");
-    DetermineNodeOrientationSingleCluster(&clLL1 , snA );
-    //Calculate the Neighboring Nodes for the Cluster
-  printf("MergeStep6\n");
-    CalculateNeighNodesForSingleClusterLL(clLL1,snA,PFget_Px(PF),PFget_Py(PF),PFget_Pz(PF));
-    CalculateSumAndPGivenSingleClusterLL(snA, clLL1, MasterM, PFget_Attempts(PF),\
-        PFget_Px(PF),PFget_Py(PF),PFget_Pz(PF));
-  printf("MergeStep7\n");
+	  printf("MergeStep4\n");
+	  tempSN = getSNwithInd(snA,SiteID2);
+	  setDataStruc(&tempSN,1,(void *)clLL1);
+	  //Determine orientation of nodes with respect to each other
+	  printf("MergeStep5\n");
+	  DetermineNodeOrientationSingleCluster(&clLL1 , snA );
+	  //Calculate the Neighboring Nodes for the Cluster
+	  printf("MergeStep6\n");
+	  CalculateNeighNodesForSingleClusterLL(clLL1,snA,PFget_Px(PF),PFget_Py(PF),PFget_Pz(PF));
+	  CalculateSumAndPGivenSingleClusterLL(snA, clLL1, MasterM, PFget_Attempts(PF),\
+			  PFget_Px(PF),PFget_Py(PF),PFget_Pz(PF));
+	  printf("MergeStep7\n");
 
   }else{
-  printf("MergeStep8\n");
-    tempSN = getSNwithInd(snA,SiteID1);
-    setDataStruc(&tempSN,1,(void *)clLL2);
-    //Determine orientation of nodes with respect to each other
-  printf("MergeStep9\n");
-    DetermineNodeOrientationSingleCluster(&clLL2 , snA );
-    //Calculate the Neighboring Nodes for the Cluster
-  printf("MergeStep10\n");
-    CalculateNeighNodesForSingleClusterLL(clLL2,snA,PFget_Px(PF),PFget_Py(PF),PFget_Pz(PF));
-  printf("MergeStep11\n");
-    CalculateSumAndPGivenSingleClusterLL(snA, clLL2, MasterM, PFget_Attempts(PF),\
-        PFget_Px(PF),PFget_Py(PF),PFget_Pz(PF));
+	  printf("MergeStep8\n");
+	  tempSN = getSNwithInd(snA,SiteID1);
+	  setDataStruc(&tempSN,1,(void *)clLL2);
+	  //Determine orientation of nodes with respect to each other
+	  printf("MergeStep9\n");
+	  DetermineNodeOrientationSingleCluster(&clLL2 , snA );
+	  //Calculate the Neighboring Nodes for the Cluster
+	  printf("MergeStep10\n");
+	  CalculateNeighNodesForSingleClusterLL(clLL2,snA,PFget_Px(PF),PFget_Py(PF),PFget_Pz(PF));
+	  printf("MergeStep11\n");
+	  CalculateSumAndPGivenSingleClusterLL(snA, clLL2, MasterM, PFget_Attempts(PF),\
+			  PFget_Px(PF),PFget_Py(PF),PFget_Pz(PF));
   }
 
   return 0;

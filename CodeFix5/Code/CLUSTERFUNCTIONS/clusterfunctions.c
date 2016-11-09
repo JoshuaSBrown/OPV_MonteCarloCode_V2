@@ -2563,7 +2563,6 @@ int CalculateSumAndP(const int TotalOrders, const_SNarray snA, ArbArray * ClArLL
 		if(TempClLL==NULL) {
 			//printf("Cluster Empty\n");
 		} else {
-
 			while (TempClLL!=NULL){
 
 				//count=0.0;
@@ -2646,7 +2645,6 @@ int CalculateSumAndP(const int TotalOrders, const_SNarray snA, ArbArray * ClArLL
 				TempClLL = getNextClusterLL(TempClLL);
 
 			}// End of while loop for ClLL
-
 
 		}//End of if statement
 
@@ -3311,13 +3309,30 @@ matrix CalculateDwellTimeAndRateN(ClusterLL *  TempClLL, matrix * mtxTimes  ,\
 int CalculatePvalNeigh(ClusterLL * TempClLL,const_matrix mtxTimes, const_matrix mtxProbNeighDwell){
 
 	//Calculate Pval & time for NeighNodes 
-	if(TempClLL==NULL || mtxTimes==NULL || mtxProbNeighDwell == NULL){
+	#ifdef _ERROR_CHECKING_ON_
+	if(TempClLL==NULL){
+		fprintf(stderr,"TempClLL is NULL in CalculatePvalNeigh\n");
+		#ifdef _FORCE_HARD_CRASH_
+		exit(1);
+		#endif
 		return -1;
 	}
+	if(mtxTimes==NULL){
+		fprintf(stderr,"mtxTimes is NULL in CalculatePvalNeigh\n");
+		#ifdef _FORCE_HARD_CRASH_
+		exit(1);
+		#endif
+		return -1;
+	}
+	if(mtxProbNeighDwell == NULL){
+		fprintf(stderr,"mtxProbNeighDwell is NULL in CalculatePvalNeigh\n");
+		#ifdef _FORCE_HARD_CRASH_
+		exit(1);
+		#endif
+		return -1;
+	}
+	#endif
 
-	if((*TempClLL)==NULL){
-		return -1;
-	}
 	NeighNode NeighNod = getStartNeigh((*TempClLL));
 	double val=0;
 	double temp_val=0;
@@ -3326,7 +3341,7 @@ int CalculatePvalNeigh(ClusterLL * TempClLL,const_matrix mtxTimes, const_matrix 
 	int inc2;
 	int ID;
 	int Node_ID;
-  double total;
+	double total = 0.0;
 
   /* Calculate the total */
 	while(NeighNod!=NULL){
@@ -3349,14 +3364,9 @@ int CalculatePvalNeigh(ClusterLL * TempClLL,const_matrix mtxTimes, const_matrix 
 		for(inc=1;inc<=getRows(mtxProbNeighDwell);inc++){
 			Node_ID = getE(mtxProbNeighDwell,inc,2);
 			if(ID==Node_ID){
-				
-        temp_val = getE(mtxProbNeighDwell,inc,1);
-        if(val>1.01){
-          printf("ERROR val is greater than 1.01 in CalculatePvalNeigh val %g\n",val);
-          exit(1);
-        }
-        setNeighNodeNew_p(NeighNod,temp_val/total+val);
-        val += temp_val/total;
+				temp_val = getE(mtxProbNeighDwell,inc,1);
+				setNeighNodeNew_p(NeighNod,temp_val/total+val);
+				val += temp_val/total;
 				time = getE(mtxTimes,inc2,1);
 				setNeighNode_t(NeighNod, time, inc2);
 				inc2++;
@@ -3637,9 +3647,8 @@ int ClusterChargePath(Charge one,
                       SNarray snA,
                       matrix MasterM,
                       ParameterFrame PF,
-                      ClusterLL AllClLL,
                       ArbArray * ClArLL,
-                      int Global_ClusterID
+                      int * Global_ClusterID
                       ){
  
   int trigger;
@@ -3653,8 +3662,14 @@ int ClusterChargePath(Charge one,
   int PeriodicX;
   int PeriodicY;
   int PeriodicZ;
-  
-  ClusterLL ClLL;
+
+  ClusterLL AllClLL=NULL; 
+  if(ClArLL!=NULL){
+	if(*ClArLL!=NULL){
+		AllClLL = (ClusterLL) getArbElement(*ClArLL,0);
+	}
+  } 
+  ClusterLL ClLL = NULL;
 
   SiteNode sn1;
   SiteNode sn2;
@@ -3695,25 +3710,30 @@ int ClusterChargePath(Charge one,
     /* Will now check if the site is not connected to a cluster
      * if it needs to be turned into one */
     trigger = triggerMatch(one, ClusterAlgTrigger);
-    if(trigger>=2){
+	printf("trigger %d\n",trigger);
+	  if(trigger>=2){
       /* This means the site can be turned into a cluster
        */
-      ConsecutiveFlag = getIDsOfTwoOfMostFrequentlyVisitedSites(one, &SiteID_1, &SiteID_2);
+      ConsecutiveFlag = getIDsOfTwoOfMostFrequentlyVisitedSitesUniqueClusters(one, &SiteID_1, &SiteID_2);
 
       sn1 = getSNwithInd(snA,SiteID_1);
       sn2 = getSNwithInd(snA,SiteID_2);
+
+	  printf("ConsecutiveFlag %d\n",ConsecutiveFlag);
 
       if(ConsecutiveFlag==0){
 
         /* Determine if both sites are part of a cluster or
          * not */
+		
         ClusterFlag = DetermineClusterStatus(sn1,sn2);
-
+		printf("ClusterFlag %d\n",ClusterFlag);
         if(ClusterFlag==0){
           /* This means both sites are part of a cluster
            * now we need to check if they are part of the
            * same cluster or not. If they are not we can
            * merge the clusters together. */
+			printf("checkSNconnectedSameCluster %d\n",checkSNconnectedSameCluster(sn1,sn2));
           if(checkSNconnectedSameCluster(sn1,sn2)==0){
             /* They are part of different clusters so 
              * we will proceed to merge them. */
@@ -3802,7 +3822,7 @@ int ClusterChargePath(Charge one,
            * both site will be used to create a new cluster */
           
           /* Creating new cluster */
-          ClLL = newClusterLL(Global_ClusterID);
+          ClLL = newClusterLL(*Global_ClusterID);
 
           /* Add the two nodes to the cluster */
           addNodesToClusterGivenSites(ClLL,SiteID_1,SiteID_2);
@@ -3824,7 +3844,7 @@ int ClusterChargePath(Charge one,
                                                PeriodicX,
                                                PeriodicY,
                                                PeriodicZ);
-          Global_ClusterID++;
+          (*Global_ClusterID)++;
           if(AllClLL==NULL){
             /* This means it is the first cluster to be stored */
             *ClArLL = newArbArray(1,1);

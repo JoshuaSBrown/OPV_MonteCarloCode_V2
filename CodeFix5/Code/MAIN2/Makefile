@@ -6,7 +6,7 @@ CFLAGS = -lm -pg -m64 -o0 -Wall -Wextra -std=gnu99 -pedantic -ggdb
 ALL : run
 
 run : main.c chargetransport.o midpoint.o electrode.o matrix.o read.o charge.o matrix_linklist.o neighll.o neighnode.o node.o omll.o arbarray.o linklist.o clusterfunctions.o clustersitenode.o cluster.o sitenode.o montecarlo.o functions.o io.o error.o chargesitenode.o
-	$(CC) $(CFLAGS) main.c chargetransport.o midpoint.o electrode.o read.o charge.o matrix_linklist.o neighll.o neighnode.o node.o omll.o arbarray.o matrix.o linklist.o clusterfunctions.o clustersitenode.o cluster.o sitenode.o functions.o io.o montecarlo.o error.o chargesitenode.o -o run
+	$(CC) $(CFLAGS) main.c chargetransport.o midpoint.o electrode.o read.o charge.o matrix_linklist.o neighll.o neighnode.o node.o omll.o arbarray.o matrix.o linklist.o clusterfunctions.o clustersitenode.o cluster.o sitenode.o functions.o io.o montecarlo.o error.o chargesitenode.o -o run -lm
 
 chargetransport.o  : ../CHARGETRANSPORT/chargetransport.c
 	$(CC) $(CFLAGS) -c ../CHARGETRANSPORT/chargetransport.c -o chargetransport.o

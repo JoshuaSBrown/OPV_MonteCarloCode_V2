@@ -1738,7 +1738,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
   
   long double CutOffTime         = (long double) PFget_CutOffTime(PF);
   int         ClusterAlg         = PFget_ClusterAlg(PF);
-  int         ClusterAlgTrigger  = PFget_ClusterAlgTrigger(PF);
 	//FILE * EndPtFile = NULL;
 	//FILE * PathFile = NULL;
 	//FILE * LogFile = NULL;
@@ -1866,7 +1865,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	int Ntot = NCh*TCount;
 	//printf("NTot %d NCh %d\n",Ntot,NCh);
 	int flag;
-	int ClusterFlag;
   int SaveCount;
 	//Movie start point
 	int Movie = (int) ((double)t/((double)TStep*(double)Nstep_av));
@@ -1914,7 +1912,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	int ChargeID;
 	int future;
 	int JumpFromElec;
-  int trigger;
 
 	long double SaveTime;
 	double      ran;
@@ -1945,22 +1942,13 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 	int ID;
 	int ID2;
-	int SiteID;
-  int SiteID_1;
-  int SiteID_2;
-  int ClusterID;
   int Global_ClusterID;   //Keeps track of the ids of the 
-  int ConsecutiveFlag;
                                       //clusters as they are created
-  ClusterLL AllClLL;
-  ClusterLL ClLL;
   Charge    one;
 	Charge    two;
 	Charge    three;
 	SiteNode  site;
 
-  SiteNode sn1;
-  SiteNode sn2;
 	NumAvgVel = 0;
 
 	SLength = getAlen(snA);
@@ -2032,8 +2020,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	SaveTime         = 0;
 	tim              = TStep;
   Global_ClusterID = 1;
-	AllClLL          = NULL;
-  ClLL             = NULL;
   
   electricEnergyX = SiteDistance*ElectricFieldX;
   electricEnergyY = SiteDistance*ElectricFieldY;
@@ -2095,7 +2081,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 	}
 
-  SiteNode tempSN = NULL;
   matrix MasterM;
   //This is only needed if the second cluster Alg
   //is turned on
@@ -2375,13 +2360,15 @@ int randomWalk( SNarray snA,int CheckptNum,\
         if(ClusterAlg==2 && method==0){
          //At this point we want to ignore the electrodes
           //the electrodes all have id's greater than getAtotal(snA)
-          ClusterChargePath(one,
+			printf("Entering ClusterChargePath\n");
+	        ClusterChargePath(one,
                             ChargeID,
                             FutureSite,
                             snA,
                             MasterM,
                             PF,
-                            ArClLL);
+                            ClArLL,
+                            &Global_ClusterID);
            
         }//End of ClusterAlg==2 segment
 			}else{

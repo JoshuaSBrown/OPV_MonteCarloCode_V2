@@ -80,6 +80,8 @@ int updatePath(SNarray snA, Charge ch, int SiteID, int ClusterID){
     //the matches occur 
     matrix matches = getMatrixLLMatchAtRow(mtxll,ClusterID,3, &numMatches);
 
+	printf("Printing Matches of ClusterID %d SiteID %d numMatches %d\n",ClusterID,SiteID,numMatches);
+	printMatrix(matches);
     //This means we need to update the sites listed
     //in the ChargePath so they show which clusters
     //they are associated with
@@ -99,7 +101,7 @@ int updatePath(SNarray snA, Charge ch, int SiteID, int ClusterID){
           //Check if part of a cluster
           if (checkSNconnectedCluster(getSNwithInd(snA,SiteID2))==1){
             //Determine the Cluster ID
-            ClusterID2 = getCluster_id(getClusterList(getSNwithInd(snA,SiteID)));
+            ClusterID2 = getCluster_id(getClusterList(getSNwithInd(snA,SiteID2)));
             //Update the Elem in the path to 
             //show it is attached to the ClusterID2
             setMatrixLLElem(mtxll,inc,3,ClusterID2);

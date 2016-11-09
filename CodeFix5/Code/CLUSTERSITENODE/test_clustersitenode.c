@@ -169,7 +169,7 @@ int main(void){
 	rv = OccAllCluster(snA, 1,1,1);
 	assert(rv==1);
 	
-  deleteArbArray(&ArClLL);
+	deleteArbArray(&ArClLL);
 	deleteArbArray(&ArClLL2);
 	deleteMatrix(&MasterM);
 	deleteAllMidPointArray(&mpA);

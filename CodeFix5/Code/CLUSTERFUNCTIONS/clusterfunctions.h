@@ -182,9 +182,8 @@ int ClusterChargePath(Charge one,
                       SNarray snA,
                       matrix MasterM,
                       ParameterFrame PF,
-                      ClusterLL ArClLL,
                       ArbArray * ClArLL,
-                      int GlobalClusterID);
+                      int * GlobalClusterID);
 
 /* This function will save all the cluster information so that it does
 	 not have to be recalculated
