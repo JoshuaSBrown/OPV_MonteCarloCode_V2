@@ -185,6 +185,7 @@ int main(void){
 
 	printf("********************************\n\n");
 	printClusterLL(ClLLAll);
+
 	assert(ClusterID2 == 2);
 	ClLL2 = getClusterGivenClusterID(ClLLAll,ClusterID2);
 	assert(ClLL2!=NULL);

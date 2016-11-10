@@ -966,7 +966,7 @@ int getIDsOfTwoOfMostFrequentlyVisitedSites(Charge ch, int * ID_1, int * ID_2){
   ID2 = -1;
 
   max_visits1 = getMatrixLLNodeElem(ch->path,1,2);
-  max_visits1 = getMatrixLLNodeElem(ch->path,1,2);
+  max_visits2 = getMatrixLLNodeElem(ch->path,1,2);
   ID1         = getMatrixLLNodeElem(ch->path,1,1);
   ID2         = getMatrixLLNodeElem(ch->path,1,1);
  
@@ -1029,13 +1029,16 @@ int getIDsOfTwoOfMostFrequentlyVisitedSitesUniqueClusters(Charge ch, int * ID_1,
   ID2 = -1;
 
   max_visits1 = getMatrixLLNodeElem(ch->path,1,2);
-  max_visits1 = getMatrixLLNodeElem(ch->path,1,2);
+  max_visits2 = getMatrixLLNodeElem(ch->path,1,2);
   ID1         = getMatrixLLNodeElem(ch->path,1,1);
   ClusterID1  = getMatrixLLNodeElem(ch->path,1,3);
   ID2         = getMatrixLLNodeElem(ch->path,1,1);
   ClusterID2  = getMatrixLLNodeElem(ch->path,1,3);
  
   flag = 1;
+
+  printf("Determining Two most frequently visited sites\n");
+  printCharge(ch);
 
   if( getMatrixLLNodeElem(ch->path,2,2) >= max_visits1){
     max_visits1 = getMatrixLLNodeElem(ch->path,2,2); 
@@ -1054,34 +1057,43 @@ int getIDsOfTwoOfMostFrequentlyVisitedSitesUniqueClusters(Charge ch, int * ID_1,
   ClusterID1new = ClusterID1;
   ClusterID2new = ClusterID2;
 
+  printf("ID1 %d ID2 %d max_visits1 %d max_visits2 %d\n",ID1,ID2,max_visits1,max_visits2);
+
   for(seq=3;seq<=getMatrixLLlength(ch->path);seq++){ 
     if( getMatrixLLNodeElem(ch->path,seq,2)>max_visits1){
+
+
       max_visits2 = max_visits1;
       ID2         = ID1;
-	  ClusterID2new = ClusterID1new;
+      ClusterID2new = ClusterID1new;
       max_visits1 = getMatrixLLNodeElem(ch->path,seq,2); 
       ID1         = getMatrixLLNodeElem(ch->path,seq,1);
-	  ClusterID1new = getMatrixLLNodeElem(ch->path,seq,3);
-	  if(ClusterID1==ClusterID2 && 
-         ClusterID1new!=ClusterID2new &&
-         (ClusterID1!=-1 && ClusterID2!=-1)){
-		ClusterID1 = ClusterID1new;
-		ClusterID2 = ClusterID2new;
-		flag = 0;
-	  }
-    }else if( getMatrixLLNodeElem(ch->path,seq,2)>max_visits2){
-		max_visits2 = getMatrixLLNodeElem(ch->path,seq,2); 
-		ID2         = getMatrixLLNodeElem(ch->path,seq,1); 
-		ClusterID2new  = getMatrixLLNodeElem(ch->path,seq,3);
-		if(ClusterID1==ClusterID2 && 
-           ClusterID1new!=ClusterID2new &&
+      ClusterID1new = getMatrixLLNodeElem(ch->path,seq,3);
+      if(ClusterID1==ClusterID2 && 
+          ClusterID1new!=ClusterID2new &&
           (ClusterID1!=-1 && ClusterID2!=-1)){
-			ClusterID2 = ClusterID2new;
-			flag = 0;
-		}
-	}
+        ClusterID1 = ClusterID1new;
+        ClusterID2 = ClusterID2new;
+        flag = 0;
+      }
+
+      printf("First if max_visits1 %d ID1 %d\n",max_visits1,ID1);
+    }else if( getMatrixLLNodeElem(ch->path,seq,2)>max_visits2){
+      max_visits2 = getMatrixLLNodeElem(ch->path,seq,2); 
+      ID2         = getMatrixLLNodeElem(ch->path,seq,1); 
+      ClusterID2new  = getMatrixLLNodeElem(ch->path,seq,3);
+      if(ClusterID1==ClusterID2 && 
+          ClusterID1new!=ClusterID2new &&
+          (ClusterID1!=-1 && ClusterID2!=-1)){
+        ClusterID2 = ClusterID2new;
+        flag = 0;
+      }
+      printf("Second if max_visits2 %d ID2 %d\n",max_visits2,ID2);
+    }
   }
   *ID_1 = ID1;
   *ID_2 = ID2;
+
+  printf("ID_1 %d ID_2 %d\n",*ID_1,*ID_2);
   return flag;
 }
