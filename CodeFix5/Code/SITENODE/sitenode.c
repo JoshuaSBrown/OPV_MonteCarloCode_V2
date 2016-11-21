@@ -243,7 +243,7 @@ SNarray newSNarray( int len, int wid, int hei) {
 }
 
 int deletePoint( Point pt){
-  #ifdef _ERROR_CHECKING_ON_
+    #ifdef _ERROR_CHECKING_ON_
 	if(pt==NULL){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR pt is NULL in deletePoint\n");
@@ -253,7 +253,7 @@ int deletePoint( Point pt){
     #endif
 		return -1;
 	}
-  #endif
+    #endif
 
 	free(pt);
 	return 0;
@@ -261,7 +261,7 @@ int deletePoint( Point pt){
 
 int deleteSN(SiteNode sn){
 //Does not Delete the Cluster	
-  #ifdef _ERROR_CHECKING_ON_
+    #ifdef _ERROR_CHECKING_ON_
 	if(sn==NULL){
     #ifdef _ERROR_
     fprintf(stderr,"ERROR sn is NULL in deleteSN\n");
@@ -285,26 +285,26 @@ int deleteSN(SiteNode sn){
 
 int deleteSNarray(SNarray * snA){
 
-  #ifdef _ERROR_CHECKING_ON_
+	#ifdef _ERROR_CHECKING_ON_
 	if(snA==NULL){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR snA is NULL in deleteSNarray\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR snA is NULL in deleteSNarray\n");
+		#endif
+		#ifdef _FORCE_HARD_CRASH_
+		exit(1);
+		#endif
 		return -1;
 	}
 	if(*snA==NULL){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR *snA is NULL in deleteSNarray\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR *snA is NULL in deleteSNarray\n");
+		#endif
+		#ifdef _FORCE_HARD_CRASH_
+		exit(1);
+		#endif
 		return -1;
 	}
-  #endif
+	#endif
 
 	int i;
 	for(i=0;i<(*snA)->total;i++){
@@ -312,7 +312,7 @@ int deleteSNarray(SNarray * snA){
 	}
 
 	free(*snA);
-  *snA=NULL;
+	*snA=NULL;
 	return 0;
 }
 

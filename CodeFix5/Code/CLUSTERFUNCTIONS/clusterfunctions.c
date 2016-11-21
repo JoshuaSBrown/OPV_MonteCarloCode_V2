@@ -8,6 +8,7 @@
 #include <assert.h>
 
 #include "clusterfunctions.h"
+#include "clustercalculators.h"
 #include "../ERROR/error.h"
 #include "../MIDPOINT/midpoint.h"
 #include "../MONTECARLO/montecarlo.h"
@@ -24,42 +25,73 @@
 #include "../CLUSTERSITENODE/clustersitenode.h"
 #include "../CHARGESITENODE/chargesitenode.h"
 
+/* This function is responsible for creating the MasterM matrix which stores
+ * the hoprates between every site as well as the order of magnitude associated
+ * with each of the hop rates */
 matrix CalculateAllHops(const_SNarray snA,const double electricEnergyX, \
 		const double electricEnergyY, const double electricEnergyZ, \
 		const double KT,const double reOrgEnergy,const double SiteDistance, \
 		const double AttemptToHop, const double gamma,\
 		const int PeriodicX,const int PeriodicY,const int PeriodicZ){
 
-  #ifdef _ERROR_CHECKING_ON_
+    #ifdef _ERROR_CHECKING_ON_
 	if(snA==NULL ){
-    #ifdef _ERROR_
+        #ifdef _ERROR_
 		fprintf(stderr,"ERROR snA is NULL in CalculateAllHops\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+        #endif
+		return_error_val();
 		return NULL;
 	}
 	if( KT<0 ){
-    #ifdef _ERROR_
+		#ifdef _ERROR_
 		fprintf(stderr,"ERROR kT value less than 0 in CalculateAllHops\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+		#endif
+		return_error_val();
 		return NULL;
 	}
-	if( PeriodicX<0 || PeriodicX>1 || PeriodicY<0 || PeriodicY>1 || \
-			PeriodicZ<0 || PeriodicZ>1){
-    #ifdef _ERROR_
-		fprintf(stderr,"ERROR Periodic boundary conditions are out of bounds in CalculateAllHops\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
+	if( PeriodicX<0 ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicX is less than 0 in CalculateAllHops.\n");
+		#endif
+		return_error_val();
 		return NULL;
 	}
-  #endif
+	if( PeriodicX>1 ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicX is greater than 1 in CalculateAllHops.\n");
+		#endif
+		return_error_val();
+		return NULL;
+    }
+	if( PeriodicY<0 ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicY is less than 0 in CalculateAllHops.\n");
+		#endif
+		return_error_val();
+		return NULL;
+	}
+    if( PeriodicY>1 ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicY is greater than 1 in CalculateAllHops.\n");
+		#endif
+		return_error_val();
+		return NULL;
+	}
+    if( PeriodicZ<0 ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicZ is less than 0 in CalculateAllHops.\n");
+		#endif
+		return_error_val();
+		return NULL;
+    }
+    if( PeriodicZ>1){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicZ is greater than 1 in CalculateAllHops.\n");
+		#endif
+		return_error_val();
+		return NULL;
+	}
+    #endif
 
 	int i, j, k, l ;
 	int i1, j1, k1;
@@ -92,9 +124,9 @@ matrix CalculateAllHops(const_SNarray snA,const double electricEnergyX, \
 
 	//Calculating full Marcus Coefficient;
 
-	//printf("MarcusJ0 %g hbar %g gamma %g SiteDistance %g\n",MarcusJ0,hbar,gamma,SiteDistance);
-	MarcusCoeff = pow(MarcusJ0,2)/hbar * pow(M_PI/(4*reOrgEnergy*KT),1/2)*exp(2*gamma*SiteDistance);
-
+	MarcusCoeff = pow(MarcusJ0,2)/hbar * \
+                  pow(M_PI/(4*reOrgEnergy*KT),1/2)*\
+                  exp(2*gamma*SiteDistance);
 
 	//MasterM values
 	//1 - Order of Magnitude of hop behind site i,j,k
@@ -153,22 +185,18 @@ matrix CalculateAllHops(const_SNarray snA,const double electricEnergyX, \
 					if( i == getAlen(snA)-1)
 						v[1] = 0;
 				}
-
 				if(PeriodicY==0){
 					if( j == 0)
 						v[2] = 0;
 					if( j == getAwid(snA)-1)
 						v[3] = 0;
 				}
-
-
 				if(PeriodicZ==0){
 					if( k == 0 )
 						v[4] = 0;
 					if( k == getAhei(snA)-1 )
 						v[5] = 0;
 				}
-
 				for(l=0;l<6;l++){
 					setE(MasterM,getIndex(snA,i,j,k)+1,(l+1),round(log10(v[l])));
 					//Also record the actual rates
@@ -182,20 +210,109 @@ matrix CalculateAllHops(const_SNarray snA,const double electricEnergyX, \
 	return MasterM;
 }
 
-ArbArray MPsort(int * orderL, int * orderH, int * MidPtsTotal, const_matrix MasterM, const_SNarray snA,\
-		const int PeriodicX, const int PeriodicY, const int PeriodicZ){
+/* This function creates the mpA datastructure */
+ArbArray MPsort(int * orderL, 
+                int * orderH, 
+                int * MidPtsTotal, 
+                const_matrix MasterM, 
+                const_SNarray snA,
+		        const int PeriodicX, 
+                const int PeriodicY, 
+                const int PeriodicZ){
 
-	if( orderL==NULL || orderH==NULL || MidPtsTotal==NULL || MasterM==NULL || snA==NULL){
+	#ifdef _ERROR_CHECKING_ON_
+	if( orderL==NULL ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR orderL is NULL in MPsort\n");
+		#endif
+		return_error_val();
+		return NULL;
+    }
+    if( orderH==NULL ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR orderH is NULL in MPsort\n");
+		#endif
+		return_error_val();
+		return NULL;
+    }
+    if( MidPtsTotal==NULL ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR MidPtsTotal is NULL in MPsort\n");
+		#endif
+		return_error_val();
+		return NULL;
+    }
+    if( MasterM==NULL ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR MasterM is NULL in MPsort\n");
+		#endif
+		return_error_val();
+		return NULL;
+    }
+    if( snA==NULL){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR snA is NULL in MPsort\n");
+		#endif
+		return_error_val();
 		return NULL;
 	}
-
-	if( PeriodicX>1 || PeriodicX<0 || PeriodicY>1 || PeriodicY<0 || PeriodicZ>1 || PeriodicZ<0){
+	if( PeriodicX>1 ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicX is greater than 1 in MPsort\n");
+		#endif
+		return_error_val();
 		return NULL;
 	}
-
-	if(getRows(MasterM)!=getAtotal(snA)|| getCols(MasterM)!=12){
+    if( PeriodicX<0 ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicX is less than 0 in MPsort\n");
+		#endif
+		return_error_val();
+		return NULL;
+    }
+    if( PeriodicY>1 ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicY is greater than 1 in MPsort\n");
+		#endif
+		return_error_val();
 		return NULL;
 	}
+    if( PeriodicY<0 ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicY is less than 0 in MPsort\n");
+		#endif
+		return_error_val();
+		return NULL;
+    }
+    if( PeriodicZ>1 ){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicZ is greater than 1 in MPsort\n");
+		#endif
+		return_error_val();
+		return NULL;
+    }
+    if( PeriodicZ<0){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicZ is less than 0 in MPsort\n");
+		#endif
+		return_error_val();
+		return NULL;
+	}
+	if(getRows(MasterM)!=getAtotal(snA)){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR getRows(MasterM)!=getAtotal(snA) in MPsort\n");
+		#endif
+		return_error_val();
+		return NULL;
+    }
+    if( getCols(MasterM)!=12){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR cols of MasterM is not 12 in MPsort\n");
+		#endif
+		return_error_val();
+		return NULL;
+	}
+	#endif
 	double x1;
 	double x2;
 	double y1;
@@ -444,28 +561,28 @@ ArbArray MPsort(int * orderL, int * orderH, int * MidPtsTotal, const_matrix Mast
 	return mpA;
 }
 
-ArbArray SortOrderMag(const int TotalOrders,const int orderLow, const_ArbArray mpA){
+/* This function sorts the midpoints into an Arb Array 
+ * such that they are sorted by the order of magnitudes. */
+ArbArray SortOrderMag(const int TotalOrders,
+                      const int orderLow, 
+                      const_ArbArray mpA){
 
-  #ifdef _ERROR_CHECKING_ON_
+    #ifdef _ERROR_CHECKING_ON_
 	if(TotalOrders<1){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR TotalOrders is less than 1 in SortOrderMag\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return NULL;
-  }
+		fprintf(stderr,"ERROR TotalOrders is less than 1 in SortOrderMag\n");
+		#endif
+		return_error_val();
+		return NULL;
+	}
 	if( mpA==NULL){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR mpA is NULL in SortOrderMag\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return NULL;
+		fprintf(stderr,"ERROR mpA is NULL in SortOrderMag\n");
+		#endif
+		return_error_val();
+		return NULL;
 	}
-  #endif
+	#endif
 	//This array contains all the link lists
 	ArbArray ArLL=newArbArray(TotalOrders, 0);
 	//Need to set default values for all the OrderMagLL in
@@ -478,7 +595,7 @@ ArbArray SortOrderMag(const int TotalOrders,const int orderLow, const_ArbArray m
 	int element, tempOrder, order, Mid_ID;
 	double percent=0;
 	double total = (double) getElementsUsed(mpA);
-  MidPoint mp;
+	MidPoint mp;
 	for(element=0;element<TotalOrders;element++){
 		order=element+orderLow;
 		setDefaultArbElem(ArLL,element,order);
@@ -503,89 +620,84 @@ ArbArray SortOrderMag(const int TotalOrders,const int orderLow, const_ArbArray m
 			return NULL;
 		}
 
-    mp = getMP(mpA,Mid_ID);
+		mp = getMP(mpA,Mid_ID);
 		addToOrLL(ArLL, element, &mp );
 	}
   
-  printf("Returning from Sort\n");
+	printf("Returning from Sort\n");
 
 	return ArLL;
 }
 
+/* This function will take an arbarray. Where each element in the
+ * arbarray is an Order of Magnitude link list. It will sort all
+ * the sites in the order of magnitude link list into clusters */
 ArbArray ClusterSort(const int TotalOrders, const_ArbArray ArLL){
 
 	//The totalOrders corresponds to the difference between the highest and lowest
 	//order of magnitude in the sample. It can happen that the there is a jump
 	//so that not all the orders is represented between the highest and lowest
 	//points.
-  #ifdef _ERROR_CHECKING_ON_ 
+    #ifdef _ERROR_CHECKING_ON_ 
 	if(TotalOrders<=0){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR TotalOrders are less or equal to 0 in ClusterSort\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return NULL;
+		fprintf(stderr,"ERROR TotalOrders are less or equal "
+                       "to 0 in ClusterSort\n");
+		#endif
+		return_error_val();
+		return NULL;
 	}
 	if(ArLL==NULL){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR ArLL is NULL in ClusterSort\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return NULL;
+		fprintf(stderr,"ERROR ArLL is NULL in ClusterSort\n");
+		#endif
+		return_error_val();
+		return NULL;
 	}
 	if(TotalOrders<getElementsUsed(ArLL)){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR TotalOrders are less than the number of elements used in ArLL in ClusterSort\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return NULL;
+		fprintf(stderr,"ERROR TotalOrders are less than the number"
+                       " of elements used in ArLL in ClusterSort\n");
+		#endif
+		return_error_val();
+		return NULL;
 	}
-  #endif
+    #endif
 	OrderMagLL TempOMLL;
 	int element = 0;
-  int totalElems;
+	int totalElems;
 	int Lo;
 	int Hi;
-  printf("Step 1 ClusterSort\n");
+	printf("Step 1 ClusterSort\n");
 	TempOMLL = getOrderLL(ArLL,element);
-  printf("Step 1.1 ClusterSort\n");
+	printf("Step 1.1 ClusterSort\n");
 	Lo = getOMLL_order(TempOMLL); 
-  printf("Step 1.2 ClusterSort\n");
-  totalElems = getElementsUsed(ArLL);
+	printf("Step 1.2 ClusterSort\n");
+	totalElems = getElementsUsed(ArLL);
 	while(element < totalElems){
-    printf("element %d totalElemsUsed %d totalElemReserved %d\n",element,totalElems,getElementsReserved(ArLL));
+		printf("element %d totalElemsUsed %d totalElemReserved %d\n",
+               element,totalElems,getElementsReserved(ArLL));
 		TempOMLL = getOrderLL(ArLL,element);
 		element++;
 	}
-  printf("Step 1.3 ClusterSort\n");
+	printf("Step 1.3 ClusterSort\n");
 	TempOMLL = getOrderLL(ArLL,element-1);
-  printf("Step 1.4 ClusterSort\n");
+	printf("Step 1.4 ClusterSort\n");
 	Hi = getOMLL_order(TempOMLL);
 	if(TotalOrders!=(Hi-Lo+1)){
 		//printf("Value Hi %d Lo %d diff %d\n",Hi,Lo,(Hi-Lo+1));
 		return NULL;
 	}
 
-  printf("Step 2 ClusterSort\n");
+	printf("Step 2 ClusterSort\n");
 	ArbArray ClArLL = newArbArray(TotalOrders, 1);
 
 	if(ClArLL==NULL){
 		return NULL;
 	}
 
-	//printf("Successfully Created Cluster Array Link List.\n");
-
 	MidPoint tempmp;
 	int ID;
-
-	//printf("\nOrganizing Nodes into clusters based on proximity.\n");
-
 
 	for(element=0;element<TotalOrders;element++){
 
@@ -599,7 +711,7 @@ ArbArray ClusterSort(const int TotalOrders, const_ArbArray ArLL){
 			ClusterLL clLL = newClusterLL(ID);
 			setArbElement(ClArLL, element, (void *) clLL);
 
-  printf("Step 3 ClusterSort\n");
+			printf("Step 3 ClusterSort\n");
 			while(tempmp!=NULL){
 				addNodeToCluster(clLL , tempmp);
 				tempmp = getNextMP(tempmp);
@@ -607,7 +719,7 @@ ArbArray ClusterSort(const int TotalOrders, const_ArbArray ArLL){
 		}
 	}
 
-  printf("Returning from ClusterSort\n");
+	printf("Returning from ClusterSort\n");
 
 	return ClArLL;
 }
@@ -904,6 +1016,8 @@ int FilterCluster(const int TotalOrders,const int orderLow,const_matrix MasterM,
 	return 0;
 }
 
+/* This function is responsible for removing clusters that apparently
+ * extend from one side of the system to the other */
 int FeelPercolation(ClusterLL ClLL, const_SNarray snA, int PeriodicY, int PeriodicZ ) {
 
 	if(ClLL==NULL || snA==NULL){
@@ -2220,99 +2334,86 @@ int PrintCheck(int TotalOrders, int orderLow, const_ArbArray ClArLL, const_SNarr
 	return 0;
 
 }
-int CalculateNeighNodesForSingleClusterLL(ClusterLL TempClLL, SNarray snA, int PeriodicX, int PeriodicY, int PeriodicZ ){
 
-  #ifdef _ERROR_CHECKING_ON_
+int CalculateNeighNodesForSingleClusterLL(ClusterLL TempClLL, 
+                                          SNarray snA, 
+                                          int PeriodicX, 
+                                          int PeriodicY, 
+                                          int PeriodicZ ){
+
+	#ifdef _ERROR_CHECKING_ON_
 	if(snA==NULL){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR snA NULL in CalculateNeighNodesForClusterLL\n");
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR snA NULL in CalculateNeighNodesForClusterLL\n");
 		#endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1;
+		return return_error_val();
 	}
-  if(TempClLL==NULL){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR TempClLL NULL in CalculateNeighNodesForClusterLL\n");
+	if(TempClLL==NULL){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR TempClLL NULL in CalculateNeighNodesForClusterLL\n");
 		#endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1;
-  }
-  if(PeriodicX<0){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR PeriodicX is less than 0 in CalculateNeighNodesForClusterLL\n");
+		return return_error_val();
+	}
+	if(PeriodicX<0){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicX is less than 0 in "
+                       "CalculateNeighNodesForClusterLL\n");
 		#endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1; 
-  }
-  if(PeriodicX>1){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR PeriodicX is greater than 1 in CalculateNeighNodesForClusterLL\n");
+		return return_error_val();
+	}
+	if(PeriodicX>1){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicX is greater than 1 in "
+                       "CalculateNeighNodesForClusterLL\n");
 		#endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1; 
-  }
-  if(PeriodicY<0){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR PeriodicY is less than 0 in CalculateNeighNodesForClusterLL\n");
+		return return_error_val();
+	}
+	if(PeriodicY<0){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicY is less than 0 in "
+                       "CalculateNeighNodesForClusterLL\n");
 		#endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1; 
-  }
-  if(PeriodicY>1){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR PeriodicY is greater than 1 in CalculateNeighNodesForClusterLL\n");
+		return return_error_val();
+	}
+	if(PeriodicY>1){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicY is greater than 1 in "
+                       "CalculateNeighNodesForClusterLL\n");
 		#endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1; 
-  }
-  if(PeriodicZ<0){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR PeriodicZ is less than 0 in CalculateNeighNodesForClusterLL\n");
+		return return_error_val();
+	}
+	if(PeriodicZ<0){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicZ is less than 0 in "
+                       "CalculateNeighNodesForClusterLL\n");
 		#endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1; 
-  }
-  if(PeriodicZ>1){
-    #ifdef _ERROR_
-    fprintf(stderr,"ERROR PeriodicZ is greater than 1 in CalculateNeighNodesForClusterLL\n");
+		return return_error_val();
+	}
+	if(PeriodicZ>1){
+		#ifdef _ERROR_
+		fprintf(stderr,"ERROR PeriodicZ is greater than 1 in "
+                       "CalculateNeighNodesForClusterLL\n");
 		#endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1; 
-  }
-  #endif
-  if(PeriodicX==1 && PeriodicY==1 && PeriodicZ==1){	
-    CalculateNeighSinglePXPYPZ(TempClLL, snA);
-  }else if(PeriodicX == 0 && PeriodicY==1 && PeriodicZ==1){
-    CalculateNeighSinglePYPZ(TempClLL, snA);
-  }else if(PeriodicX == 1 && PeriodicY==0 && PeriodicZ==1){
-    CalculateNeighSinglePXPZ(TempClLL, snA);
-  }else if(PeriodicX == 1 && PeriodicY==1 && PeriodicZ==0){
-    CalculateNeighSinglePXPY(TempClLL, snA);
-  }else if(PeriodicX == 0 && PeriodicY==0 && PeriodicZ==1){
-    CalculateNeighSinglePZ(TempClLL, snA);
-  }else if(PeriodicX == 1 && PeriodicY==0 && PeriodicZ==0){
-    CalculateNeighSinglePX(TempClLL, snA);
-  }else if(PeriodicX == 0 && PeriodicY==1 && PeriodicZ==0){
-    CalculateNeighSinglePY(TempClLL, snA);
-  }else{
-    CalculateNeighSingle(TempClLL, snA);
-  }
+		return return_error_val();
+	}
+	#endif
+	if(PeriodicX==1 && PeriodicY==1 && PeriodicZ==1){	
+		CalculateNeighSinglePXPYPZ(TempClLL, snA);
+	}else if(PeriodicX == 0 && PeriodicY==1 && PeriodicZ==1){
+		CalculateNeighSinglePYPZ(TempClLL, snA);
+	}else if(PeriodicX == 1 && PeriodicY==0 && PeriodicZ==1){
+		CalculateNeighSinglePXPZ(TempClLL, snA);
+	}else if(PeriodicX == 1 && PeriodicY==1 && PeriodicZ==0){
+		CalculateNeighSinglePXPY(TempClLL, snA);
+	}else if(PeriodicX == 0 && PeriodicY==0 && PeriodicZ==1){
+		CalculateNeighSinglePZ(TempClLL, snA);
+	}else if(PeriodicX == 1 && PeriodicY==0 && PeriodicZ==0){
+		CalculateNeighSinglePX(TempClLL, snA);
+	}else if(PeriodicX == 0 && PeriodicY==1 && PeriodicZ==0){
+		CalculateNeighSinglePY(TempClLL, snA);
+	}else{
+		CalculateNeighSingle(TempClLL, snA);
+	}
 
 	return 0; 
 }
@@ -2429,111 +2530,83 @@ int DetermineClusterStatus(SiteNode sn1, SiteNode sn2){
   }
 }
 
-int CalculateSumAndP(const int TotalOrders, const_SNarray snA, ArbArray * ClArLL,\
-		const_matrix MasterM, const int attempts,\
-		const int PeriodicX,const int PeriodicY,const int PeriodicZ){
+int CalculateSumAndP(const int TotalOrders, 
+                     const_SNarray snA, 
+                     ArbArray * ClArLL,
+		             const_matrix MasterM, 
+                     const int attempts,
+		             const int PeriodicX,
+                     const int PeriodicY,
+                     const int PeriodicZ){
 
-  #ifdef _ERROR_CHECKING_ON_
+	#ifdef _ERROR_CHECKING_ON_
 	if(PeriodicX<0){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR PeriodicX is less than 0 in CalculateSumAndP\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		fprintf(stderr,"ERROR PeriodicX is less than 0 in CalculateSumAndP\n");
+		#endif
+		return return_error_val();
 	}
 	if(PeriodicY<0){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR PeriodicY is less than 0 in CalculateSumAndP\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		fprintf(stderr,"ERROR PeriodicY is less than 0 in CalculateSumAndP\n");
+		#endif
+		return return_error_val();
 	}
 	if(PeriodicZ<0){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR PeriodicZ is less than 0 in CalculateSumAndP\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		fprintf(stderr,"ERROR PeriodicZ is less than 0 in CalculateSumAndP\n");
+		#endif
+		return return_error_val();
 	}
 	if(PeriodicX>1){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR PeriodicX is greater than 1 in CalculateSumAndP\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		fprintf(stderr,"ERROR PeriodicX is greater than 1 in CalculateSumAndP\n");
+		#endif
+		return return_error_val();
 	}
 	if(PeriodicY>1){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR PeriodicY is greater than 1 in CalculateSumAndP\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		fprintf(stderr,"ERROR PeriodicY is greater than 1 in CalculateSumAndP\n");
+		#endif
+		return return_error_val();
 	}
 	if(PeriodicZ>1){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR PeriodicZ is greater than 1 in CalculateSumAndP\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-		return -1;
+		fprintf(stderr,"ERROR PeriodicZ is greater than 1 in CalculateSumAndP\n");
+		#endif
+		return return_error_val();
 	}
 	if(TotalOrders<0){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR TotalOrders less than 0 in CalculateSumAndP\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1;
+		fprintf(stderr,"ERROR TotalOrders less than 0 in CalculateSumAndP\n");
+		#endif
+		return return_error_val();
 	}
 	if(snA==NULL){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR snA is NULL in CalculateSumAndP\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1;
+		fprintf(stderr,"ERROR snA is NULL in CalculateSumAndP\n");
+		#endif
+		return return_error_val();
 	}
 	if(ClArLL ==NULL){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR ClArLL is NULL in CalculateSumAndP\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1;
+		fprintf(stderr,"ERROR ClArLL is NULL in CalculateSumAndP\n");
+		#endif
+		return return_error_val();
 	}
 	if(MasterM==NULL){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR MasterM is NULL in CalculateSumAndP\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1;
+		fprintf(stderr,"ERROR MasterM is NULL in CalculateSumAndP\n");
+		#endif
+		return return_error_val();
 	}
 	if(attempts<1){
 		#ifdef _ERROR_
-    fprintf(stderr,"ERROR attempts are less than 1 in CalculateSumAndP\n");
-    #endif
-    #ifdef _FORCE_HARD_CRASH_
-    exit(1);
-    #endif
-    return -1;
+		fprintf(stderr,"ERROR attempts are less than 1 in CalculateSumAndP\n");
+		#endif
+		return return_error_val();
 	}
-  #endif
+	#endif
 	//Cylce through the nodes in ClArLL and for every node
 	//determine the hop rate off of the cluster thet total
 	//average of all the hop rates off the cluster will be
@@ -2585,9 +2658,9 @@ int CalculateSumAndP(const int TotalOrders, const_SNarray snA, ArbArray * ClArLL
 				//This function calculates the probability a charge
 				//will hop to a site within the cluster irrespective of
 				//time but based on spacial orientation
-        mtxProb = CalculateProb( TempClLL, mtxHopOpt, snA, attempts );
+				mtxProb = CalculateProb( TempClLL, mtxHopOpt, snA, attempts );
 				printf("ClusterFunctionsStep1\n");
-        if(mtxProb==NULL){
+				if(mtxProb==NULL){
 					printf("mtxProb NULL 2\n");
 					exit(1);
 				}
@@ -2654,9 +2727,13 @@ int CalculateSumAndP(const int TotalOrders, const_SNarray snA, ArbArray * ClArLL
 	return 0;
 }
 
-int CalculateSumAndPGivenSingleClusterLL(const_SNarray snA, ClusterLL TempClLL,\
-		const_matrix MasterM, const int attempts,\
-		const int PeriodicX,const int PeriodicY,const int PeriodicZ){
+int CalculateSumAndPGivenSingleClusterLL(const_SNarray snA, 
+                                         ClusterLL TempClLL,
+		                                 const_matrix MasterM, 
+                                         const int attempts,
+		                                 const int PeriodicX,
+                                         const int PeriodicY,
+                                         const int PeriodicZ){
 
   #ifdef _ERROR_CHECKING_ON_
 	if(PeriodicX<0){
@@ -2860,219 +2937,15 @@ int CalculateSumAndPGivenSingleClusterLL(const_SNarray snA, ClusterLL TempClLL,\
 	return 0;
 }
 
-int CountOptions( Node tempNode, matrix * mtxHopOpt, const_SNarray snA){
-	//Function counts the number of hopping options 
-	//a given site has within the cluster if it
-	//wants to keep hopping within the cluster and
-	//off the cluster
-	//matrix mtxHopOpt stores the Id of the site
-	//and the corresponding number of options
-	//col 1 - hops within cluster
-	//col 2 - hops off the cluster
-	//col 3 - ID of site
-	if ((*mtxHopOpt)==NULL || snA==NULL){
-		return -1;
-	}
-
-	int countOpt;
-	int countOpt2;
-	int inc = 1;
-	int Node_ID;
-	int i, j, k;
-	while (tempNode!=NULL){
-
-		countOpt=0;
-		countOpt2=0;
-
-		Node_ID = getNode_id(tempNode);	
-		getLoc( &i, &j, &k, Node_ID, snA);
-		if(getFlagFro(tempNode)==1){
-			countOpt++;
-		}else{
-			countOpt2++;
-		}
-		if(getFlagBeh(tempNode)==1){
-			countOpt++;
-		}else{
-			countOpt2++;
-		}
-		if(getFlagLef(tempNode)==1){
-			countOpt++;
-		}else{
-			countOpt2++;
-		}
-		if(getFlagRig(tempNode)==1){
-			countOpt++;
-		}else{
-			countOpt2++;
-		}
-		if(getFlagBel(tempNode)==1){
-			countOpt++;
-		}else{
-			countOpt2++;
-		}
-		if(getFlagAbo(tempNode)==1){
-			countOpt++;
-		}else{
-			countOpt2++;
-		}
-
-		setE((*mtxHopOpt),inc,1,countOpt);
-		setE((*mtxHopOpt),inc,2,countOpt2);
-		setE((*mtxHopOpt),inc,3,Node_ID);					
-		inc++;
-		tempNode = getNextNode(tempNode);
-	}
-
-	return 0;
-}
-
-matrix CalculateProb(const_ClusterLL TempClLL, matrix mtxHopOpt, const_SNarray snA, const int attempts ){
-
-
-	//This function can be used for periodic or non periodic conditions it does not
-	//do anything with neighbors outside of the clusters. 
-	int inc;
-	int Node_ID;
-  int numNodes;
-	int Node_IDFro, Node_IDBeh;
-	int Node_IDLef, Node_IDRig;
-	int Node_IDBel, Node_IDAbo;
-	int i, j, k;
-	int Row;
-	int Row2;
-	double val;
-
-	//The second column of mtxProb will contain the IDs of the respective sites
-	//We need to reinitialize the 2nd column to the ID's of the CNTs
-	numNodes = getCluster_numNodes(TempClLL);
-  printf("getCluster_numNodes(TempClLL) %d\n",numNodes);
-	matrix mtxProb = newMatrixSet( getCluster_numNodes(TempClLL),2, (1/((double)getCluster_numNodes(TempClLL))));
-	matrix mtxProbNew = newMatrix(6,1);
-	Node tempNode;
-
-	//Initilize Node Ids in the mtxProb
-	tempNode = getStartNode(TempClLL);
-
-	printf("\n****************Calculating Prob Matrix********************\n");
-	inc = 1;
-
-	while(tempNode!=NULL){
-		Node_ID = getNode_id(tempNode);
-		setE(mtxProb,inc,2,(double) Node_ID);
-		tempNode = getNextNode(tempNode);
-		inc++;
-	}
-
-	for(int attempt=1;attempt<(attempts*numNodes);attempt++){
-		tempNode= getStartNode(TempClLL);
-		inc = 1;
-
-    printf("attempt %d\n",attempt);
-
-		while (tempNode!=NULL){
-
-			//1 hop behind     	index - 0 
-			//2 hop infront			index - 1
-			//3 hop left				index - 2
-			//4 hop right				index - 3
-			//5 hop below				index - 4 
-			//6 hop above				index - 5
-			Node_ID = getNode_id(tempNode);
-
-			//printf("Node_id %d inc %d\n",Node_ID,inc);
-			getLoc( &i, &j, &k, Node_ID, snA);
-
-			if(getFlagFro(tempNode)==1){
-				//Node in front is within the cluster
-				Node_IDFro = getIndFroP(snA,i,j,k);
-				//printf("Node in front of %d is %d\n",Node_ID, Node_IDFro);
-				Row = FindRowOfMatchInCol(mtxHopOpt, Node_IDFro, 3);
-				Row2 = FindRowOfMatchInCol(mtxProb, Node_IDFro,2);
-				//printf("Row %d Row2 %d\n",Row,Row2);
-				val = (1/getE(mtxHopOpt,Row,1))*getE(mtxProb,Row2,1);
-				setE(mtxProbNew,2,1,val);
-			}
-			if(getFlagBeh(tempNode)==1){
-				//Node behind is within the cluster
-				Node_IDBeh = getIndBehP(snA,i,j,k);
-				//printf("Node behind %d is %d\n",Node_ID, Node_IDBeh);
-				Row = FindRowOfMatchInCol(mtxHopOpt, Node_IDBeh,3);
-				Row2 = FindRowOfMatchInCol(mtxProb, Node_IDBeh,2);
-				//printf("Row %d Row2 %d\n",Row,Row2);
-				val = (1/getE(mtxHopOpt,Row,1))*getE(mtxProb,Row2,1);
-				setE(mtxProbNew,1,1,val);
-			}
-
-			if(getFlagLef(tempNode)==1){
-				//Node behind is within the cluster
-				Node_IDLef = getIndLefP(snA,i,j,k);
-				//printf("Node to the left of %d is %d\n",Node_ID, Node_IDLef);
-				Row = FindRowOfMatchInCol(mtxHopOpt, Node_IDLef,3);
-				Row2 = FindRowOfMatchInCol(mtxProb, Node_IDLef,2);
-				//printf("Row %d Row2 %d\n",Row,Row2);
-
-				val = (1/getE(mtxHopOpt,Row,1))*getE(mtxProb,Row2,1);
-				setE(mtxProbNew,3,1,val);
-			}
-			if(getFlagRig(tempNode)==1){
-				//Node behind is within the cluster
-				Node_IDRig = getIndRigP(snA,i,j,k);
-				//printf("Node to the Right of %d is %d\n",Node_ID, Node_IDRig);
-				Row = FindRowOfMatchInCol(mtxHopOpt, Node_IDRig,3);
-				Row2 = FindRowOfMatchInCol(mtxProb, Node_IDRig,2);
-				//printf("Row %d Row2 %d\n",Row,Row2);
-				val = (1/getE(mtxHopOpt,Row,1))*getE(mtxProb,Row2,1);
-				setE(mtxProbNew,4,1,val);
-			}
-			if(getFlagBel(tempNode)==1){
-				//Node behind is within the cluster
-				Node_IDBel = getIndBelP(snA,i,j,k);
-				//printf("Node below %d is %d\n",Node_ID, Node_IDBel);
-				Row = FindRowOfMatchInCol(mtxHopOpt, Node_IDBel,3);
-				Row2 = FindRowOfMatchInCol(mtxProb, Node_IDBel,2);
-				//printf("Row %d Row2 %d\n",Row,Row2);
-				val = (1/getE(mtxHopOpt,Row,1))*getE(mtxProb,Row2,1);
-				setE(mtxProbNew,5,1,val);
-			}
-
-			if(getFlagAbo(tempNode)==1){
-				//Node behind is within the cluster
-				Node_IDAbo = getIndAboP(snA,i,j,k);
-				//printf("Node above %d is %d\n",Node_ID, Node_IDAbo);
-				Row = FindRowOfMatchInCol(mtxHopOpt, Node_IDAbo,3);
-				Row2 = FindRowOfMatchInCol(mtxProb, Node_IDAbo,2);
-				//printf("Row %d Row2 %d\n",Row,Row2);
-				val = (1/getE(mtxHopOpt,Row,1))*getE(mtxProb,Row2,1);
-				setE(mtxProbNew,6,1,val);
-			}
-
-			val = (SumOfCol(mtxProbNew,1)+getE(mtxProb,inc,1))/2;
-
-			//printf("Prob of site %d val: %g\n",Node_ID,val);
-			setE(mtxProb,inc,1,val);
-			inc++;
-			tempNode = getNextNode(tempNode);
-			setAll(mtxProbNew, 0.0);
-		}
-
-		val = SumOfCol(mtxProb,1);
-		//Normalize the matrix
-		DivideEachElementCol(&mtxProb,1, val);
-
-	}
-
-	printMatrix(mtxProb);
-  deleteMatrix(&mtxProbNew);
-	
-	return mtxProb;
-}
 
 matrix CalculateProbNeighDwell(const int countNeighOpts,\
 		matrix mtxDwellTime,const_matrix mtxProb,  Node tempNode,\
 		const_matrix MasterM, const_SNarray snA, const double rateN,\
 		int PeriodicX, int PeriodicY, int PeriodicZ){
 
+
+	printf("ERROR CalculateProbNeighDwell is deprecated\n");
+	exit(1);
 	//The second column stores the id of the NeighSite charge
 	//would be hopping too
 	matrix mtxProbNeighDwell = newMatrix(countNeighOpts,2);
@@ -3178,6 +3051,9 @@ matrix CalculateDwellTimeAndRateN(ClusterLL *  TempClLL, matrix * mtxTimes  ,\
        double * rateN           ,	const int PeriodicX  , const int PeriodicY,\
        const int PeriodicZ      ){
 
+
+	printf("ERROR CalculateDwellTimeAndRateN is deprecated\n");
+	exit(1);
 	//Now need to multiply each mtxProbNeigh by the appropriate hoprate
 	//Only for the sites that are within the clusters need to cycle 
 	//through nodes again. 
@@ -3330,6 +3206,8 @@ matrix CalculateDwellTimeAndRateN(ClusterLL *  TempClLL, matrix * mtxTimes  ,\
 
 int CalculatePvalNeigh(ClusterLL * TempClLL,const_matrix mtxTimes, const_matrix mtxProbNeighDwell){
 
+	printf("ERROR CalculatePvalNeigh is deprecated\n");
+	exit(1);
 	//Calculate Pval & time for NeighNodes 
 	#ifdef _ERROR_CHECKING_ON_
 	if(TempClLL==NULL){
@@ -3379,23 +3257,23 @@ int CalculatePvalNeigh(ClusterLL * TempClLL,const_matrix mtxTimes, const_matrix 
 
 	NeighNod = getStartNeigh((*TempClLL));
 
-  /*printMatrix(mtxTimes);
-  getchar();*/
-
 	while(NeighNod!=NULL){
 
-	  inc2 =1;
+		inc2 =1;
 		ID = getNeighNode_id(NeighNod);
 		for(inc=1;inc<=getRows(mtxProbNeighDwell);inc++){
 			Node_ID = getE(mtxProbNeighDwell,inc,2);
 			if(ID==Node_ID){
 				temp_val = getE(mtxProbNeighDwell,inc,1);
-        //This will put the pval in a new hop
-		    printf("temp_val %g total %g val %g pval %g\n",temp_val,total,val,temp_val/total+val);
-    		setNeighNodeNew_p(NeighNod,temp_val/total+val);
+				//This will put the pval in a new hop
+				printf("temp_val %g total %g val %g pval %g\n",temp_val,total,val,temp_val/total+val);
+				setNeighNodeNew_p(NeighNod,temp_val/total+val);
 				val += temp_val/total;
 				time = getE(mtxTimes,inc,1);
-        printf("inc %d inc2 %d ID %d Node_ID %d time %g\n",inc,inc2,ID,Node_ID,time);
+				printf("inc %d inc2 %d ID %d Node_ID %d time %g\n",inc,inc2,ID,Node_ID,time);
+				/* We do not need to know the time taken to hop to 
+                 * an individual site we simply need the cluster time */
+				printf("Warning do not need to setNeighNode_t when creating cluster but we are.\n");
 				setNeighNode_t(NeighNod, time, inc2);
 				inc2++;
 			}
@@ -3405,45 +3283,6 @@ int CalculatePvalNeigh(ClusterLL * TempClLL,const_matrix mtxTimes, const_matrix 
 
 	return 0;
 }
-
-int CalculatePvalNodes(ClusterLL * TempClLL, matrix mtxProb, matrix mtxDwellTime){
-	//Calculate Pval & time for Nodes
-
-	//printf("Number of Nodes %d\n",getCluster_numNodes(*TempClLL));
-	Node tempNode = getStartNode((*TempClLL));
-	int inc=1;
-	double val=0.0;
-	double total=0;
-
-	while(tempNode!=NULL){
-
-		val = getE(mtxProb,inc,1)*getE(mtxDwellTime,inc,1);
-		//printf("Value of val %g\n",val);
-		total += val;
-		setNode_p(tempNode,val);		
-		inc++;
-		tempNode = getNextNode(tempNode);
-	}
-
-	tempNode=getStartNode((*TempClLL));
-
-	val = 0.0;
-	inc = 1;
-	//Normalize
-	while(tempNode!=NULL){
-
-    printf("getNode_p %g\n",getNode_p(tempNode));
-		val += getNode_p(tempNode)/total;
-		setNode_p(tempNode,val);	
-    
-    //setNode_p(tempNode,val+getNode_p(tempNode)/total);
-    //val += getNode_p(tempNode)/total;
-		tempNode = getNextNode(tempNode);
-	}
-
-	return 0;
-}
-
 
 int ConnectClusterElec( ArbArray * ClArLL,\
 												Electrode elXB, Electrode elXF,\

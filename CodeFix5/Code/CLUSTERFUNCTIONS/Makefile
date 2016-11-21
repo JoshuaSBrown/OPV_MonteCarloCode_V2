@@ -5,17 +5,17 @@ CFLAGS = -lm -Wall -Wextra -std=gnu99 -pedantic -g
 # Targets
 ALL : test_clusterfunctions test_clusterfunctions2 test_clusterfunctions3 test_clusterfunctions4
 
-test_clusterfunctions : test_clusterfunctions.c arbarray.o omll.o electrode.o midpoint.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o
-	$(CC) $(CFLAGS) test_clusterfunctions.c arbarray.o omll.o  electrode.o midpoint.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o -o test_clusterfunctions -lm
+test_clusterfunctions : test_clusterfunctions.c arbarray.o omll.o electrode.o midpoint.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o clustercalculators.o
+	$(CC) $(CFLAGS) test_clusterfunctions.c arbarray.o omll.o  electrode.o midpoint.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o clustercalculators.o -o test_clusterfunctions -lm
 
-test_clusterfunctions2 : test_clusterfunctions2.c arbarray.o omll.o electrode.o midpoint.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o  charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o
-	$(CC) $(CFLAGS) test_clusterfunctions2.c arbarray.o omll.o electrode.o midpoint.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o  charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o -o test_clusterfunctions2 -lm
+test_clusterfunctions2 : test_clusterfunctions2.c arbarray.o omll.o electrode.o midpoint.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o  charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o clustercalculators.o 
+	$(CC) $(CFLAGS) test_clusterfunctions2.c arbarray.o omll.o electrode.o midpoint.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o  charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o  clustercalculators.o -o test_clusterfunctions2 -lm
 
-test_clusterfunctions3 : test_clusterfunctions3.c arbarray.o omll.o electrode.o midpoint.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o  charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o
-	$(CC) $(CFLAGS) test_clusterfunctions3.c midpoint.o arbarray.o omll.o electrode.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o  charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o -o test_clusterfunctions3 -lm
+test_clusterfunctions3 : test_clusterfunctions3.c arbarray.o omll.o electrode.o midpoint.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o  charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o clustercalculators.o 
+	$(CC) $(CFLAGS) test_clusterfunctions3.c midpoint.o arbarray.o omll.o electrode.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o  charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o clustercalculators.o  -o test_clusterfunctions3 -lm
 
-test_clusterfunctions4 : test_clusterfunctions4.c arbarray.o omll.o electrode.o midpoint.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o  charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o
-	$(CC) $(CFLAGS) test_clusterfunctions4.c midpoint.o arbarray.o omll.o electrode.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o  charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o -o test_clusterfunctions4 -lm
+test_clusterfunctions4 : test_clusterfunctions4.c arbarray.o omll.o electrode.o midpoint.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o  charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o clustercalculators.o 
+	$(CC) $(CFLAGS) test_clusterfunctions4.c midpoint.o arbarray.o omll.o electrode.o neighll.o neighnode.o node.o clusterfunctions.o sitenode.o matrix.o linklist.o cluster.o montecarlo.o read.o  charge.o matrix_linklist.o clustersitenode.o chargesitenode.o error.o clustercalculators.o  -o test_clusterfunctions4 -lm
 
 omll.o : ../OMLL/omll.c
 	$(CC) $(CFLAGS) -c ../OMLL/omll.c -o omll.o
@@ -73,6 +73,9 @@ chargesitenode.o : ../CHARGESITENODE/chargesitenode.c
 
 error.o : ../ERROR/error.c
 	$(CC) $(CFLAGS) -c ../ERROR/error.c -o error.o
+
+clustercalculators.o : clustercalculators.c
+	$(CC) $(CFLAGS) -c clustercalculators.c -o clustercalculators.o
 
 .PHONY : clean
 clean :

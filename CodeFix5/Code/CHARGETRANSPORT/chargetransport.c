@@ -2161,6 +2161,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				//Here we will check the method if CELIV will update the site hop rates
 				if(method==1){
 
+					/* This is for CELIV */
 					//Adjust Vx
 					if((double)t<Tcv){
 						Vx = Vramp*((double)t);
