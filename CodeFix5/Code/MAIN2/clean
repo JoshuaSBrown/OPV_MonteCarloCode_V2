@@ -3,4 +3,7 @@
 rm -rf Movies
 rm -rf CHECKPOINT
 rm -f Data*
-
+rm -f shout.txt
+rm -f out.txt
+rm -f out2.txt
+rm -f gmon.out

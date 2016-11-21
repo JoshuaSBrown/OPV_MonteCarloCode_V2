@@ -4,9 +4,9 @@
 method 0 
 
 //Number of nodes along the x-axis, y-axis and z-axis
-SLength 20
-SWidth 15
-SHeight 4
+SLength 30
+SWidth 10
+SHeight 10
 
 //Defines whether sides are periodic or not
 // 0 - means non-periodic
@@ -78,7 +78,7 @@ ImageCharge 0
 IntrinsicFermi -5.3
 
 //Voltage across a single system in x, y and z [V]
-VoltageX 0.6
+VoltageX 1.0
 VoltageY 0.0
 VoltageZ 0.0
 
@@ -102,7 +102,7 @@ D 20E14
 TCount 1
 
 //Number of charges injected per time step
-NCh 2
+NCh 10
 
 //Total number of charges passed through the system
 Ntot TCount*NCh
@@ -120,7 +120,7 @@ Time_check 240
 Rcount 1
 
 //Turn on Cluster Algorithm 2, Leave off 0, old ClusterAlg 1
-ClusterAlg 2
+ClusterAlg 0
 ClusterAlgRec 4
 ClusterAlgTrigger 20
 
@@ -177,7 +177,7 @@ reOrgEnergy 0.1
 gamma 2
 
 //Movie Frames 
-MovieFrames 30
+MovieFrames 1
 
 //Cutoff Time of Simulation [s]
 //value of 0 means there is no cut off time

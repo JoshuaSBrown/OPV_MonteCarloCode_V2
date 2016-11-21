@@ -2107,7 +2107,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
                                PeriodicZ);
   }
 
-
+  printf("Entering Loop\n");
   /*************************************************
    *                     KEY LOOP
    *************************************************/
@@ -2123,7 +2123,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
          ((t<=CELIV_totalT && method==1) || 
          method==0)){
 
-    getchar();
+    //getchar();
 		//If no charges have been inserted in the system we will
 		//simply increment the time
 		CheckConservationCharges(elXb, 
@@ -2585,7 +2585,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
         //Check to see if new site is part of a cluster
         ClusterYes=getType(site);
         //Determine future hopping site
-        if(ClusterYes==1){
+     /*   if(ClusterYes==1){
           //If site is part of a cluster ensure that the site
           //is not next to an electrode
           ClusterHopCheck(PeriodicX, PeriodicY, PeriodicZ,\
@@ -2630,14 +2630,13 @@ int randomWalk( SNarray snA,int CheckptNum,\
             getLoc(&x,&y,&z,future,snA);
           }
 
-        }else{
-          //Future Hop To Cluster or Site
-          printf("1 ste\n");
+        }else{*/
+         //Future Hop To Cluster or Site
           SiteHop(snA, &one, site, &future, EndX, EndY,EndZ,\
               XElecOn,YElecOn,ZElecOn, PeriodicX,PeriodicY, PeriodicZ);
           getLoc(&x,&y,&z,future,snA);
           tim = 1/getsum(getSN(snA,x,y,z));
-        }
+       // }
 
         //Having chosen future site recording it
         if(future==getAtotal(snA)){
@@ -2818,7 +2817,6 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	//If simulation ended before all charges left the system we
 	//need to record their positions for accurately calculating 
 	//the charge mobility
-	printf("Printing to EndPtFile\n");
 	if(PFget_EndPtFile(PF)!=0){
 		int loop;	
 		for(loop = 0; loop<NCh; loop++){

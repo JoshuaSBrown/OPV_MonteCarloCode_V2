@@ -2539,6 +2539,10 @@ int CalculateSumAndP(const int TotalOrders,
                      const int PeriodicY,
                      const int PeriodicZ){
 
+
+  printf("ERROR Currently CalculateSumAndP is depricated\n");
+  exit(1);
+/*
 	#ifdef _ERROR_CHECKING_ON_
 	if(PeriodicX<0){
 		#ifdef _ERROR_
@@ -2705,9 +2709,9 @@ int CalculateSumAndP(const int TotalOrders,
 
 				CalculatePvalNodes(&TempClLL, mtxProb, mtxDwellTime);
 
-        /*printClusterLL(TempClLL);
+ */       /*printClusterLL(TempClLL);
         getchar();*/
-
+/*
 				//Delete Matrices
 				deleteMatrix(&mtxHopOpt);
 				deleteMatrix(&mtxProb);
@@ -2723,7 +2727,7 @@ int CalculateSumAndP(const int TotalOrders,
 		}//End of if statement
 
 
-	}//End of For loop
+	}//End of For loop*/
 	return 0;
 }
 
@@ -2735,6 +2739,9 @@ int CalculateSumAndPGivenSingleClusterLL(const_SNarray snA,
                                          const int PeriodicY,
                                          const int PeriodicZ){
 
+  printf("ERROR currently CalculateSumAndPGivenSingleClusterLL is depricated\n");
+  exit(1);
+  /*
   #ifdef _ERROR_CHECKING_ON_
 	if(PeriodicX<0){
 		#ifdef _ERROR_
@@ -2911,10 +2918,10 @@ int CalculateSumAndPGivenSingleClusterLL(const_SNarray snA,
   printf("ClusterFunctionsStep52\n");
   CalculatePvalNodes(&TempClLL, mtxProb, mtxDwellTime);
   printf("ClusterFunctionsStep53\n");
-
+*/
   /*printClusterLL(TempClLL);
   getchar();*/
-
+/*
   printf("SumAndPofCluster\n");
 
   printf("mtxHopOpt\n");
@@ -2933,7 +2940,7 @@ int CalculateSumAndPGivenSingleClusterLL(const_SNarray snA,
   deleteMatrix(&mtxDwellTime);
   deleteMatrix(&mtxProbNeighDwell);
 
-  printf("ClusterFunctionsStep54\n");
+  printf("ClusterFunctionsStep54\n");*/
 	return 0;
 }
 
