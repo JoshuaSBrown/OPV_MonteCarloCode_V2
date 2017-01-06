@@ -11,9 +11,9 @@ int readPath(char * FileName){
 	char bufRead[256];
   char FileName2[60];
 
+  FileName2[strlen(FileName)-5] = '\0';
   strncpy(FileName2,FileName,(strlen(FileName)-5));
   printf("FileName %s\nFileName2 %s\n",FileName,FileName2); 
-  
   int CurrentCharge;  //The current charge being read from the
                       //.path file
   int inc;            //Increment used to determine the position 
@@ -57,7 +57,7 @@ int readPath(char * FileName){
         ChargePath = newMatrix(rows,4);
         FlagFinished = 0;
         fgets(bufRead,256,PathIn);
-        printf("Scanning in Charge %d\n",CurrentCharge);
+        //printf("Scanning in Charge %d\n",CurrentCharge);
         line =1;
         while(fscanf(PathIn,"%d %d %d %d %lf %lf",&x,&y,&z,&ChargeID,&dwelltime,&globaltime)!=EOF){
           if(y>max_y){
@@ -66,23 +66,23 @@ int readPath(char * FileName){
           if(z>max_z){
             max_z = z;
           }
-          printf("line %d\n",line);
+          //printf("line %d\n",line);
           line++;
           if(ChargeID==CurrentCharge){
 
             FlagFinished = 1; 
             //Resize Matrix if needed
-            if(inc>rows){
+            if(inc==rows){
               rows = rows*2;
-              printf("resizing Matrix rows %d inc %d\n",rows,inc);
+              //printf("resizing Matrix rows %d inc %d\n",rows,inc);
               resizeRow(&ChargePath,rows);
             }
 
             //Store information
-            setE(ChargePath,inc,1,(double)x);
-            setE(ChargePath,inc,2,(double)y);
-            setE(ChargePath,inc,3,(double)z);
-            setE(ChargePath,inc,4,dwelltime);
+            setE(ChargePath,inc+1,1,(double)x);
+            setE(ChargePath,inc+1,2,(double)y);
+            setE(ChargePath,inc+1,3,(double)z);
+            setE(ChargePath,inc+1,4,dwelltime);
             inc++;
           }
           fgets(bufRead,256,PathIn);
@@ -90,7 +90,7 @@ int readPath(char * FileName){
 
         //resize the ChargePath matrix so there are no extra 0's
         //appended to the end
-        printf("Resizing matrix part 2 inc %d CurrentCharge %d\n",inc,CurrentCharge);
+        //printf("Resizing matrix part 2 inc %d CurrentCharge %d\n",inc,CurrentCharge);
         if(inc!=0){
           resizeRow(&ChargePath,inc-1);
         }
@@ -139,7 +139,7 @@ int getPercTrap(char * FileName, const_matrix ChargePath,int ChargeID, int y_max
 	char buf[256];
 
   rows = getRows(ChargePath);
-  inc = 1;
+  inc = 0;
   R = 8;
   
 /* Step 1: Each row of this matrix will track an individual site
@@ -182,11 +182,11 @@ int getPercTrap(char * FileName, const_matrix ChargePath,int ChargeID, int y_max
         R = R*2;
         resizeRow(&UniqueSites,R);
       } 
-      setE(UniqueSites,inc,1,x);
-      setE(UniqueSites,inc,2,y);
-      setE(UniqueSites,inc,3,z);
-      setE(UniqueSites,inc,4,dwelltime);
-      setE(UniqueSites,inc,5,SiteID);
+      setE(UniqueSites,inc+1,1,x);
+      setE(UniqueSites,inc+1,2,y);
+      setE(UniqueSites,inc+1,3,z);
+      setE(UniqueSites,inc+1,4,dwelltime);
+      setE(UniqueSites,inc+1,5,SiteID);
       for(j=(i+1);j<=rows;j++){
         x1 = getE(ChargePath,j,1);
         y1 = getE(ChargePath,j,2);
@@ -195,7 +195,7 @@ int getPercTrap(char * FileName, const_matrix ChargePath,int ChargeID, int y_max
 
         if(SiteID==SiteID2){
           dwelltime = dwelltime+getE(ChargePath,j,4);
-          setE(UniqueSites,inc,4,dwelltime);
+          setE(UniqueSites,inc+1,4,dwelltime);
         }
       }
       inc++;
@@ -237,10 +237,10 @@ int getPercTrap(char * FileName, const_matrix ChargePath,int ChargeID, int y_max
 
 /* Step 4: we can now append this information to the .perc file
  */
-  rows = getRows(ChargePath);
+  rows = getRows(UniqueSites);
 	snprintf(buf, sizeof buf,"%s%s",FileName,".perc");
   
-  printLL2(ChargePercLL);
+  //printLL2(ChargePercLL);
 
   FILE * PercOut;
   if(ChargeID==0){
@@ -250,7 +250,7 @@ int getPercTrap(char * FileName, const_matrix ChargePath,int ChargeID, int y_max
         fprintf(PercOut,"%d %d\n",ChargeID,LLsize);
         for(i=1;i<=LLsize;i++){
           ID = getLLNodeID2(ChargePercLL,i);
-          printf("ID of node %d\n",ID);
+          //printf("ID of node %d\n",ID);
           //Cycle through the matrix and print the information for the
           //site if there is a match.
           for(j=1;j<=rows;j++){
@@ -258,7 +258,7 @@ int getPercTrap(char * FileName, const_matrix ChargePath,int ChargeID, int y_max
             y = getE(UniqueSites,j,2);
             z = getE(UniqueSites,j,3);
             ID2 = getE(UniqueSites,j,5);
-            printf("ID of perc site %d\n",ID2);
+            //printf("ID of perc site %d\n",ID2);
             if(ID==ID2){
               dwelltime = getE(UniqueSites,j,4);
               fprintf(PercOut,"%d %d %d %g\n",(int)x,(int)y,(int)z,dwelltime);
@@ -317,7 +317,7 @@ int getPercTrap(char * FileName, const_matrix ChargePath,int ChargeID, int y_max
 /* Step 6: Now we are going to print the .trap file in the same
  * format as the .perc file. 
  */
-  rows = getRows(ChargePath);
+  rows = getRows(UniqueSites);
 	snprintf(buf, sizeof buf,"%s%s",FileName,".trap");
 	
   FILE * TrapOut;

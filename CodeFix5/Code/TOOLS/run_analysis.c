@@ -3,6 +3,9 @@
 #include <string.h>
 #include "analysis.h"
 
+/* To run this simply type:
+ * run_analysis filename.path
+ */
 int main(int argc, char *argv[]){
 
   char * FileName[64];
