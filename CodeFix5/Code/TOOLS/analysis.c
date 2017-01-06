@@ -74,7 +74,7 @@ int readPath(char * FileName){
             //Resize Matrix if needed
             if(inc>rows){
               rows = rows*2;
-              printf("resizing Matrix\n");
+              printf("resizing Matrix rows %d inc %d\n",rows,inc);
               resizeRow(&ChargePath,rows);
             }
 
@@ -90,9 +90,10 @@ int readPath(char * FileName){
 
         //resize the ChargePath matrix so there are no extra 0's
         //appended to the end
-        printf("Resizing matrix part 2\n");
-        resizeRow(&ChargePath,inc-1);
-        
+        printf("Resizing matrix part 2 inc %d CurrentCharge %d\n",inc,CurrentCharge);
+        if(inc!=0){
+          resizeRow(&ChargePath,inc-1);
+        }
         //We have now collected all the data from the .path file
         //for the charge labeled CurrentCharge we can go ahead and 
         //analyize the data we have and append it in .trap and .perc
