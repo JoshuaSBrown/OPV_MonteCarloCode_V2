@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../CLUSTER/CLUSTERFUNCTIONS/MATRIX/matrix.h"
+#include "../MATRIX/matrix.h"
 #include "../LINKLIST2/linklist2.h"
 #include "analysis.h"
 

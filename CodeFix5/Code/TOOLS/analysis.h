@@ -1,7 +1,7 @@
 #ifndef _ANALYSIS_H_
 #define _ANALYAIA_H_
 
-#include "../CLUSTER/CLUSTERFUNCTIONS/MATRIX/matrix.h"
+#include "../MATRIX/matrix.h"
 #include "../LINKLIST2/linklist2.h"
 
 //Read the .path file store the path of each charge in an array
