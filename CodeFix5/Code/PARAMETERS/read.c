@@ -1009,6 +1009,12 @@ ParameterFrame newParamFrame_File(void){
                " specified a non 0 fractions of seeds. fracSeed must be 0.0\n");
         exit(1);
       }
+      if(PF->fracSeed==0.0 && PF->SeedProt!=3){
+        printf("ERROR if running with the fraction of seeds equal to 0.0 you "
+               "are using an uncorrelated system you must specify the a "
+               "SeedProt of 3 if running for an uncorrelated system\n");
+        exit(1);
+      }
 		}else{
 			printf("ERROR when reading file can not find fracSeed!\n");
 			exit(1);
