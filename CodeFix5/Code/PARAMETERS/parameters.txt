@@ -142,7 +142,8 @@ ScaleAfterCorr 1
 // 2 - means averaged by closest seed but energy of seed
 //		 sites are all the same, Using Average site energy E0
 //		 to describe the seed energies.
-SeedProt 2
+// 3 - Uncorrelated
+SeedProt 3
 //How many numerical iterations should be used to approximate
 //cluster behavior per Node. If I have 5 nodes 5*attempts 
 //will be used to numerically predict the probability
@@ -150,7 +151,7 @@ SeedProt 2
 Attempts 3
 
 //What fraction of sites act as seeds
-fracSeed 0.4
+fracSeed 0.0
 //Average site energy [eV]
 E0 -5.2
 //Standard deviation of the site energy

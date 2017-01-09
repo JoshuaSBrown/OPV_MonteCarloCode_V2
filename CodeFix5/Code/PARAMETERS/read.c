@@ -966,8 +966,8 @@ ParameterFrame newParamFrame_File(void){
 			if(intval<0){
 				printf("ERROR SeedProt is negative\n");
 				exit(1);
-			}else if(intval>2){
-				printf("ERROR SeedProt is greater than 2\n");
+			}else if(intval>3){
+				printf("ERROR SeedProt is greater than 3\n");
 				exit(1);
 			}
 			PF->SeedProt = intval;
@@ -1004,6 +1004,11 @@ ParameterFrame newParamFrame_File(void){
 				exit(1);
 			}
 			PF->fracSeed = doubleval;
+      if(PF->fracSeed!=0.0 && PF->SeedProt==3){
+        printf("ERROR SeedProt is 3 for Uncorrelated system but you have"
+               " specified a non 0 fractions of seeds. fracSeed must be 0.0\n");
+        exit(1);
+      }
 		}else{
 			printf("ERROR when reading file can not find fracSeed!\n");
 			exit(1);

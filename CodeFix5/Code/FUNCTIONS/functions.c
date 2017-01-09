@@ -127,6 +127,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
   matrix AsTr = NULL;
 	setDefaultSNa(snA);
 
+  /* Assigning Energies for traps */
 	if(traps!=0){
     AsTr=newMatrix(traps,3);
 		printf("Randomly determining which sites are traps & assigning energies.\n");
@@ -206,62 +207,84 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 		//printVisitFreq(snA);
 
 		m=0;
-		printf("Calculating Energies for correlated sites1\n");
+		printf("Calculating Energies for remaining sites\n");
 		percent=0;
 		for (i= 0; i < SLength; i++){
 			for(j = 0; j < SWidth; j++){
 				for(k = 0; k < SHeight; k++){
-					SumEcor=0;
-					SumCor=0;
-					CorRadtemp=CorRad;
+        
+          /* For uncorrelated system*/
+          if(SeedProt==3){
 
-					//printf("Initial ID %d initE %d\n",getIndex(snA,i,j,k), getInitE(getSN(snA,i,j,k)));
-					while (SumEcor==0 && getInitE(getSN(snA,i,j,k))==0){
+            SiteEnergy=grn(E0, sigma);
+            if(SiteEnergy>maxEnergy){
+              maxEnergy = SiteEnergy;
+            }
+            if(SiteEnergy<minEnergy){
+              minEnergy = SiteEnergy;
+            }
+            setEnergy(getSN(snA,i,j,k),SiteEnergy);
+            setInitE(getSN(snA,i,j,k),2);
+            if ( ((double)m)/((double)sites-(seeds+traps))>percent){
+              printf("Percent Complete %ld\n",(int long)(percent*100));
+              percent+=0.1;
+            }
+            m++;
 
-						SiteEnergy=grn(E0, sigma);
-						
-						if(SiteEnergy>maxEnergy){
-							maxEnergy = SiteEnergy;
-						}
-						if(SiteEnergy<minEnergy){
-							minEnergy = SiteEnergy;
-						}
+          /* For Correlated system */
+          }else{
+          
+            SumEcor=0;
+            SumCor=0;
+            CorRadtemp=CorRad;
 
-						//assert(As!=NULL);
-						//Accounting for correlation from seeds
-						CorrCal(As, i,j,k, CorRadtemp, SiteEnergy, SiteDistance,snA, &SumCor, &SumEcor, &seed_dist,\
-										SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
-							
-						//Accounting for correlation from traps
-						if (traps!=0){
-							if(SeedProt==0){
-								printf("WARNING: Effect of both seeds and traps has not been correctly accounted for SeedProt = 0!\n");
-							}
-								
-							CorrCal(AsTr, i,j,k, CorRadtemp, SiteEnergy, SiteDistance, snA, &SumCor2, &SumEcor2, &trap_dist,\
-										SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
-						
-							if(trap_dist<seed_dist && SumEcor2!=0){
-								SumCor = SumCor2;
-								SumEcor = SumEcor2;
-							}
-						}
-						if (SumEcor==0) {
-							CorRadtemp=CorRadtemp*2;
-						}else{
-							setEnergy(getSN(snA,i,j,k),SiteEnergy+SumEcor/SumCor);
-							setInitE(getSN(snA,i,j,k),2);
-							if ( ((double)m)/((double)sites-(seeds+traps))>percent){
-								printf("Percent Complete %ld\n",(int long)(percent*100));
-								percent+=0.1;
-							}
+            //printf("Initial ID %d initE %d\n",getIndex(snA,i,j,k), getInitE(getSN(snA,i,j,k)));
+            while (SumEcor==0 && getInitE(getSN(snA,i,j,k))==0){
 
-							m++;
+              SiteEnergy=grn(E0, sigma);
 
-						}
-						
+              if(SiteEnergy>maxEnergy){
+                maxEnergy = SiteEnergy;
+              }
+              if(SiteEnergy<minEnergy){
+                minEnergy = SiteEnergy;
+              }
+
+              //assert(As!=NULL);
+              //Accounting for correlation from seeds
+              CorrCal(As, i,j,k, CorRadtemp, SiteEnergy, SiteDistance,snA, &SumCor, &SumEcor, &seed_dist,\
+                  SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
+
+              //Accounting for correlation from traps
+              if (traps!=0){
+                if(SeedProt==0){
+                  printf("WARNING: Effect of both seeds and traps has not been correctly accounted for SeedProt = 0!\n");
+                }
+
+                CorrCal(AsTr, i,j,k, CorRadtemp, SiteEnergy, SiteDistance, snA, &SumCor2, &SumEcor2, &trap_dist,\
+                    SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
+
+                if(trap_dist<seed_dist && SumEcor2!=0){
+                  SumCor = SumCor2;
+                  SumEcor = SumEcor2;
+                }
+              }
+              if (SumEcor==0) {
+                CorRadtemp=CorRadtemp*2;
+              }else{
+                setEnergy(getSN(snA,i,j,k),SiteEnergy+SumEcor/SumCor);
+                setInitE(getSN(snA,i,j,k),2);
+                if ( ((double)m)/((double)sites-(seeds+traps))>percent){
+                  printf("Percent Complete %ld\n",(int long)(percent*100));
+                  percent+=0.1;
+                }
+
+                m++;
+
+              }
+
+            }
 					}
-					
 				}
 				
 			}
