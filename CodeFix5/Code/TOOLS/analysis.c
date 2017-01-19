@@ -5,6 +5,11 @@
 #include "../LINKLIST2/linklist2.h"
 #include "analysis.h"
 
+void usage(void){
+  printf("You must pass the name .path file as an argument\n");
+  printf("./run_analysis filename.path\n");
+}
+
 int readPath(char * FileName){
 
 	char buf[256];

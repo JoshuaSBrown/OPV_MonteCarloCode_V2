@@ -4,6 +4,9 @@
 #include "../MATRIX/matrix.h"
 #include "../LINKLIST2/linklist2.h"
 
+// print usage message
+void usage(void);
+
 //Read the .path file store the path of each charge in an array
 int readPath(char * FileName);
 
