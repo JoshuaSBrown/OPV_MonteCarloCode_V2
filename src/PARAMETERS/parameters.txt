@@ -104,6 +104,11 @@ TCount 1
 //Number of charges injected per time step
 NCh 10
 
+//Radius of nieghbor sites given in units of [nm]. Sites within
+//this radius will be consider as a potential hopping site. Thus 
+//eliminating errors introduced from nearest neighbors approximations.
+R_neigh = 4
+
 //Total number of charges passed through the system
 Ntot TCount*NCh
 
