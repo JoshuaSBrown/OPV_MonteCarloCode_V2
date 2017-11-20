@@ -48,9 +48,9 @@ struct _ParameterFrame{
 	double VincY;
 	double VincZ;
 	double SiteDistance;
+  double R_neigh;
 	double D;
 	int TCount;
-  double R_neigh;
 	int NCh;
 	int Ntot;
 	double TStep;
@@ -151,9 +151,9 @@ ParameterFrame newParamFrame(void){
 	PF->VincY            =0;
 	PF->VincZ            =0;
 	PF->SiteDistance     =0;
+  PF->R_neigh          =0;
 	PF->D                =0;
 	PF->TCount           =0;
-  PF->R_neigh          =0;
 	PF->NCh              =0;
 	PF->Ntot             =0;
 	PF->TStep            =0;
@@ -760,6 +760,23 @@ ParameterFrame newParamFrame_File(void){
 			exit(1);
 		}
 
+		check = match(buffer, "\nR_neigh");
+		if(check!=-1){
+			position = (unsigned int)check;
+			doubleval = GrabDouble(position, &buffer[0] );
+			printf("R_neigh %g\n",doubleval);
+			if(doubleval<(SiteDistance*1E9)){
+				printf("ERROR R_neigh is less than the Site Distance this means\n");
+        printf("      that no site will have a neighbor, the R_neigh must be\n");
+        printf("      at least equal to the SiteDistance.\n");
+				exit(1);
+			}
+			PF->R_neigh = doubleval;
+		}else{
+			printf("ERROR when reading file can not find R_neigh!\n");
+			exit(1);
+		}
+
 		check = match(buffer, "\nD");
 		if(check!=-1){
 			position = (unsigned int)check;
@@ -783,23 +800,6 @@ ParameterFrame newParamFrame_File(void){
 			PF->TCount = intval;
 		}else{
 			printf("ERROR when reading file can not find TCount!\n");
-			exit(1);
-		}
-
-		check = match(buffer, "\nR_neigh");
-		if(check!=-1){
-			position = (unsigned int)check;
-			doubleval = GrabDouble(position, &buffer[0] );
-			printf("R_neigh %d\n",doubleval);
-			if(doubleval<1){
-				printf("ERROR R_neigh is less than 1 nm this means it will\n");
-        printf("      that no site will have a neighbor, must be  \n");
-        printf("      at least 1.\n");
-				exit(1);
-			}
-			PF->R_neigh = doubleval;
-		}else{
-			printf("ERROR when reading file can not find R_neigh!\n");
 			exit(1);
 		}
 
@@ -1639,6 +1639,10 @@ int ReadParameter(int * method,\
 				*SiteDistance = GrabDouble(position, &buffer[0] );
 				printf("SiteDistance %g\n",*SiteDistance);
 
+        position = match(buffer, "\nR_neigh");
+        *R_neigh = GrabDouble(position, &buffer[0] );
+        printf("R_neigh %g\n",*R_neigh);
+
 				position = match(buffer, "\nD");
 				*D = GrabDouble(position, &buffer[0] );
 				printf("D %g\n",*D);
@@ -1646,10 +1650,6 @@ int ReadParameter(int * method,\
 				position = match(buffer, "\nTCount");
 				*TCount = GrabInt(position, &buffer[0] );
 				printf("TCount %d\n",*TCount);
-
-        position = match(buffer, "\nR_neigh");
-        *R_neigh = GrabDouble(position, &buffer[0] );
-        printf("R_neigh %g\n",*R_neigh);
 
 				position = match(buffer, "\nNCh");
 				*NCh = GrabInt(position, &buffer[0] );
@@ -2346,6 +2346,16 @@ int PFset_SiteDist(ParameterFrame PF,double SiteDistance ){
 	return 0;
 }
 
+int PFset_R_neigh(ParamterFrame PF, double R_neigh){
+  if(PF==NULL){
+    return -1;
+  }
+  
+  PF->R_neigh = R_neigh;
+  
+  return 0;
+}
+
 int PFset_D(ParameterFrame PF,double D ){
 
 	if(PF==NULL){
@@ -2366,16 +2376,6 @@ int PFset_TCount(ParameterFrame PF,int TCount ){
 	PF->TCount = TCount;
 
 	return 0;
-}
-
-int PFset_R_neigh(ParamterFrame PF, double R_neigh){
-  if(PF==NULL){
-    return -1;
-  }
-  
-  PF->R_neigh = R_neigh;
-  
-  return 0;
 }
 
 int PFset_NCh(ParameterFrame PF,int NCh ){
@@ -3124,6 +3124,15 @@ double PFget_SiteDist(ParameterFrame PF){
 	return PF->SiteDistance;
 }
 
+int PFget_R_neigh(ParameterFrame PF){
+  
+  if(PF==NULL){
+    return -1;
+  }
+  
+  return PF->R_neigh;
+}
+
 double PFget_D(ParameterFrame PF){
 
 	if(PF==NULL){
@@ -3140,15 +3149,6 @@ int PFget_TCount(ParameterFrame PF ){
 	}
 
 	return PF->TCount;
-}
-
-int PFget_R_neigh(ParameterFrame PF){
-  
-  if(PF==NULL){
-    return -1;
-  }
-  
-  return PF->R_neigh;
 }
 
 int PFget_NCh(ParameterFrame PF){
