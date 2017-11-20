@@ -50,6 +50,7 @@ struct _ParameterFrame{
 	double SiteDistance;
 	double D;
 	int TCount;
+  double R_neigh;
 	int NCh;
 	int Ntot;
 	double TStep;
@@ -110,85 +111,86 @@ ParameterFrame newParamFrame(void){
 	}
 
 	//initialize all variables to 0
-	PF->method=0;
-	PF->SLength=0;
-	PF->SWidth=0;
-	PF->SHeight=0;
-	PF->PeriodicX=0;
-	PF->PeriodicY=0;
-	PF->PeriodicZ=0;
-	PF->EndX=0;
-	PF->EndY=0;
-	PF->EndZ=0;
-	PF->XElecOn=0;
-	PF->YElecOn=0;
-	PF->ZElecOn=0;
-	PF->XFermiB=0;
-	PF->XFermiF=0;
-	PF->YFermiL=0;
-	PF->YFermiR=0;
-	PF->ZFermiB=0;
-	PF->ZFermiA=0;
-	PF->ImageCharge=0;
-	PF->IntrFermi=0;
-	PF->alphaxb=0;
-	PF->alphaxf=0;
-	PF->alphayl=0;
-	PF->alphayr=0;
-	PF->alphazb=0;
-	PF->alphaza=0;
-	PF->vX=0;
-	PF->vY=0;
-	PF->vZ=0;
-	PF->VoltageX=0;
-	PF->VoltageY=0;
-	PF->VoltageZ=0;
-	PF->VStepX=0;
-	PF->VStepY=0;
-	PF->VStepZ=0;
-	PF->VincX=0;
-	PF->VincY=0;
-	PF->VincZ=0;
-	PF->SiteDistance=0;
-	PF->D=0;
-	PF->TCount=0;
-	PF->NCh=0;
-	PF->Ntot=0;
-	PF->TStep=0;
-	PF->N_av=0;
-	PF->Nstep_av=0;
-	PF->Time_check=0;
-	PF->Rcount=0;
-	PF->ClusterAlg=0;
-  PF->ClusterAlgRec=2;
+	PF->method           =0;
+	PF->SLength          =0;
+	PF->SWidth           =0;
+	PF->SHeight          =0;
+	PF->PeriodicX        =0;
+	PF->PeriodicY        =0;
+	PF->PeriodicZ        =0;
+	PF->EndX             =0;
+	PF->EndY             =0;
+	PF->EndZ             =0;
+	PF->XElecOn          =0;
+	PF->YElecOn          =0;
+	PF->ZElecOn          =0;
+	PF->XFermiB          =0;
+	PF->XFermiF          =0;
+	PF->YFermiL          =0;
+	PF->YFermiR          =0;
+	PF->ZFermiB          =0;
+	PF->ZFermiA          =0;
+	PF->ImageCharge      =0;
+	PF->IntrFermi        =0;
+	PF->alphaxb          =0;
+	PF->alphaxf          =0;
+	PF->alphayl          =0;
+	PF->alphayr          =0;
+	PF->alphazb          =0;
+	PF->alphaza          =0;
+	PF->vX               =0;
+	PF->vY               =0;
+	PF->vZ               =0;
+	PF->VoltageX         =0;
+	PF->VoltageY         =0;
+	PF->VoltageZ         =0;
+	PF->VStepX           =0;
+	PF->VStepY           =0;
+	PF->VStepZ           =0;
+	PF->VincX            =0;
+	PF->VincY            =0;
+	PF->VincZ            =0;
+	PF->SiteDistance     =0;
+	PF->D                =0;
+	PF->TCount           =0;
+  PF->R_neigh          =0;
+	PF->NCh              =0;
+	PF->Ntot             =0;
+	PF->TStep            =0;
+	PF->N_av             =0;
+	PF->Nstep_av         =0;
+	PF->Time_check       =0;
+	PF->Rcount           =0;
+	PF->ClusterAlg       =0;
+  PF->ClusterAlgRec    =2;
   PF->ClusterAlgTrigger=15;
-	PF->CutOff=0;
-	PF->lambda=0;
-	PF->ScaleAfterCorr=0;
-	PF->SeedProt=0;
-	PF->Attempts=0;
-	PF->fracSeed=0;
-	PF->E0=0;
-	PF->sigma=0;
-	PF->fracTrap=0;
-	PF->Etrap=0;
-	PF->Tsigma=0;
-	PF->TempStart=0;
-	PF->TempStep=0;
-	PF->TempInc=0;
-	PF->reOrg=0;
-	PF->AttemptToHop=0;
-	PF->gamma=0;
-	PF->RelativePerm=0;
-	PF->MovieFrames=0;
-	PF->CutOffTime=0;
-	PF->Tcv=0;
-	PF->Vcv=0;
-	PF->Tlag=0;
-	PF->EndPtFile=0;
-	PF->NumChargesTrack=0;
-	PF->PathFile=0;
-	PF->LogFile=0;
+	PF->CutOff           =0;
+	PF->lambda           =0;
+	PF->ScaleAfterCorr   =0;
+	PF->SeedProt         =0;
+	PF->Attempts         =0;
+	PF->fracSeed         =0;
+	PF->E0               =0;
+	PF->sigma            =0;
+	PF->fracTrap         =0;
+	PF->Etrap            =0;
+	PF->Tsigma           =0;
+	PF->TempStart        =0;
+	PF->TempStep         =0;
+	PF->TempInc          =0;
+	PF->reOrg            =0;
+	PF->AttemptToHop     =0;
+	PF->gamma            =0;
+	PF->RelativePerm     =0;
+	PF->MovieFrames      =0;
+	PF->CutOffTime       =0;
+	PF->Tcv              =0;
+	PF->Vcv              =0;
+	PF->Tlag             =0;
+	PF->EndPtFile        =0;
+	PF->NumChargesTrack  =0;
+	PF->PathFile         =0; 
+	PF->LogFile          =0;
 	return PF;
 }
 
@@ -784,6 +786,23 @@ ParameterFrame newParamFrame_File(void){
 			exit(1);
 		}
 
+		check = match(buffer, "\nR_neigh");
+		if(check!=-1){
+			position = (unsigned int)check;
+			doubleval = GrabDouble(position, &buffer[0] );
+			printf("R_neigh %d\n",doubleval);
+			if(doubleval<1){
+				printf("ERROR R_neigh is less than 1 nm this means it will\n");
+        printf("      that no site will have a neighbor, must be  \n");
+        printf("      at least 1.\n");
+				exit(1);
+			}
+			PF->R_neigh = doubleval;
+		}else{
+			printf("ERROR when reading file can not find R_neigh!\n");
+			exit(1);
+		}
+
 		check = match(buffer, "\nNCh");
 		if(check!=-1){
 			position = (unsigned int)check;
@@ -1362,7 +1381,7 @@ int ReadParameter(int * method,\
 		double * VoltageX, double * VoltageY, double * VoltageZ,\
 		int * VStepX, int * VStepY, int * VStepZ,\
 		double * VincX, double * VincY, double * VincZ,\
-		double * SiteDistance, double * D, int * TCount,\
+		double * SiteDistance, double * D, int * TCount,double R_neigh,\
 		int * NCh, int * Ntot, double * TStep, int * N_av,\
 		int * Nstep_av, int * Time_check, int * Rcount,int * ClusterAlg,\
     int * ClusterAlgRec, int * ClusterAlgTrigger, double * CutOff,\
@@ -1627,6 +1646,10 @@ int ReadParameter(int * method,\
 				position = match(buffer, "\nTCount");
 				*TCount = GrabInt(position, &buffer[0] );
 				printf("TCount %d\n",*TCount);
+
+        position = match(buffer, "\nR_neigh");
+        *R_neigh = GrabDouble(position, &buffer[0] );
+        printf("R_neigh %g\n",*R_neigh);
 
 				position = match(buffer, "\nNCh");
 				*NCh = GrabInt(position, &buffer[0] );
@@ -2343,6 +2366,16 @@ int PFset_TCount(ParameterFrame PF,int TCount ){
 	PF->TCount = TCount;
 
 	return 0;
+}
+
+int PFset_R_neigh(ParamterFrame PF, double R_neigh){
+  if(PF==NULL){
+    return -1;
+  }
+  
+  PF->R_neigh = R_neigh;
+  
+  return 0;
 }
 
 int PFset_NCh(ParameterFrame PF,int NCh ){
@@ -3107,6 +3140,15 @@ int PFget_TCount(ParameterFrame PF ){
 	}
 
 	return PF->TCount;
+}
+
+int PFget_R_neigh(ParameterFrame PF){
+  
+  if(PF==NULL){
+    return -1;
+  }
+  
+  return PF->R_neigh;
 }
 
 int PFget_NCh(ParameterFrame PF){

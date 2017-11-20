@@ -38,7 +38,7 @@ int ReadParameter(int * method,\
     double * VoltageY      , double * VoltageZ      ,	int * VStepX           ,\
     int * VStepY           , int * VStepZ           ,	double * VincX         ,\
     double * VincY         , double * VincZ         ,	double * SiteDistance  ,\
-    double * D             , int * TCount           ,	int * NCh              ,\
+    double * D             , int * TCount           ,	double * R_neigh       , int * NCh              ,\
     int * Ntot             , double * TStep         , int * N_av             ,\
 		int * Nstep_av         , int * Time_check       , int * Rcount           ,\
     int * ClusterAlg       , int * ClusterAlgRec    , int * ClusterAlgTrigger,\
@@ -100,6 +100,7 @@ int PFset_VincZ(ParameterFrame PF,double VincZ);
 int PFset_SiteDist(ParameterFrame PF,double SiteDistance);
 int PFset_D(ParameterFrame PF,double D);
 int PFset_TCount(ParameterFrame PF,int TCount);
+int PFset_R_neigh(ParameterFrame PF,double R_neigh);
 int PFset_NCh(ParameterFrame PF,int NCh);
 int PFset_Ntot(ParameterFrame PF,int Ntot);
 int PFset_TStep(ParameterFrame PF,double TStep);
@@ -181,6 +182,7 @@ double PFget_VincZ(ParameterFrame PF);
 double PFget_SiteDist(ParameterFrame PF);
 double PFget_D(ParameterFrame PF);
 int PFget_TCount(ParameterFrame PF);
+double PFget_R_neigh(ParameterFrame PF);
 int PFget_NCh(ParameterFrame PF);
 int PFget_Ntot(ParameterFrame PF);
 double PFget_TStep(ParameterFrame PF);

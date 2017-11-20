@@ -3,7 +3,8 @@
 // 1 - CELIV
 method 0 
 
-//Number of nodes along the x-axis, y-axis and z-axis
+//Number of nodes along the x-axis, y-axis and z-axis each 
+//each site is assumed to be 1 nm apart 
 SLength 30
 SWidth 10
 SHeight 10
