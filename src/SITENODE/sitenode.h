@@ -184,7 +184,7 @@ int setTime(SiteNode sn, double time);
 
 int addTime(SiteNode * sn, double time);
 
-int getDecayStatus(SiteNode sn);
+int getDecayStatus(const_SiteNode sn);
 
 double getTime(SiteNode sn);
 
