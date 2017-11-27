@@ -1421,33 +1421,33 @@ ParameterFrame newParamFrame_File(void){
 }
 
 int ReadParameter(int * method,\
-		int * SLength, int * SWidth, int * SHeight,\
-		int * PeriodicX, int * PeriodicY, int * PeriodicZ,\
-		int * EndX, int * EndY, int * EndZ,\
-		int * XElecOn, int * YElecOn, int *ZElecOn,\
-		double * XFermiB, double * XFermiF, double * YFermiL,\
-		double * YFermiR, double * ZFermiB, double * ZFermiA,\
-		int * ImageCharge, double * IntrFermi,\
-		double * alphaxb, double * alphaxf, double * alphayl,\
-		double * alphayr, double * alphazb, double * alphaza,\
-		double * vX, double * vY, double * vZ,\
-		double * VoltageX, double * VoltageY, double * VoltageZ,\
-		int * VStepX, int * VStepY, int * VStepZ,\
-		double * VincX, double * VincY, double * VincZ,\
-		double * SiteDistance, double * D, int * TCount,double * R_neigh,\
-		int * NCh, int * Ntot, double * TStep, int * N_av,\
-		int * Nstep_av, int * Time_check, int * Rcount,int * ClusterAlg,\
-    int * ClusterAlgRec, int * ClusterAlgTrigger, double * CutOff,\
-		double * lambda, int * ScaleAfterCorr,int * SeedProt, int * Attempts,\
-		double * fracSeed, double * E0, double * sigma,\
-		double * fracTrap, double * Etrap, double * Tsigma,\
-		double * TempStart, int * TemperatureStep,\
-		double * TemperatureInc, double * reOrgEnergy,\
-		double * AttemptToHop, double * gamma,\
-		double * RelativePerm, int * MovieFrames, double * CutOffTime,\
-    int DecayOn, double DecayProb, double DecayDisplacement,\
-		double * Vcv, double * Tcv, double * Tlag, int * EndPtFile,\
-		int * NumChargesTrack, int * PathFile, int * LogFile){
+		int * SLength        , int * SWidth              , int * SHeight          ,\
+		int * PeriodicX      , int * PeriodicY           , int * PeriodicZ        ,\
+		int * EndX           , int * EndY                , int * EndZ             ,\
+		int * XElecOn        , int * YElecOn             , int *ZElecOn           ,\
+		double * XFermiB     , double * XFermiF          , double * YFermiL       ,\
+		double * YFermiR     , double * ZFermiB          , double * ZFermiA       ,\
+		int * ImageCharge    , double * IntrFermi        , double * alphaxb       ,\
+    double * alphaxf     , double * alphayl          , double * alphayr       ,\
+    double * alphazb     , double * alphaza          , double * vX            ,\
+    double * vY          , double * vZ               , double * VoltageX      ,\
+    double * VoltageY    , double * VoltageZ         , int * VStepX           ,\
+    int * VStepY         , int * VStepZ              , double * VincX         ,\
+    double * VincY       , double * VincZ            , double * SiteDistance  ,\
+    double * D           , int * TCount              , double * R_neigh       , int * NCh,\
+    int * Ntot           , double * TStep            , int * N_av             ,\
+		int * Nstep_av       , int * Time_check          , int * Rcount           ,\
+    int * ClusterAlg     , int * ClusterAlgRec       , int * ClusterAlgTrigger,\
+    double * CutOff      , double * lambda           , int * ScaleAfterCorr   ,\
+    int * SeedProt       , int * Attempts            , double * fracSeed      ,\
+    double * E0          , double * sigma            , double * fracTrap      ,\
+    double * Etrap       , double * Tsigma           , double * TempStart     ,\
+    int * TemperatureStep, double * TemperatureInc   , double * reOrgEnergy   ,\
+		double * AttemptToHop, double * gamma            , double * RelativePerm  ,\
+    int * MovieFrames    , double * CutOffTime       , int * DecayOn          ,\
+    double * DecayProb   , double * DecayDisplacement, double * Tcv           ,\
+    double * Vcv         , double * Tlag             , int * EndPtFile        ,\
+		int * NumChargesTrack, int * PathFile            , int * LogFile          ){
 
 			char *buffer = NULL;
 			int position;
