@@ -82,7 +82,7 @@ struct _ParameterFrame{
 	int MovieFrames;
 	double CutOffTime;
   int DecayOn;
-  double DecayCoef;
+  double DecayProb;
   double DecayDisplacement;
 	double Tcv;
 	double Vcv;
@@ -188,7 +188,7 @@ ParameterFrame newParamFrame(void){
 	PF->MovieFrames      =0;
 	PF->CutOffTime       =0;
 	PF->DecayOn          =0;
-	PF->DecayCoef        =0;
+	PF->DecayProb        =0;
 	PF->DecayDisplacement=0;
 	PF->Tcv              =0;
 	PF->Vcv              =0;
@@ -1259,15 +1259,20 @@ ParameterFrame newParamFrame_File(void){
 			exit(1);
 		}
 
-		check = match(buffer,"\nDecayCoef");
+		check = match(buffer,"\nDecayProb");
 		if(check!=-1){
 			position = (unsigned int)check;
 			doubleval = GrabDouble(position, &buffer[0] );
-			printf("DecayCoef %g\n",doubleval);
-			PF->DecayCoef = doubleval;
+			printf("DecayProb %g\n",doubleval);
+			PF->DecayProb = doubleval;
+    
+      if(PF->DecayProb<0){
+        printf("ERROR DecaProb is less than 0");
+        exit(1);
+      }
 
 		}else{
-			printf("ERROR when reading file can not find DecayCoef\n");
+			printf("ERROR when reading file can not find DecayProb\n");
 			exit(1);
 		}
 
@@ -1276,7 +1281,7 @@ ParameterFrame newParamFrame_File(void){
 			position = (unsigned int)check;
 			doubleval = GrabDouble(position, &buffer[0] );
 			printf("DecayDisplacement %g\n",doubleval);
-			PF->DecayCoef = doubleval;
+			PF->DecayDisplacement = doubleval;
 
 		}else{
 			printf("ERROR when reading file can not find DecayDisplacement\n");
@@ -1440,7 +1445,7 @@ int ReadParameter(int * method,\
 		double * TemperatureInc, double * reOrgEnergy,\
 		double * AttemptToHop, double * gamma,\
 		double * RelativePerm, int * MovieFrames, double * CutOffTime,\
-    int DecayOn, double DecayCoef, double DecayDisplacement,\
+    int DecayOn, double DecayProb, double DecayDisplacement,\
 		double * Vcv, double * Tcv, double * Tlag, int * EndPtFile,\
 		int * NumChargesTrack, int * PathFile, int * LogFile){
 
@@ -1820,9 +1825,9 @@ int ReadParameter(int * method,\
 				*DecayOn = GrabInt(position, &buffer[0]);
 				printf("DecayOn %d\n",*DecayOn);
 
-				position = match(buffer, "\nDecayCoef");
-				*DecayCoef = GrabDouble(position, &buffer[0]);
-				printf("DecayCoef %g\n",*DecayCoef);
+				position = match(buffer, "\nDecayProb");
+				*DecayProb = GrabDouble(position, &buffer[0]);
+				printf("DecayProb %g\n",*DecayProb);
 
 				position = match(buffer, "\nDecayDisplacement");
 				*DecayDisplacement = GrabDouble(position, &buffer[0]);
@@ -2777,11 +2782,11 @@ int PFset_DecayOn(ParameterFrame PF, int DecayOn){
 
 }
 
-int PFset_DecayCoef(ParameterFrame PF, double DecayCoef){
+int PFset_DecayProb(ParameterFrame PF, double DecayProb){
 	if(PF==NULL){
 		return -1;
 	}
-	PF->DecayCoef = DecayCoef;
+	PF->DecayProb = DecayProb;
 	return 0;
 }
 
@@ -3512,11 +3517,11 @@ int PFget_DecayOn(ParameterFrame PF){
 	return PF->DecayOn;
 }
 
-double PFget_DecayCoef(ParameterFrame PF){
+double PFget_DecayProb(ParameterFrame PF){
 	if(PF==NULL){
 		return -1;
 	}
-	return PF->DecayCoef;
+	return PF->DecayProb;
 }
 
 double PFget_DecayDisplacement(ParameterFrame PF){
