@@ -48,7 +48,8 @@ int ReadParameter(int * method,\
     double * Etrap         , double * Tsigma        ,	double * TempStart     ,\
     int * TemperatureStep  , double * TemperatureInc, double * reOrgEnergy   ,\
 		double * AttemptToHop  , double * gamma         ,	double * RelativePerm  ,\
-    int * MovieFrames      , double * CutOffTime    ,	double * Tcv           ,\
+    int * MovieFrames      , double * CutOffTime    ,	int * DecayOn          ,\
+    double * DecayCoef     , double * DecayDisplacement, double * Tcv           ,\
     double * Vcv           , double * Tlag          , int * EndPtFile        ,\
 		int * NumChargesTrack  , int * PathFile         , int * LogFile          );
 
@@ -131,6 +132,9 @@ int PFset_gamma(ParameterFrame PF,double gamma);
 int PFset_RelativePerm(ParameterFrame PF,double RelativePerm);
 int PFset_MovieFrames(ParameterFrame PF, int MovieFrames);
 int PFset_CutOffTime(ParameterFrame PF, double CutOffTime);
+int PFset_DecayOn(ParameterFrame PF, int DecayOn);
+int PFset_DecayCoef(ParameterFrame PF, double DecayCoef);
+int PFset_DecayDisplacement(ParameterFrame PF, double DecayDisplacement);
 int PFset_Vcv(ParameterFrame PF, double Vcv);
 int PFset_Tcv(ParameterFrame PF, double Tcv);
 int PFset_Tlag(ParameterFrame PF, double Tlag);
@@ -213,6 +217,9 @@ double PFget_gamma(ParameterFrame PF);
 double PFget_RelativePerm(ParameterFrame PF);
 int PFget_MovieFrames(ParameterFrame PF);
 double PFget_CutOffTime(ParameterFrame PF);
+int PFget_DecayOn(ParameterFrame PF);
+double PFget_DecayCoef(ParameterFrame PF);
+double PFget_DecayDisplacement(ParameterFrame PF);
 double PFget_Tcv(ParameterFrame PF);
 double PFget_Vcv(ParameterFrame PF);
 double PFget_Tlag(ParameterFrame PF);

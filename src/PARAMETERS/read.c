@@ -81,6 +81,9 @@ struct _ParameterFrame{
 	double RelativePerm;
 	int MovieFrames;
 	double CutOffTime;
+  int DecayOn;
+  double DecayCoef;
+  double DecayDisplacement;
 	double Tcv;
 	double Vcv;
 	double Tlag;
@@ -184,6 +187,9 @@ ParameterFrame newParamFrame(void){
 	PF->RelativePerm     =0;
 	PF->MovieFrames      =0;
 	PF->CutOffTime       =0;
+	PF->DecayOn          =0;
+	PF->DecayCoef        =0;
+	PF->DecayDisplacement=0;
 	PF->Tcv              =0;
 	PF->Vcv              =0;
 	PF->Tlag             =0;
@@ -765,7 +771,7 @@ ParameterFrame newParamFrame_File(void){
 			position = (unsigned int)check;
 			doubleval = GrabDouble(position, &buffer[0] );
 			printf("R_neigh %g\n",doubleval);
-			if(doubleval<(SiteDistance*1E9)){
+			if(doubleval<(PF->SiteDistance*1E9)){
 				printf("ERROR R_neigh is less than the Site Distance this means\n");
         printf("      that no site will have a neighbor, the R_neigh must be\n");
         printf("      at least equal to the SiteDistance.\n");
@@ -1235,6 +1241,48 @@ ParameterFrame newParamFrame_File(void){
 			exit(1);
 		}
 		
+	  check = match(buffer,"\nDecayOn");
+		if(check!=-1){
+			position = (unsigned int)check;
+			intval = GrabInt(position, &buffer[0] );
+			printf("DecayOn %d\n",intval);
+			PF->DecayOn = intval;
+			
+			if(PF->DecayOn!=0 && PF->DecayOn!=1){
+				printf("ERROR DecayOn assigned a value that is neighter\n");
+				printf("1 or 0");
+				exit(1);
+			}
+
+		}else{
+			printf("ERROR when reading file can not find DecayOn!\n");
+			exit(1);
+		}
+
+		check = match(buffer,"\nDecayCoef");
+		if(check!=-1){
+			position = (unsigned int)check;
+			doubleval = GrabDouble(position, &buffer[0] );
+			printf("DecayCoef %g\n",doubleval);
+			PF->DecayCoef = doubleval;
+
+		}else{
+			printf("ERROR when reading file can not find DecayCoef\n");
+			exit(1);
+		}
+
+		check = match(buffer,"\nDecayDisplacement");
+		if(check!=-1){
+			position = (unsigned int)check;
+			doubleval = GrabDouble(position, &buffer[0] );
+			printf("DecayDisplacement %g\n",doubleval);
+			PF->DecayCoef = doubleval;
+
+		}else{
+			printf("ERROR when reading file can not find DecayDisplacement\n");
+			exit(1);
+		}
+
 		check = match(buffer,"\nVcv");
 		if(check!=-1){
 			position = (unsigned int)check;
@@ -1381,7 +1429,7 @@ int ReadParameter(int * method,\
 		double * VoltageX, double * VoltageY, double * VoltageZ,\
 		int * VStepX, int * VStepY, int * VStepZ,\
 		double * VincX, double * VincY, double * VincZ,\
-		double * SiteDistance, double * D, int * TCount,double R_neigh,\
+		double * SiteDistance, double * D, int * TCount,double * R_neigh,\
 		int * NCh, int * Ntot, double * TStep, int * N_av,\
 		int * Nstep_av, int * Time_check, int * Rcount,int * ClusterAlg,\
     int * ClusterAlgRec, int * ClusterAlgTrigger, double * CutOff,\
@@ -1392,6 +1440,7 @@ int ReadParameter(int * method,\
 		double * TemperatureInc, double * reOrgEnergy,\
 		double * AttemptToHop, double * gamma,\
 		double * RelativePerm, int * MovieFrames, double * CutOffTime,\
+    int DecayOn, double DecayCoef, double DecayDisplacement,\
 		double * Vcv, double * Tcv, double * Tlag, int * EndPtFile,\
 		int * NumChargesTrack, int * PathFile, int * LogFile){
 
@@ -1766,6 +1815,18 @@ int ReadParameter(int * method,\
 				position = match(buffer, "\nCutOffTime");
 				*CutOffTime = GrabDouble(position, &buffer[0]);
 				printf("CutOffTime %g\n",*CutOffTime);
+
+				position = match(buffer, "\nDecayOn");
+				*DecayOn = GrabInt(position, &buffer[0]);
+				printf("DecayOn %d\n",*DecayOn);
+
+				position = match(buffer, "\nDecayCoef");
+				*DecayCoef = GrabDouble(position, &buffer[0]);
+				printf("DecayCoef %g\n",*DecayCoef);
+
+				position = match(buffer, "\nDecayDisplacement");
+				*DecayDisplacement = GrabDouble(position, &buffer[0]);
+				printf("DecayDisplacement %g\n",*DecayDisplacement);
 
 				position = match(buffer, "\nTcv");
 				*Tcv = GrabDouble(position, &buffer[0] );
@@ -2346,7 +2407,7 @@ int PFset_SiteDist(ParameterFrame PF,double SiteDistance ){
 	return 0;
 }
 
-int PFset_R_neigh(ParamterFrame PF, double R_neigh){
+int PFset_R_neigh(ParameterFrame PF, double R_neigh){
   if(PF==NULL){
     return -1;
   }
@@ -2702,6 +2763,33 @@ int PFset_CutOffTime(ParameterFrame PF, double CutOffTime){
 		return -1;
 	}
 	PF->CutOffTime = CutOffTime;
+	return 0;
+}
+
+int PFset_DecayOn(ParameterFrame PF, int DecayOn){
+
+	if(PF==NULL || !(DecayOn==1 || DecayOn==0) ){
+		return -1;
+	}
+
+	PF->DecayOn = DecayOn;
+	return 0;
+
+}
+
+int PFset_DecayCoef(ParameterFrame PF, double DecayCoef){
+	if(PF==NULL){
+		return -1;
+	}
+	PF->DecayCoef = DecayCoef;
+	return 0;
+}
+
+int PFset_DecayDisplacement(ParameterFrame PF, double DecayDisplacement){
+	if(PF==NULL ){
+		return -1;
+	}
+	PF->DecayDisplacement = DecayDisplacement;
 	return 0;
 }
 
@@ -3124,7 +3212,7 @@ double PFget_SiteDist(ParameterFrame PF){
 	return PF->SiteDistance;
 }
 
-int PFget_R_neigh(ParameterFrame PF){
+double PFget_R_neigh(ParameterFrame PF){
   
   if(PF==NULL){
     return -1;
@@ -3415,6 +3503,27 @@ double PFget_CutOffTime(ParameterFrame PF){
 		return -1;
 	}
 	return PF->CutOffTime;
+}
+
+int PFget_DecayOn(ParameterFrame PF){
+	if(PF==NULL){
+		return -1;
+	}
+	return PF->DecayOn;
+}
+
+double PFget_DecayCoef(ParameterFrame PF){
+	if(PF==NULL){
+		return -1;
+	}
+	return PF->DecayCoef;
+}
+
+double PFget_DecayDisplacement(ParameterFrame PF){
+	if(PF==NULL){
+		return -1;
+	}
+	return PF->DecayDisplacement;
 }
 
 double PFget_Vcv(ParameterFrame PF){
