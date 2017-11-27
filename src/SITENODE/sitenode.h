@@ -178,9 +178,13 @@ int setEnergy(SiteNode sn, double Energy);
 
 double getEnergy(const_SiteNode sn);
 
+int setDecayStatus(SiteNode sn, int decay_status);
+
 int setTime(SiteNode sn, double time);
 
 int addTime(SiteNode * sn, double time);
+
+int getDecayStatus(SiteNode sn);
 
 double getTime(SiteNode sn);
 

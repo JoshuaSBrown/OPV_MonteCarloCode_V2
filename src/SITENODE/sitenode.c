@@ -23,6 +23,10 @@ struct _SiteNode{
 	double visitFreq;
 	double visit;
 
+  // Determines if the site has decayed or not
+  // 0 - has not decayed
+  // 1 - has decayed
+  int decay_status;
 	//site energy
 	double energy;
 
@@ -75,6 +79,7 @@ SiteNode newSN(void) {
 	sn->dwellStatus=-1;
 	sn->visitFreq=0;
 	sn->visit=0;
+  sn->decay_status = 0;
 	sn->time=0;
 	sn->energy=0;
 	sn->type=0;
@@ -117,6 +122,7 @@ int printSN(SiteNode sn){
 	printf("Init Energy     %d\n",sn->initE);
 	printf("Dwell Status    %d\n",sn->dwellStatus);
 	printf("Type            %d\n",sn->type);
+  printf("Decay Status    %d\n",sn->decay_status);
 	printf("Visit Frequency %g\n",sn->visitFreq);
 	printf("Visit 					%g\n",sn->visit);
 	printf("Energy					%g\n",sn->energy);
@@ -682,6 +688,35 @@ int setEnergy(SiteNode sn, double Energy) {
 
 double getEnergy( const_SiteNode sn) {
 	return sn->energy;
+}
+
+int setDecayStatus(SiteNode sn, int decay_status){
+  #ifdef _ERROR_CHECKING_ON_
+	if(sn==NULL){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR sn is NULL in setDecayStatus\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1;
+	}
+	if(!(decay_status==1 || decay_status==0)){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR decay_status set to a value that is not 0 or 1\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1;
+	}
+  #endif
+	sn->decay_status=decay_status;
+	return 0;
+}
+
+double getDecayStatus( const_SiteNode sn) {
+	return sn->decay_status;
 }
 
 int setTime(SiteNode sn, double time){
