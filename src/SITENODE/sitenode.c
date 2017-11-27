@@ -715,7 +715,7 @@ int setDecayStatus(SiteNode sn, int decay_status){
 	return 0;
 }
 
-double getDecayStatus( const_SiteNode sn) {
+int getDecayStatus( const_SiteNode sn) {
 	return sn->decay_status;
 }
 
