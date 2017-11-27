@@ -75,7 +75,8 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 		const double electricEnergyZ, const double MarcusCoeff,\
 		const double KT,const double reOrgEnergy,SNarray snA,\
 		const int PeriodicX, const int PeriodicY, const int PeriodicZ,\
-		const int XElecOn, const int YElecOn, const int ZElecOn);
+		const int XElecOn, const int YElecOn, const int ZElecOn,
+    const double SiteDistance, const double R_neigh);
 
 /* InitCharget0 initializes the charge data structure
 	 It returns the charge data structure
