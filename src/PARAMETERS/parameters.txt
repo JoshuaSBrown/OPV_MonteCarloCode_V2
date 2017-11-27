@@ -190,6 +190,10 @@ MovieFrames 1
 CutOffTime 1E-6
 
 //***********if Decay***************
+//DecayOn - 1 is include site decay
+//          0 is turn off
+DecayOn 1
+
 //Decay Coef, follows an exponential distribution
 //which is normalized at exp(-alpha*x) , x=0
 DecayCoef 1
