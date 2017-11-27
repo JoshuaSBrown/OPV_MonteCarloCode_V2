@@ -32,7 +32,7 @@ matrix CalculateAllHops(const_SNarray snA,const double electricEnergyX, \
 		const double electricEnergyY, const double electricEnergyZ, \
 		const double KT,const double reOrgEnergy,const double SiteDistance, \
 		const double AttemptToHop, const double gamma,\
-		const int PeriodicX,const int PeriodicY,const int PeriodicZ){
+		const int PeriodicX,const int PeriodicY,const int PeriodicZ, const double R_neigh){
 
     #ifdef _ERROR_CHECKING_ON_
 	if(snA==NULL ){
@@ -104,6 +104,36 @@ matrix CalculateAllHops(const_SNarray snA,const double electricEnergyX, \
 
 	double MarcusJ0;
 	double MarcusCoeff;
+  
+  // Determine how many neighbors are within the neighbor radius
+  int count_neigh=0;
+  double SiteDistance_nm = SiteDistance*1E9;
+  double x_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
+  double y_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
+  double z_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
+  while(x_dis<=R_neigh){
+    y_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
+    while(y_dis<=R_neigh){
+      z_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
+      while(z_dis<=R_neigh){
+
+        double rad = pow(x_dis,2)+pow(y_dis,2)+pow(z_dis,2);
+        rad = pow(rad,1.0/2.0);
+        if(rad<=R_neigh){
+          count_neigh++;
+        }
+        z_dis+=SiteDistance_nm;
+      }
+      y_dis+=SiteDistance_nm;
+    }
+    x_dis+=SiteDistance_nm;
+  }
+
+
+  // Minus the center site because it is not a neighbor
+  count_neigh--;
+  printf("Number of Neighbors per site %d\n",count_neigh);
+  exit(1);
 
 	//one node have 6 hopping rate for 6 neighbor node
 	double v[6];
@@ -3408,10 +3438,11 @@ int FindCluster( int * OrderL, SNarray snA, double electricEnergyX,\
 	int XElecOn = PFget_XElecOn(PF);
 	int YElecOn = PFget_YElecOn(PF);
 	int ZElecOn = PFget_ZElecOn(PF);
+  double R_neigh = PFget_R_neigh(PF);
 
 	matrix MasterM = CalculateAllHops(snA, electricEnergyX, electricEnergyY, electricEnergyZ,\
 			kT,reOrgEnergy, SiteDistance, AttemptToHop, gamma,\
-			PeriodicX, PeriodicY, PeriodicZ);
+			PeriodicX, PeriodicY, PeriodicZ, R_neigh);
 	
 	//Compare mid points
 	//Some cases exist where there is a hop off the cluster that is on the same

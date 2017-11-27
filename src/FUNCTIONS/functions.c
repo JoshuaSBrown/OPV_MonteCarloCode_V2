@@ -1804,12 +1804,15 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 	double pval;
 
   // Determine how many neighbors are within the neighbor radius
-  double x_dis=-ceil(R_neigh/SiteDistance)*SiteDistance;
-  double y_dis=-ceil(R_neigh/SiteDistance)*SiteDistance;
-  double z_dis=-ceil(R_neigh/SiteDistance)*SiteDistance;
-  int count_neigh;
+  int count_neigh=0;
+  double SiteDistance_nm = SiteDistance*1E9;
+  double x_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
+  double y_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
+  double z_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
   while(x_dis<=R_neigh){
+    y_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
     while(y_dis<=R_neigh){
+      z_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
       while(z_dis<=R_neigh){
 
         double rad = pow(x_dis,2)+pow(y_dis,2)+pow(z_dis,2);
@@ -1817,17 +1820,15 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
         if(rad<=R_neigh){
           count_neigh++;
         }
-        z_dis+=SiteDistance;
+        z_dis+=SiteDistance_nm;
       }
-      y_dis+=SiteDistance;
+      y_dis+=SiteDistance_nm;
     }
-    x_dis+=SiteDistance;
+    x_dis+=SiteDistance_nm;
   }
 
   // Minus the center site because it is not a neighbor
   count_neigh--;
-  printf("Number of Neighbors per site %d\n",count_neigh);
-  exit(1);
 
 	//one node have 6 hopping rate for 6 neighbor node
 	double v[6];
