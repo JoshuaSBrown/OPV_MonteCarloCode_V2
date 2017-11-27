@@ -1393,6 +1393,7 @@ int Pre_randomWalk(const int CheckPtStatus  , char * FileNameCheckPtVersion, cha
 
 		}else if(CheckPtStatus==1) {
 			//This means we are starting from a checkpt file that already exists
+      printf("ERROR Loading Checkpt files has been disabled\n");
 
 			//Lets first make sure that a .cluster file does not exist before we
 			//recalculate everything
@@ -1400,11 +1401,11 @@ int Pre_randomWalk(const int CheckPtStatus  , char * FileNameCheckPtVersion, cha
 
 			//Charge Array chA is created in here
 			printf("Loading Charge and Site information from .ckpt\n");
-			Load_CheckPt_Data_TOF( t, snA, chA, Sequence,\
+			/*Load_CheckPt_Data_TOF( t, snA, chA, Sequence,\
 					FutureSite, FileNameCheckPtVersion, n,nc, nca,\
 					&Num_elXb, &Num_elXf, &Num_elYl, &Num_elYr,\
 					&Num_elZb, &Num_elZa,Vx,Vy,Vz);
-
+      */
 			if(FutureSite==NULL || Sequence==NULL || chA==NULL){
 				printf("ERROR in the load_checkPt_Data_TOF function a datastructure\n");
 				printf("Has been found to be NULL\n");
@@ -1728,6 +1729,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	double Tlag         = PFget_Tlag(PF);
 	double TStep        = PFget_TStep(PF);
 	int    TCount       = PFget_TCount(PF);
+  double R_neigh      = PFget_R_neigh(PF);
 	int    Time_check   = PFget_Time_check(PF);
 	int    Nstep_av     = PFget_Nstep_av(PF);
 	int    NCh          = PFget_NCh(PF);
@@ -2104,7 +2106,8 @@ int randomWalk( SNarray snA,int CheckptNum,\
                                PFget_gamma(PF),
                                PeriodicX, 
                                PeriodicY, 
-                               PeriodicZ);
+                               PeriodicZ,
+                               R_neigh);
   }
 
   printf("Entering Loop\n");
@@ -2189,8 +2192,9 @@ int randomWalk( SNarray snA,int CheckptNum,\
                              PeriodicZ, 
                              XElecOn, 
                              YElecOn, 
-                             ZElecOn);
-			
+                             ZElecOn,
+                             SiteDistance,
+			                       R_neigh);
           /* Update hop rates of the electrodes */	
 					Update_initJumPossibility_ElecX(electricEnergyX, 
                                           electricEnergyY,
@@ -2441,7 +2445,8 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					
 					initJumPossibility(electricEnergyX, electricEnergyY, electricEnergyZ,\
 							MarcusCoeff, KT,PFget_reOrg(PF), snA,\
-							PeriodicX, PeriodicY, PeriodicZ, XElecOn, YElecOn, ZElecOn);
+							PeriodicX, PeriodicY, PeriodicZ, XElecOn, YElecOn, ZElecOn,\
+              SiteDistance, R_neigh);
 					
 					Update_initJumPossibility_ElecX( electricEnergyX, electricEnergyY,\
 							electricEnergyZ, MarcusCoeff, KT, Xb1, Xb2, elXb, 0 , PF);
@@ -3411,7 +3416,7 @@ int CheckPt_Latest_CELIV(char * FileNameFull, int buffersize,const double T){
 		return 0;
 	}
 }
-
+/*
 int Load_CheckPt(long double * t     , SNarray * snA      , ChargeArray * chA     ,\
                  matrix * Sequence   , matrix * FutureSite, char * FileName       ,\
                  ParameterFrame *PF  , long int *n        , int * nc              ,\
@@ -3797,7 +3802,8 @@ int Load_CheckPt(long double * t     , SNarray * snA      , ChargeArray * chA   
 			initJumPossibility(electricEnergyX, electricEnergyY, electricEnergyZ,\
 					MarcusCoeff, KT,PFget_reOrg(*PF), *snA,\
 					PFget_Px(*PF), PFget_Py(*PF), PFget_Pz(*PF),\
-					PFget_XElecOn(*PF), PFget_YElecOn(*PF),PFget_ZElecOn(*PF));
+					PFget_XElecOn(*PF), PFget_YElecOn(*PF),PFget_ZElecOn(*PF),
+          SiteDistance,R_neigh);
 
 			printf("past init\n");
 
@@ -3877,7 +3883,9 @@ int Load_CheckPt(long double * t     , SNarray * snA      , ChargeArray * chA   
 
 return 0;
 }
+*/
 
+/*
 int Load_CheckPt_Data_TOF(long double * t, SNarray * snA, ChargeArray * chA, matrix * Sequence,\
 		matrix * FutureSite, char * FileName,long int * n,  int * nc, int *nca,\
 		int * Num_elXb, int * Num_elXf, int * Num_elYl, int * Num_elYr, int * Num_elZb,\
@@ -4619,7 +4627,7 @@ int Load_CheckPt_PF( char * FileName, ParameterFrame *PF ){
 
 	return 0;
 }
-
+*/
 int Save_CheckPt(char * FileName, int * CheckptNum, SNarray snA,\
 		ChargeArray chA, matrix Sequence, matrix FutureSite, long double t,\
 		ParameterFrame PF,long int n, int nc, int nca, Electrode elXb, Electrode elXf,\

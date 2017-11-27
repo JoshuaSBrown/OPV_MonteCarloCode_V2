@@ -46,6 +46,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	double fracSeed = PFget_FracSeed(PF);
 	double fraction = PFget_FracTrap(PF);
 	double SiteDistance = PFget_SiteDist(PF);
+  double R_neigh = PFget_R_neigh(PF);
 	double Etrap = PFget_Etrap(PF);
 	double Tsigma = PFget_Tsigma(PF);
 	double E0 = PFget_E0(PF);
@@ -293,7 +294,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 		printf("Percent Complete %ld\n",(int long)(100));
 
 		printf("Deleting Matrix As.\n");
-		deleteMatrix(&As);
+    if(As!=NULL) deleteMatrix(&As);
 	}
 
 	if ( seeds+traps >= sites/2 ) {
@@ -454,7 +455,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	//For all the sitenodes
 	initJumPossibility(electricEnergyX, electricEnergyY, electricEnergyZ,\
 			  MarcusCoeff, KT,reOrgEnergy, snA,\
-				PeriodicX, PeriodicY, PeriodicZ, XElecOn, YElecOn, ZElecOn);
+				PeriodicX, PeriodicY, PeriodicZ, XElecOn, YElecOn, ZElecOn, SiteDistance,R_neigh);
 
 	end = clock();
 	time_spent = (double)(end-begin) / CLOCKS_PER_SEC;
@@ -1786,7 +1787,8 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 		  const double electricEnergyZ, const double MarcusCoeff,\
 		  const double KT,const double reOrgEnergy, SNarray snA,\
 			const int PeriodicX, const int PeriodicY, const int PeriodicZ,\
-			const int XElecOn, const int YElecOn, const int ZElecOn){
+			const int XElecOn, const int YElecOn, const int ZElecOn,\
+      const double SiteDistance, const double R_neigh){
 
 	if(snA==NULL || PeriodicX<0 || PeriodicX>1 ||\
 									PeriodicY<0 || PeriodicY>1 ||\
@@ -1800,6 +1802,33 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 	int SHeight = getAhei(snA);
 	int i, j, k, l;
 	double pval;
+
+  // Determine how many neighbors are within the neighbor radius
+  double x_dis=-ceil(R_neigh/SiteDistance)*SiteDistance;
+  double y_dis=-ceil(R_neigh/SiteDistance)*SiteDistance;
+  double z_dis=-ceil(R_neigh/SiteDistance)*SiteDistance;
+  int count_neigh;
+  while(x_dis<=R_neigh){
+    while(y_dis<=R_neigh){
+      while(z_dis<=R_neigh){
+
+        double rad = pow(x_dis,2)+pow(y_dis,2)+pow(z_dis,2);
+        rad = pow(rad,1.0/2.0);
+        if(rad<=R_neigh){
+          count_neigh++;
+        }
+        z_dis+=SiteDistance;
+      }
+      y_dis+=SiteDistance;
+    }
+    x_dis+=SiteDistance;
+  }
+
+  // Minus the center site because it is not a neighbor
+  count_neigh--;
+  printf("Number of Neighbors per site %d\n",count_neigh);
+  exit(1);
+
 	//one node have 6 hopping rate for 6 neighbor node
 	double v[6];
 	double sum;

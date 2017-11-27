@@ -120,9 +120,11 @@ int main(void){
 	CheckFileExist = CheckPt_exist(FileNameCheckPt,FileNameSize);
 	printf("Value of CheckFileExist %d\n",CheckFileExist);
 	if(CheckFileExist == 0){
+    printf("ERROR Loading checkpoint files has been disabled\n");
+    exit(1);
 		//This means a Checkpoint file does exist 
 		printf("Loading Parameter Frame from checkpoint file\n");
-		Load_CheckPt_PF(FileNameCheckPt, &PF);
+//		Load_CheckPt_PF(FileNameCheckPt, &PF);
 	}else{
 		//This means a checkpoint file does not exist
 		//Starting from scratch reading from parameterfile
