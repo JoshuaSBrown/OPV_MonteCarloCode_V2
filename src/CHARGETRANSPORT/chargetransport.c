@@ -991,10 +991,22 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 
 
 //Can use MakeHop when jumping off electrode but not when jumping on because (newID?)
-int MakeHop(SNarray snA, int newID          , Charge *ch         , int * totalX       ,\
-    int * totalY       , int * totalZ       , const int PeriodicX, const int PeriodicY,\
-    const int PeriodicZ, const int XElecOn  , const int YElecOn  , const int ZElecOn  ){
+int MakeHop(SNarray snA, int newID             , Charge *ch                    , int * totalX       ,\
+    int * totalY       , int * totalZ          , ParameterFrame PF             , double KT          ,\
+    double electricEnergyX, double electricEnergyY, double electricEnergyZ ){
 
+  const int PeriodicX = PFget_Px(PF);
+  const int PeriodicY = PFget_Py(PF);
+  const int PeriodicZ = PFget_Pz(PF);
+
+  const int XElecOn = PFget_XElecOn(PF);
+  const int YElecOn = PFget_YElecOn(PF);
+  const int ZElecOn = PFget_ZElecOn(PF);
+
+  const int    DecayOn           = PFget_DecayOn(PF);
+  const double DecayTime         = PFget_DecayTime(PF);
+  const double DecayProb         = PFget_DecayProb(PF);
+  const double DecayDisplacement = PFget_DecayDisplacement(PF);
 	//Now we need to correctly move the charge to
 	//the new position
 	int x    , y    , z    ;
@@ -1087,31 +1099,8 @@ int MakeHop(SNarray snA, int newID          , Charge *ch         , int * totalX 
 				}
 			}
 
-    //This is allowed if moving from a cluster
-		/*	if(XDiff<-2 || XDiff>2){
-				printf("ERROR XDiff %d is greater or less than 2\n",XDiff);
-				printf("x1 %d x %d\n",x1,x);
-        if(checkSNconnectedCluster(getSN(snA,x,y,z))){
-          printf("x y and z connected to cluster\n");
-        }
-        if(checkSNconnectedCluster(getSN(snA,x1,y1,z1))){
-          printf("x1 y1 and z1 connected to cluster\n");
-        }
-        exit(1);
-			}*/
+      checkDecay(PF, snA, SN_ID, KT, ch);
 
-			*totalX = *totalX+XDiff;
-			*totalY = *totalY+YDiff;
-			*totalZ = *totalZ+ZDiff;
-
-			setCx(*ch,getCx(*ch)+XDiff);
-			setCy(*ch,getCy(*ch)+YDiff);
-			setCz(*ch,getCz(*ch)+ZDiff);
-
-			//printf("After hop Cx %d Cy %d Cz %d\n",getCx(*ch),getCy(*ch),getCz(*ch));
-			//This means the charge sucessfully hopped
-			//to a new location
-			return 0;
 		}else{
 			//This means the site the charge was going 
 			//to hop to was occupied so it didn't move
@@ -1127,6 +1116,9 @@ int MakeHop(SNarray snA, int newID          , Charge *ch         , int * totalX 
 	setCx(*ch,getCx(*ch)+XDiff);
 	setCy(*ch,getCy(*ch)+YDiff);
 	setCz(*ch,getCz(*ch)+ZDiff);
+
+  //This means the charge sucessfully hopped
+  //to a new location
 	return 0;
 
 }
@@ -1686,6 +1678,50 @@ int initFutureSite( SNarray * snA, matrix * FutureSite,ChargeArray * chA, Parame
 	}
 
 	return 0;
+}
+
+int checkDecay(ParameterFrame PF, SNArray snA, int SN_ID, double KT, Charge *ch){
+
+  SiteNode sn2 = getSNwithInd(snA,SN_ID);
+  // If site decay is allowed
+  if(PFget_DecayOn(PF)==1){
+    // Determine if the site the charge hopped to has decayed thus its energy
+    // has changed 
+    double prob_decay = (double)rand() / RAND_MAX;
+    if(prob_decay<DecayProb){
+      // This means the site potentially will decay
+      int updateRate = Decay(sn2,DecayDisplacement); 
+
+      // Update the rates around the site that decayed
+      if(updateRate){
+        updateNeigh_JumPossibility(PF,KT,snA,SN_ID);
+        return 1;
+      }
+    }
+  }else if(PFget_DecayOn(PF)==2){
+    // Determine if the site the charge hopped to has decayed thus its energy
+    // has changed 
+    double dw = getDwell(*ch);
+    // Double determine how many how likely it is that the charge did not decay
+    // in that time period
+    double Time_iter = dw/PFget_DecayTime(PF);
+    double NonDecayProb = pow((1-PFget_DecayProb(PF)),Time_iter);
+    double DecayProbForDwell = 1-NonDecayProb;
+    double prob_decay = (double)rand() / RAND_MAX;
+    if(prob_decay<DecayProbForDwell){
+      // This means the site potentially will decay
+      // unless the site has already decayed
+      int updateRate = Decay(sn2,PFget_DecayDisplacement(PF)); 
+
+      // Update the rates around the site that decayed
+      if(updateRate){
+        updateNeigh_JumPossibility(PF,KT,snA,SN_ID);
+        return 2;
+      }
+      
+    }
+  } 
+  return 0;
 }
 
 int randomWalk( SNarray snA,int CheckptNum,\
@@ -2309,8 +2345,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
       //flag - 1 if site is already occupied
 			flag = MakeHop(snA, getE(FutureSite,ChargeID+1,1),\
 					&one, &TotalXtemp, &TotalYtemp, &TotalZtemp,\
-					PeriodicX, PeriodicY, PeriodicZ,\
-					XElecOn, YElecOn, ZElecOn);
+					PF, KT, electricEnergyX, electricEnergyY, electricEnergyZ);
 
     
 			//Get the time it took to make the hop
@@ -2506,6 +2541,16 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					exit(1);
 				}*/
 				MinusDwel(two,tim);
+        // For every charge we need to check to see if the charge
+        // decayed or not. If it does we also need to recalculate 
+        // The dwell time. 
+        if(checkDecay(PF,snA,getIndex(snA,getCx(two),getCy(two),getCz(two)),KT,two)==2){
+          // This means the site decayed so we need to update the time
+          // the charge will spend on the site. 
+        
+          double tim_new = 1/getsum(getSN(snA,getCx(two),getCy(two),getCz(two)));
+          setDwel(two, -log((double) rand()/RAND_MAX)*tim_new);
+        } 
 				UpdateOccTime(&snA, &two,tim, PF);
 			}
 			// *********************************************************************
