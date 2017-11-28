@@ -993,7 +993,7 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 //Can use MakeHop when jumping off electrode but not when jumping on because (newID?)
 int MakeHop(SNarray snA, int newID             , Charge *ch                    , int * totalX       ,\
     int * totalY       , int * totalZ          , ParameterFrame PF             , double KT          ,\
-    double electricEnergyX, double electricEnergyY, double electricEnergyZ ){
+    double electricEnergyX, double electricEnergyY, double electricEnergyZ,double MarcusCoef ){
 
   const int PeriodicX = PFget_Px(PF);
   const int PeriodicY = PFget_Py(PF);
@@ -1682,7 +1682,9 @@ int initFutureSite( SNarray * snA, matrix * FutureSite,ChargeArray * chA, Parame
 
 // You should know that ch is an active charge, as in it has not reached the 
 // escape electrode. 
-int checkDecay(ParameterFrame PF, SNArray snA, int SN_ID, double KT, Charge *ch){
+int checkDecay(ParameterFrame PF, SNarray snA, int SN_ID, double KT, Charge *ch,
+               double electricEnergyX, double electricEnergyY, double electricEnergyZ,
+               double MarcusCoef){
 
   // Let's make sure that the site_ID is not an electrode and is between
   // 0 the length of the actual snA
@@ -1722,7 +1724,7 @@ int checkDecay(ParameterFrame PF, SNArray snA, int SN_ID, double KT, Charge *ch)
 
       // Update the rates around the site that decayed
       if(updateRate){
-        updateNeigh_JumPossibility(PF,KT,snA,SN_ID);
+        updateNeigh_JumPossibility(electricEnergyX, electricEnergyY, electricEnergyZ, PF,MarcusCoef, KT,snA,SN_ID);
         return 2;
       }
       
@@ -2077,18 +2079,19 @@ int randomWalk( SNarray snA,int CheckptNum,\
   electricEnergyX = SiteDistance*ElectricFieldX;
   electricEnergyY = SiteDistance*ElectricFieldY;
   electricEnergyZ = SiteDistance*ElectricFieldZ;
-	
+
+  KT = kB*Temperature;
+  //is equivalent to the marcus coefficient at 300 K
+  MarcusJ0 = pow( PFget_AttemptToHop(PF)*hbar*pow(4*PFget_reOrg(PF)*kB*300/M_PI,1/2),1/2);
+  //Calculating full Marcus Coefficient;
+  MarcusCoeff = pow(MarcusJ0,2)/hbar* 
+    pow(M_PI/(4*PFget_reOrg(PF)*KT),1/2)*
+    exp(-2*PFget_gamma(PF)*PFget_SiteDist(PF));
+
   /* If CELIV method is specified calculate ramp rate */
 	if(method==1){
 
 		Vramp = Vcv/Tcv;
-		KT = kB*Temperature;
-		//is equivalent to the marcus coefficient at 300 K
-		MarcusJ0 = pow( PFget_AttemptToHop(PF)*hbar*pow(4*PFget_reOrg(PF)*kB*300/M_PI,1/2),1/2);
-		//Calculating full Marcus Coefficient;
-		MarcusCoeff = pow(MarcusJ0,2)/hbar* 
-                  pow(M_PI/(4*PFget_reOrg(PF)*KT),1/2)*
-                  exp(-2*PFget_gamma(PF)*PFget_SiteDist(PF));
 		//Need to define matrices containing energies of sites next to electrodes
 		Xb1 = newMatrix(SWidth,SHeight);
 		Xb2 = newMatrix(SWidth,SHeight);
@@ -2352,7 +2355,8 @@ int randomWalk( SNarray snA,int CheckptNum,\
       //flag - 1 if site is already occupied
 			flag = MakeHop(snA, getE(FutureSite,ChargeID+1,1),\
 					&one, &TotalXtemp, &TotalYtemp, &TotalZtemp,\
-					PF, KT, electricEnergyX, electricEnergyY, electricEnergyZ);
+					PF, KT, electricEnergyX, electricEnergyY, electricEnergyZ,
+          MarcusCoef);
 
     
 			//Get the time it took to make the hop
