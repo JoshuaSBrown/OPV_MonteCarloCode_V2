@@ -1728,6 +1728,11 @@ int checkDecay(ParameterFrame PF,\
                                    KT,\
                                    snA,\
                                    SN_ID);
+
+        // Print the line
+        int x, y, z;
+        getLoc(&x,&y,&z,SN_ID,snA); 
+        printFileDecay(x,y,z,gett(ch));
         return 1;
       }
     }
@@ -1749,6 +1754,9 @@ int checkDecay(ParameterFrame PF,\
       // Update the rates around the site that decayed
       if(updateRate){
         updateNeigh_JumPossibility(electricEnergyX, electricEnergyY, electricEnergyZ, PF,MarcusCoef, KT,snA,SN_ID);
+        int x, y, z;
+        getLoc(&x,&y,&z,SN_ID,snA); 
+        printFileDecay(x,y,z,gett(ch));
         return 2;
       }
       
@@ -6143,6 +6151,22 @@ int HoppingToSurroundingSites(SiteNode site, int codeX, int codeY, int codeZ){
 	}
 
 	return l;
+}
+
+int printFileDecay(int x, int y, int z, double time){
+
+	char buf[256];
+	snprintf(buf, sizeof buf,"%s","SiteDecay.txt");
+
+  FILE * DecayOut;
+  if((DecayOut = fopen(buf,"a")) == NULL){
+    printf("ERROR! unable to open SiteDecay.txt file\n");
+    return -1;
+  }else{
+    fprintf(DecayOut,"%g %d %d %d\n",time,x,y,z);
+    fclose(DecayOut);
+  }
+  return 0;
 }
 
 int printFileEnergy(const_SNarray snA, char * FileName,\
