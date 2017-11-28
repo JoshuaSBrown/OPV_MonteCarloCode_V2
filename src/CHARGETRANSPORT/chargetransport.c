@@ -1680,9 +1680,16 @@ int initFutureSite( SNarray * snA, matrix * FutureSite,ChargeArray * chA, Parame
 	return 0;
 }
 
+// You should know that ch is an active charge, as in it has not reached the 
+// escape electrode. 
 int checkDecay(ParameterFrame PF, SNArray snA, int SN_ID, double KT, Charge *ch){
 
+  // Let's make sure that the site_ID is not an electrode and is between
+  // 0 the length of the actual snA
+  if(SN_ID<0 || SN_ID>=getAtotal(snA)) return 0;
+
   SiteNode sn2 = getSNwithInd(snA,SN_ID);
+
   // If site decay is allowed
   if(PFget_DecayOn(PF)==1){
     // Determine if the site the charge hopped to has decayed thus its energy
