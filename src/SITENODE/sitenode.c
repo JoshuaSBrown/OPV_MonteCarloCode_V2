@@ -517,6 +517,7 @@ int Decay(SiteNode sn,double Energy){
   if(sn->decay_status==0){
     sn->energy = sn->energy+Energy;  
     sn->decay_status=1;
+    return 1;
   }
   return 0;
 }

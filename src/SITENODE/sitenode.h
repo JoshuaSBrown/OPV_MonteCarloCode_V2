@@ -146,7 +146,9 @@ int getDwelStat(const_SiteNode sn);
  * by an energy given by "Energy" this can be a
  * positive or negative value. The decay_status
  * is alo changed to 1 to indicate the site has 
- * reacted.
+ * reacted. Return a value of 1 if it decayed when
+ * called return a value of 0 if no decay occured
+ * because the site has already decayed. 
  */
 int Decay(SiteNode sn, double Energy);
 
