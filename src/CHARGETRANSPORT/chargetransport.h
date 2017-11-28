@@ -108,7 +108,7 @@ int randomWalk( SNarray snA, int CheckPointNum,\
 		ParameterFrame PF, long double t, matrix Sequence,\
 		matrix FutureSite, ChargeArray * chA,\
 		long int n, int nc, int nca,double Temperature,\
-    ArbArray * ClArLL);
+    ArbArray * ClArLL, int DecayOn, double DecayProb, double DecayDisplacement);
 
 int UpdateOccTime(SNarray * snA, Charge * ch,double tim, ParameterFrame PF);
 

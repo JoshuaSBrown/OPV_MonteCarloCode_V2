@@ -1696,7 +1696,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 		ParameterFrame PF,long double t,matrix Sequence,\
 		matrix FutureSite,ChargeArray * chA,\
 		long int n,int nc,int nca, double Temperature,\
-    ArbArray * ClArLL){
+    ArbArray * ClArLL, int DecayOn, double DecayProb, double DecayDisplacement){
 
   #ifdef _ERROR_CHECKING_ON_
 	if(FutureSite==NULL){
