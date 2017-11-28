@@ -190,13 +190,17 @@ MovieFrames 1
 CutOffTime 1E-6
 
 //***********if Decay***************
-//DecayOn - 1 is include site decay
+//DecayOn - 2 is time dependent
+//          1 is depends on the transitions is not time dependent
 //          0 is turn off
-DecayOn 1
+DecayOn 2
 
-//Decay Coef, follows an exponential distribution
-//which is normalized at exp(-alpha*x) , x=0
-DecayCoef 1
+//Decay Prob, each time a hop is made, this is the probability
+//the site decays as a value between 0 - 1
+DecayProb 0.0001
+
+// Decay time, will not be used unless DecayOn is set to 2 units seconds
+DecayTime 1E-12
 
 //Energy Displacement of the decayed site [eV] can be positive
 //or negative 
