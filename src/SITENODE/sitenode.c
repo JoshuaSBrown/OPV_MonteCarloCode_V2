@@ -501,6 +501,26 @@ void * getClusterList(const_SiteNode sn){
 	return sn->Cluster;
 }
 
+int Decay(SiteNode sn,double Energy){
+  #ifdef _ERROR_CHECKING_ON_
+	if( sn==NULL){
+    #ifdef _ERROR_
+    fprintf(stderr,"ERROR sn is NULL in setDwelStat\n");
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+		return -1;
+	}
+  #endif
+
+  if(sn->decay_status==0){
+    sn->energy = sn->energy+Energy;  
+    sn->decay_status=1;
+  }
+  return 0;
+}
+
 int setDwelStat(SiteNode sn, int stat) {
 	
   #ifdef _ERROR_CHECKING_ON_

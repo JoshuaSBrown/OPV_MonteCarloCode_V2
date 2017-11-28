@@ -141,6 +141,15 @@ void * getClusterList(const_SiteNode sn);
 // Grabs the dwell status of the node
 int getDwelStat(const_SiteNode sn);
 
+/* If the site has reached a probabiliy where it
+ * will decay the energy of the site is adjusted
+ * by an energy given by "Energy" this can be a
+ * positive or negative value. The decay_status
+ * is alo changed to 1 to indicate the site has 
+ * reacted.
+ */
+int Decay(SiteNode sn, double Energy);
+
 /* The Dwell Status describes whether a
 	 charge is occupying the site or not
 	 if it is -1 it is unoccupied else it
