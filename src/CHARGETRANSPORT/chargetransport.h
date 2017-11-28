@@ -68,8 +68,8 @@ int ClusterHop(SNarray snA, Charge * ch, double * time, int * newID);
 	 1 - if site is already occupied
  */
 int MakeHop(SNarray snA, int newID, Charge * ch, int * totalX, int * totalY, int * totalZ,\
-            ParameterFrame PF, double KT, double electricEnergyX, double electricEnergyY,\
-            double electricEnergyZ);	
+            ParameterFrame PF, double KT, const double electricEnergyX,const double electricEnergyY,\
+            const double electricEnergyZ,const double MarcusCoef);	
 
 int initFutureSite( SNarray * snA, matrix * FutureSite, ChargeArray *chA, ParameterFrame PF,\
 										Electrode elXb, Electrode elYl, Electrode elZb);
@@ -102,7 +102,15 @@ int Pre_randomWalk(const int CheckPtStatus, char * CheckPtVersion,char * FileNam
  * 1 - if did decay based on hop
  * 2 - if did decay based on time
  */
-int checkDecay(ParameterFrame PF, SNArray snA, int SN_ID, double KT, Charge * ch);
+int checkDecay(ParameterFrame PF,\
+               SNarray snA,\
+               int SN_ID,\
+               double KT,\
+               Charge * ch,
+               double electricEnergyX,\
+               double electricEnergyY,\
+               double electricEnergyZ,\
+               double MarcusCoef);
 
 /* This is the heart of the program injects charges and allows them to hop
 	 through the system till they reach an electrode

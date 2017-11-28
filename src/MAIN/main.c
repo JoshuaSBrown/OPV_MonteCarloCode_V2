@@ -264,7 +264,7 @@ int main(void){
                          nca, 
                          Temperature,&ClArLL,
                          PFget_DecayOn(PF),
-                         PFget_DecayProb(PF)
+                         PFget_DecayProb(PF),
                          PFget_DecayDisplacement(PF)); 
 
 							printf("Printing Visit Freq files\n");
@@ -376,7 +376,7 @@ int main(void){
                    Temperature,
                    &ClArLL,
                    PFget_DecayOn(PF),
-                   PFget_DecayProb(PF)
+                   PFget_DecayProb(PF),
                    PFget_DecayDisplacement(PF)); 
 
 				printf("Printing Visit Freq files\n");

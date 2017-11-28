@@ -130,8 +130,8 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 
   /* Assigning Energies for traps */
 	if(traps!=0){
-    AsTr=newMatrix(traps,3);
 		printf("Randomly determining which sites are traps & assigning energies.\n");
+    AsTr=newMatrix(traps,3);
 		percent=0;
 		i=0;
 		//Assign energies for traps
@@ -160,53 +160,56 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	//
 	if ( seeds+traps < sites/2 ){
 
-		matrix As=newMatrix(seeds,3);
+    matrix As = NULL;
+    if(seeds!=0){
+      printf("Seeds and trap assignment\n");
+      As=newMatrix(seeds,3);
 
-		if (As==NULL) {
-			printf("WARNING Malloc returned NULL for Assigned Matrix\n");
-		}
-		i=0;
-		printf("Calculating Energies for Seeds\n");
-		percent=0;
-		while( i < seeds) {
-			pN = getRandomSitePos( &ii, &jj, &kk, snA);
-			//if Site has not already been assigned energy
-			if ( getInitE(pN) == 0 ) {         
-				//Store the pointer in an array (Array contains sites that have been assigned energies)
-				if (((double)i)/((double)seeds)>percent) {
-					printf("Percent Complete %ld\n",(int long)(percent*100));
-					percent+=0.1;
-				}
-				setE(As,i+1,1,(double)ii);
-				setE(As,i+1,2,(double)jj);
-				setE(As,i+1,3,(double)kk);
-				//printf("Assigned locations to array\n");
-				if(SeedProt<2){
-					SiteEnergy = grn(E0, sigma);
-				}else if(SeedProt==2){
-					SiteEnergy = E0;
-				}
-				
-				if(i==0){
-					minEnergy = SiteEnergy;
-					maxEnergy = SiteEnergy;
-				}else{
-					if(SiteEnergy>maxEnergy){
-						maxEnergy = SiteEnergy;
-					}
-					if(SiteEnergy<minEnergy){
-						minEnergy = SiteEnergy;
-					}
-				}
+      if (As==NULL) {
+        printf("WARNING Malloc returned NULL for Assigned Matrix\n");
+      }
+      i=0;
+      printf("Calculating Energies for Seeds\n");
+      percent=0;
+      while( i < seeds) {
+        pN = getRandomSitePos( &ii, &jj, &kk, snA);
+        //if Site has not already been assigned energy
+        if ( getInitE(pN) == 0 ) {         
+          //Store the pointer in an array (Array contains sites that have been assigned energies)
+          if (((double)i)/((double)seeds)>percent) {
+            printf("Percent Complete %ld\n",(int long)(percent*100));
+            percent+=0.1;
+          }
+          setE(As,i+1,1,(double)ii);
+          setE(As,i+1,2,(double)jj);
+          setE(As,i+1,3,(double)kk);
+          //printf("Assigned locations to array\n");
+          if(SeedProt<2){
+            SiteEnergy = grn(E0, sigma);
+          }else if(SeedProt==2){
+            SiteEnergy = E0;
+          }
 
-				setEnergy(pN,SiteEnergy);
-				setInitE(pN,1);
-				i++;
-			}
-		}
-		printf("Percent Complete %ld\n",(int long)(100));
-		//printVisitFreq(snA);
+          if(i==0){
+            minEnergy = SiteEnergy;
+            maxEnergy = SiteEnergy;
+          }else{
+            if(SiteEnergy>maxEnergy){
+              maxEnergy = SiteEnergy;
+            }
+            if(SiteEnergy<minEnergy){
+              minEnergy = SiteEnergy;
+            }
+          }
 
+          setEnergy(pN,SiteEnergy);
+          setInitE(pN,1);
+          i++;
+        }
+      }
+      printf("Percent Complete %ld\n",(int long)(100));
+      //printVisitFreq(snA);
+    }
 		m=0;
 		printf("Calculating Energies for remaining sites\n");
 		percent=0;
@@ -300,7 +303,7 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	if ( seeds+traps >= sites/2 ) {
 		//In the case that there are more assigned energies than correlated energies
 		//Assign all energies
-
+    
 		matrix UnAs=newMatrix((sites-seeds-traps),3);
 		matrix As=newMatrix(seeds,3);
 
@@ -1933,8 +1936,8 @@ int updateNeigh_JumPossibility(const double electricEnergyX,
   const int ZElecOn = PFget_ZElecOn(PF);
 
   const double reOrgEnergy = PFget_reOrg(PF);
-  const double SiteDistance = PFget_SiteDistance(PF);
-  const double R_neigh = PFget_Rneigh(PF);
+  const double SiteDistance = PFget_SiteDist(PF);
+  const double R_neigh = PFget_R_neigh(PF);
 
 	if(snA==NULL || PeriodicX<0 || PeriodicX>1 ||\
 									PeriodicY<0 || PeriodicY>1 ||\
@@ -1983,7 +1986,7 @@ int updateNeigh_JumPossibility(const double electricEnergyX,
 	SiteNode SNj;
 
   // Get location of the center site node index
-  int ii; jj, kk;
+  int ii, jj, kk;
   getLoc(&ii,&jj,&kk,SN_ID,snA);
 
   

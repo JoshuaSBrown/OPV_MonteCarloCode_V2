@@ -15,7 +15,7 @@ matrix CalculateAllHops(const_SNarray snA, const double electricEnergyX, \
 												const double electricEnergyY, const double electricEnergyZ,\
 												const double KT, const double reOrgEnergy, const double SiteDistance,\
 												const double AttemptToHop, const double gamma,\
-												const int PeriodicX, const int PeriodicY, const int PeriodicZ);
+												const int PeriodicX, const int PeriodicY, const int PeriodicZ, const double R_neigh);
 
 /* Sorts all the hops into Midpoints and splits the midpoints
 	 into an array.

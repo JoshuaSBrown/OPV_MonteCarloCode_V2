@@ -1018,6 +1018,9 @@ int MakeHop(SNarray snA, int newID             , Charge *ch                    ,
   ProjectChargePositionOntoSiteNodeReferenceFrame(&x,&y,&z,getCx(*ch),getCy(*ch),getCz(*ch),\
                                                   getAlen(snA), getAwid(snA), getAhei(snA));
 
+  // Get the old id of the site the charge was on, is hopping from
+  int oldID = getIndex(snA,x,y,z);
+
   //This is the protocol for refering to the electrodes
 	//	getAtotal(snA) + 0 - (-x)
 	//	getAtotal(snA) + 1 - (+x)
@@ -1099,7 +1102,15 @@ int MakeHop(SNarray snA, int newID             , Charge *ch                    ,
 				}
 			}
 
-      checkDecay(PF, snA, SN_ID, KT, ch);
+      checkDecay(PF,
+                 snA,
+                 oldID,
+                 KT,
+                 ch,
+                 electricEnergyX,
+                 electricEnergyY,
+                 electricEnergyZ,
+                 MarcusCoef );
 
 		}else{
 			//This means the site the charge was going 
@@ -1682,8 +1693,14 @@ int initFutureSite( SNarray * snA, matrix * FutureSite,ChargeArray * chA, Parame
 
 // You should know that ch is an active charge, as in it has not reached the 
 // escape electrode. 
-int checkDecay(ParameterFrame PF, SNarray snA, int SN_ID, double KT, Charge *ch,
-               double electricEnergyX, double electricEnergyY, double electricEnergyZ,
+int checkDecay(ParameterFrame PF,\
+               SNarray snA,\
+               int SN_ID,\
+               double KT,\
+               Charge * ch,\
+               double electricEnergyX,\
+               double electricEnergyY,\
+               double electricEnergyZ,\
                double MarcusCoef){
 
   // Let's make sure that the site_ID is not an electrode and is between
@@ -1697,9 +1714,9 @@ int checkDecay(ParameterFrame PF, SNarray snA, int SN_ID, double KT, Charge *ch,
     // Determine if the site the charge hopped to has decayed thus its energy
     // has changed 
     double prob_decay = (double)rand() / RAND_MAX;
-    if(prob_decay<DecayProb){
+    if(prob_decay<PFget_DecayProb(PF)){
       // This means the site potentially will decay
-      int updateRate = Decay(sn2,DecayDisplacement); 
+      int updateRate = Decay(sn2,PFget_DecayDisplacement(PF)); 
 
       // Update the rates around the site that decayed
       if(updateRate){
@@ -1717,7 +1734,7 @@ int checkDecay(ParameterFrame PF, SNarray snA, int SN_ID, double KT, Charge *ch,
   }else if(PFget_DecayOn(PF)==2){
     // Determine if the site the charge hopped to has decayed thus its energy
     // has changed 
-    double dw = getDwell(*ch);
+    double dw = getDwel(*ch);
     // Double determine how many how likely it is that the charge did not decay
     // in that time period
     double Time_iter = dw/PFget_DecayTime(PF);
@@ -2561,14 +2578,43 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				MinusDwel(two,tim);
         // For every charge we need to check to see if the charge
         // decayed or not. If it does we also need to recalculate 
-        // The dwell time. 
-        if(checkDecay(PF,snA,getIndex(snA,getCx(two),getCy(two),getCz(two)),KT,two)==2){
-          // This means the site decayed so we need to update the time
-          // the charge will spend on the site. 
-        
-          double tim_new = 1/getsum(getSN(snA,getCx(two),getCy(two),getCz(two)));
-          setDwel(two, -log((double) rand()/RAND_MAX)*tim_new);
-        } 
+        // The dwell time
+        int xxx, yyy, zzz;
+        if(PFget_Px(PF)){
+          xxx = (getCx(two)+getAlen(snA))%getAlen(snA);
+        }else{
+          xxx = getCx(two);
+        }
+        if(PFget_Py(PF)){
+          yyy = (getCy(two)+getAwid(snA))%getAwid(snA);
+        }else{
+          yyy = getCy(two);
+        }
+        if(PFget_Pz(PF)){
+          zzz = (getCz(two)+getAhei(snA))%getAhei(snA);
+        }else{
+          zzz = getCz(two);
+        }
+        if(xxx>=0 && xxx<getAlen(snA) &&
+           yyy>=0 && yyy<getAwid(snA) &&
+           zzz>=0 && zzz<getAhei(snA)){
+          int decay_val = checkDecay(PF,
+                                     snA,
+                                     getIndex(snA,xxx,yyy,zzz),
+                                     KT,
+                                     &two,
+                                     electricEnergyX,
+                                     electricEnergyY,
+                                     electricEnergyZ,
+                                     MarcusCoeff);
+          if(decay_val==2){
+            // This means the site decayed so we need to update the time
+            // the charge will spend on the site. 
+          
+            double tim_new = 1/getsum(getSN(snA,getCx(two),getCy(two),getCz(two)));
+            setDwel(two, -log((double) rand()/RAND_MAX)*tim_new);
+          } 
+        }
 				UpdateOccTime(&snA, &two,tim, PF);
 			}
 			// *********************************************************************

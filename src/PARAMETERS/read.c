@@ -1285,12 +1285,12 @@ ParameterFrame newParamFrame_File(void){
 			printf("DecayTime %g\n",doubleval);
 			PF->DecayTime = doubleval;
     
-      if(PF->DecayProb<0 && DecayOn==2){
+      if(PF->DecayProb<0 && PF->DecayOn==2){
         printf("ERROR DecaTime is less than 0");
         exit(1);
       }
 
-		}else if(DecayOn==2){
+		}else if(PF->DecayOn==2){
       // This parameter is only needed if DecayOn is set to 2
 			printf("ERROR when reading file can not find DecayTime\n");
 			exit(1);
