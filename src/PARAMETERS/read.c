@@ -83,6 +83,7 @@ struct _ParameterFrame{
 	double CutOffTime;
   int DecayOn;
   double DecayProb;
+  double DecayTime;
   double DecayDisplacement;
 	double Tcv;
 	double Vcv;
@@ -189,6 +190,7 @@ ParameterFrame newParamFrame(void){
 	PF->CutOffTime       =0;
 	PF->DecayOn          =0;
 	PF->DecayProb        =0;
+  PF->DecayTime        =0;
 	PF->DecayDisplacement=0;
 	PF->Tcv              =0;
 	PF->Vcv              =0;
@@ -1248,9 +1250,9 @@ ParameterFrame newParamFrame_File(void){
 			printf("DecayOn %d\n",intval);
 			PF->DecayOn = intval;
 			
-			if(PF->DecayOn!=0 && PF->DecayOn!=1){
-				printf("ERROR DecayOn assigned a value that is neighter\n");
-				printf("1 or 0");
+			if(PF->DecayOn!=0 && PF->DecayOn!=1 && PF->DecayOn!=2){
+				printf("ERROR DecayOn assigned a value that is neigther\n");
+				printf("2, 1 or 0");
 				exit(1);
 			}
 
@@ -1273,6 +1275,24 @@ ParameterFrame newParamFrame_File(void){
 
 		}else{
 			printf("ERROR when reading file can not find DecayProb\n");
+			exit(1);
+		}
+
+		check = match(buffer,"\nDecayTime");
+		if(check!=-1){
+			position = (unsigned int)check;
+			doubleval = GrabDouble(position, &buffer[0] );
+			printf("DecayTime %g\n",doubleval);
+			PF->DecayTime = doubleval;
+    
+      if(PF->DecayProb<0 && DecayOn==2){
+        printf("ERROR DecaTime is less than 0");
+        exit(1);
+      }
+
+		}else if(DecayOn==2){
+      // This parameter is only needed if DecayOn is set to 2
+			printf("ERROR when reading file can not find DecayTime\n");
 			exit(1);
 		}
 
@@ -1445,7 +1465,7 @@ int ReadParameter(int * method,\
     int * TemperatureStep, double * TemperatureInc   , double * reOrgEnergy   ,\
 		double * AttemptToHop, double * gamma            , double * RelativePerm  ,\
     int * MovieFrames    , double * CutOffTime       , int * DecayOn          ,\
-    double * DecayProb   , double * DecayDisplacement, double * Tcv           ,\
+    double * DecayProb   , double * DecayTime        , double * DecayDisplacement, double * Tcv           ,\
     double * Vcv         , double * Tlag             , int * EndPtFile        ,\
 		int * NumChargesTrack, int * PathFile            , int * LogFile          ){
 
@@ -1828,6 +1848,10 @@ int ReadParameter(int * method,\
 				position = match(buffer, "\nDecayProb");
 				*DecayProb = GrabDouble(position, &buffer[0]);
 				printf("DecayProb %g\n",*DecayProb);
+
+				position = match(buffer, "\nDecayTime");
+				*DecayTime = GrabDouble(position, &buffer[0]);
+				printf("DecayTime %g\n",*DecayTime);
 
 				position = match(buffer, "\nDecayDisplacement");
 				*DecayDisplacement = GrabDouble(position, &buffer[0]);
@@ -2790,6 +2814,14 @@ int PFset_DecayProb(ParameterFrame PF, double DecayProb){
 	return 0;
 }
 
+int PFset_DecayTime(ParameterFrame PF, double DecayTime){
+	if(PF==NULL || DecayTime<0){
+		return -1;
+	}
+	PF->DecayTime = DecayTime;
+	return 0;
+}
+
 int PFset_DecayDisplacement(ParameterFrame PF, double DecayDisplacement){
 	if(PF==NULL ){
 		return -1;
@@ -3522,6 +3554,13 @@ double PFget_DecayProb(ParameterFrame PF){
 		return -1;
 	}
 	return PF->DecayProb;
+}
+
+double PFget_DecayTime(ParameterFrame PF){
+	if(PF==NULL){
+		return -1;
+	}
+	return PF->DecayTime;
 }
 
 double PFget_DecayDisplacement(ParameterFrame PF){
