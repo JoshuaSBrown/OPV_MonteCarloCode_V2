@@ -1914,10 +1914,14 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 	return 0;
 }
 
-int updateNeigh_JumPossibility(const double electricEnergyX,const double electricEnergyY,\
-		  const double electricEnergyZ, ParameterFrame PF, const double MarcusCoeff,\
-		  const double KT, SNarray snA,\
-      int SN_ID){
+int updateNeigh_JumPossibility(const double electricEnergyX,
+                               const double electricEnergyY,\
+		                           const double electricEnergyZ,\
+                               ParameterFrame PF,\
+                               const double MarcusCoeff,\
+		                           const double KT,\
+                               SNarray snA,\
+                               int SN_ID){
 
 
   const int PeriodicX = PFget_Px(PF);

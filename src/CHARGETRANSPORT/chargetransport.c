@@ -1703,7 +1703,14 @@ int checkDecay(ParameterFrame PF, SNarray snA, int SN_ID, double KT, Charge *ch,
 
       // Update the rates around the site that decayed
       if(updateRate){
-        updateNeigh_JumPossibility(PF,KT,snA,SN_ID);
+        updateNeigh_JumPossibility(electricEnergyX,\
+                                   electricEnergyY,\
+                                   electricEnergyZ,\
+                                   PF,\
+                                   MarcusCoef,\
+                                   KT,\
+                                   snA,\
+                                   SN_ID);
         return 1;
       }
     }
@@ -2356,7 +2363,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			flag = MakeHop(snA, getE(FutureSite,ChargeID+1,1),\
 					&one, &TotalXtemp, &TotalYtemp, &TotalZtemp,\
 					PF, KT, electricEnergyX, electricEnergyY, electricEnergyZ,
-          MarcusCoef);
+          MarcusCoeff);
 
     
 			//Get the time it took to make the hop
