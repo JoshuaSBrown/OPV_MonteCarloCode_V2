@@ -1914,6 +1914,160 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 	return 0;
 }
 
+int updateNeigh_JumPossibility(const double electricEnergyX,const double electricEnergyY,\
+		  const double electricEnergyZ, ParameterFrame PF, const double MarcusCoeff,\
+		  const double KT, SNarray snA,\
+      int SN_ID){
+
+
+  const int PeriodicX = PFget_Px(PF);
+  const int PeriodicY = PFget_Py(PF);
+  const int PeriodicZ = PFget_Pz(PF);
+
+  const int XElecOn = PFget_XElecOn(PF);
+  const int YElecOn = PFget_YElecOn(PF);
+  const int ZElecOn = PFget_ZElecOn(PF);
+
+  const double reOrgEnergy = PFget_reOrg(PF);
+  const double SiteDistance = PFget_SiteDistance(PF);
+  const double R_neigh = PFget_Rneigh(PF);
+
+	if(snA==NULL || PeriodicX<0 || PeriodicX>1 ||\
+									PeriodicY<0 || PeriodicY>1 ||\
+									PeriodicZ<0 || PeriodicZ>1){
+		return -1;
+	}
+
+	int rv;
+	int SLength = getAlen(snA);
+	int SWidth = getAwid(snA);
+	int SHeight = getAhei(snA);
+	int i, j, k, l;
+	double pval;
+
+  // Determine how many neighbors are within the neighbor radius
+  int count_neigh=0;
+  double SiteDistance_nm = SiteDistance*1E9;
+  double x_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
+  double y_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
+  double z_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
+  while(x_dis<=R_neigh){
+    y_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
+    while(y_dis<=R_neigh){
+      z_dis=-ceil(R_neigh/SiteDistance_nm)*SiteDistance_nm;
+      while(z_dis<=R_neigh){
+
+        double rad = pow(x_dis,2)+pow(y_dis,2)+pow(z_dis,2);
+        rad = pow(rad,1.0/2.0);
+        if(rad<=R_neigh){
+          count_neigh++;
+        }
+        z_dis+=SiteDistance_nm;
+      }
+      y_dis+=SiteDistance_nm;
+    }
+    x_dis+=SiteDistance_nm;
+  }
+
+  // Minus the center site because it is not a neighbor
+  count_neigh--;
+
+	//one node have 6 hopping rate for 6 neighbor node
+	double v[6];
+	double sum;
+	SiteNode SNi;
+	SiteNode SNj;
+
+  // Get location of the center site node index
+  int ii; jj, kk;
+  getLoc(&ii,&jj,&kk,SN_ID,snA);
+
+  
+  ii = (ii-1+SLength)%SLength;
+  jj = (jj-1+SWidth)%SWidth;
+  kk = (kk-1+SHeight)%SHeight;
+	//int divisor;
+
+	//printf("KT %g ReOrgEnergy %g electricEnergyX %g\n",KT,reOrgEnergy,electricEnergyX);
+	//printf("SLength %d SWidth %d SHeight %d\n",SLength,SWidth,SHeight);
+	for(i = 0; i < 2; i++){
+		for(j = 0; j < 2; j++){
+			for(k = 0; k < 2; k++){
+ 
+				//divisor=6;
+				SNi = getSN(snA, ii, jj, kk);
+				SNj = getSN(snA, (ii-1+SLength)%SLength,jj,kk);																						//Behind
+				//if sigma = 0.09, generally the maximum difference Ej and Ei is approximate to 0.54
+				v[0] = MarcusCoeff*hoppingRate(getEnergy(SNj) - getEnergy(SNi) + electricEnergyX,KT,reOrgEnergy); 
+
+				SNj = getSN(snA, (ii+1)%SLength,jj,kk);																										//Front
+				v[1] = MarcusCoeff*hoppingRate(getEnergy(SNj) - getEnergy(SNi) - electricEnergyX,KT,reOrgEnergy); 
+				SNj = getSN(snA,ii, (jj-1+SWidth)%SWidth,kk);																							//Left
+				v[2] = MarcusCoeff*hoppingRate(getEnergy(SNj) - getEnergy(SNi) + electricEnergyY,KT,reOrgEnergy);
+				SNj = getSN(snA,ii, (jj+1)%SWidth,kk);																											//Right
+				v[3] = MarcusCoeff*hoppingRate(getEnergy(SNj) - getEnergy(SNi) - electricEnergyY,KT,reOrgEnergy);
+				SNj = getSN(snA,ii, jj, (kk-1+SHeight)%SHeight);																						//Below
+				v[4] = MarcusCoeff*hoppingRate(getEnergy(SNj) - getEnergy(SNi) + electricEnergyZ,KT,reOrgEnergy);
+				SNj = getSN(snA,ii, jj, (kk+1)%SHeight);																										//Above
+				v[5] = MarcusCoeff*hoppingRate(getEnergy(SNj) - getEnergy(SNi) - electricEnergyZ,KT,reOrgEnergy);
+
+				//Will want to ignore hop rates at the edges
+				//when non periodic and when the Electrodes are off
+				
+				if( ii == 0 && PeriodicX==0 && XElecOn==0){
+					v[0] = 0;
+				}
+				
+				if( ii == SLength-1 && PeriodicX==0 && XElecOn==0){
+					v[1] = 0;
+				}
+
+				if( jj == 0 && PeriodicY==0 && YElecOn==0){
+					v[2] = 0;
+				}
+
+				if( jj == SWidth-1 && PeriodicY==0 && YElecOn==0){
+					v[3] = 0;
+				}
+
+				if( kk == 0 && PeriodicZ==0 && ZElecOn==0){
+					v[4] = 0;
+				}
+
+				if( kk == SHeight-1 && PeriodicZ==0 && ZElecOn==0){
+					v[5] = 0;
+				}
+
+				sum=0;
+				for(l = 0; l < 6; l++) {
+					sum = sum + v[l];
+				}
+		
+				//Don't want the average but the sum
+				rv = setsum(SNi,sum);
+				if(rv==-1){
+					printf("setsum return -1\n");
+					exit(1);
+				}
+				//This is WRONG: use the average probability to place charges in the queue--average 
+				//rather than sum to avoid "trapping" charges at the interface
+				pval=0;
+				for(l = 0; l < 6; l++){
+					setSN_p(SNi,l,v[l]/sum+pval);
+					pval = getSN_p(SNi,l);
+				}
+
+        ii = (ii+1)%SLength;
+        jj = (jj+1)%SWidth;
+        kk = (kk+1)%SHeight;
+			}
+
+		}
+	}
+	//printf("End of Init\n");
+	return 0;
+}
+
 //////////////////////////////////////////////////////////////////
 
 ChargeArray initCharget0_Thermal( const_SNarray snA,\

@@ -78,6 +78,12 @@ int initJumPossibility(const double electricEnergyX,const double electricEnergyY
 		const int XElecOn, const int YElecOn, const int ZElecOn,
     const double SiteDistance, const double R_neigh);
 
+/* Update the hop rates of the surrounding neighbors
+ */
+int updateNeigh_JumPossibility(const double electricEnergyX,const double electricEnergyY,\
+      const double electricEnergyZ, const double MarcusCoeff,\
+      ParameterFrame PF, const double KT,const double MarcusCoef, const double KT, SNarray snA, int SN_ID);
+
 /* InitCharget0 initializes the charge data structure
 	 It returns the charge data structure
  */
