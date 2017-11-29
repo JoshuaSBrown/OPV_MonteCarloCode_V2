@@ -133,7 +133,8 @@ int UpdateOccTime(SNarray * snA, Charge * ch,double tim, ParameterFrame PF);
 */
 int Post_randomWalk(ArbArray ClArLL, SNarray snA, Electrode elXb, Electrode elXf,\
 									  Electrode elYl, Electrode elYr, Electrode elZb, Electrode elZa,\
-										ParameterFrame PF);
+										double electricEnergyX, double electricEnergyY, double electricEnergyZ,\
+                    ParameterFrame PF);
 
 /* If a .ckpt file does exist will determine whether it is the correct kind and wheather
 	 it is the latest version if it is not it will find the latest version and return it

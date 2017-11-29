@@ -278,6 +278,9 @@ int main(void){
                               elYr, 
                               elZb, 
                               elZa,
+                              electricEnergyX,
+                              electricEnergyY,
+                              electricEnergyZ,
                               PF);
 
 						}
@@ -390,6 +393,9 @@ int main(void){
                         elYr, 
                         elZb, 
                         elZa,
+                        electricEnergyX,
+                        electricEnergyY,
+                        electricEnergyZ,
                         PF);
 
 			}

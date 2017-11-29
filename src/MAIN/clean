@@ -7,3 +7,5 @@ rm -f shout.txt
 rm -f out.txt
 rm -f out2.txt
 rm -f gmon.out
+rm -f SiteDecay.txt
+rm -f Post*.xyz

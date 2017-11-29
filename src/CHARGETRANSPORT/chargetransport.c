@@ -1551,7 +1551,8 @@ int Pre_randomWalk(const int CheckPtStatus  , char * FileNameCheckPtVersion, cha
 }
 
 int Post_randomWalk(ArbArray ClArLL, SNarray snA, Electrode elXb, Electrode elXf,\
-		Electrode elYl, Electrode elYr, Electrode elZb, Electrode elZa,ParameterFrame PF){
+		Electrode elYl, Electrode elYr, Electrode elZb, Electrode elZa,\
+    double electricEnergyX, double electricEnergyY, double electricEnergyZ, ParameterFrame PF){
 
 
   int ClusterAlg = PFget_ClusterAlg(PF);
@@ -1561,6 +1562,9 @@ int Post_randomWalk(ArbArray ClArLL, SNarray snA, Electrode elXb, Electrode elXf
 		return -1;
 	}
 
+  
+  printFileEnergy(snA, "Post", electricEnergyX,\
+                  electricEnergyY, electricEnergyZ,PF);
 	SNarray snAmini;
 	matrix mtxmini;
 
