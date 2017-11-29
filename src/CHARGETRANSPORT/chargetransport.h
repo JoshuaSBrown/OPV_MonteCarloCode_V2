@@ -69,7 +69,7 @@ int ClusterHop(SNarray snA, Charge * ch, double * time, int * newID);
  */
 int MakeHop(SNarray snA, int newID, Charge * ch, int * totalX, int * totalY, int * totalZ,\
             ParameterFrame PF, double KT, const double electricEnergyX,const double electricEnergyY,\
-            const double electricEnergyZ,const double MarcusCoef);	
+            const double electricEnergyZ,const double MarcusCoef, const long double t);	
 
 int initFutureSite( SNarray * snA, matrix * FutureSite, ChargeArray *chA, ParameterFrame PF,\
 										Electrode elXb, Electrode elYl, Electrode elZb);
@@ -110,7 +110,8 @@ int checkDecay(ParameterFrame PF,\
                double electricEnergyX,\
                double electricEnergyY,\
                double electricEnergyZ,\
-               double MarcusCoef);
+               double MarcusCoef,\
+               const long double t);
 
 /* This is the heart of the program injects charges and allows them to hop
 	 through the system till they reach an electrode
@@ -233,6 +234,8 @@ int ChargeSystem(int * nc, Electrode el, const int nca, matrix Sequence, ChargeA
  */
 int ChargeClosure(Electrode el, Charge * one, matrix * Sequence, int * nc,int * nca, int * TotalCollected, int Ntot);
 
+int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int ChargeID);
+
 /* After a charge makes an action (tries to hop or does hop)
 	 a new dwell time is assigned to it. The order by which charges
 	 are moved is dependent on their dwell time and stored in the 
@@ -288,7 +291,7 @@ int SaveDataPoint(int * CurrentInc, int * NumAvgVel      , int nc               
  */
 int HoppingToSurroundingSites(SiteNode site, int codeX, int codeY, int codeZ);
 
-int printFileDecay(int x, int y, int z ,double time);
+int printFileDecay(int x, int y, int z ,const long double time);
 /* This function prints out the energies of all the sites showing the effect
 	 of the electric field on the energies as well as the image force
 */

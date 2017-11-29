@@ -993,8 +993,10 @@ int ClusterHop(SNarray snA, Charge * ch,  double * tim , int *newID){
 //Can use MakeHop when jumping off electrode but not when jumping on because (newID?)
 int MakeHop(SNarray snA, int newID             , Charge *ch                    , int * totalX       ,\
     int * totalY       , int * totalZ          , ParameterFrame PF             , double KT          ,\
-    double electricEnergyX, double electricEnergyY, double electricEnergyZ,double MarcusCoef ){
+    double electricEnergyX, double electricEnergyY, double electricEnergyZ,double MarcusCoef        ,\
+    const long double t){
 
+ // printf("Make Hop time %Lg\n",t);
   const int PeriodicX = PFget_Px(PF);
   const int PeriodicY = PFget_Py(PF);
   const int PeriodicZ = PFget_Pz(PF);
@@ -1101,7 +1103,8 @@ int MakeHop(SNarray snA, int newID             , Charge *ch                    ,
 					ZDiff=zD2;
 				}
 			}
-
+      //printf("Checking Decay\n");
+      //fflush(stdout);
       checkDecay(PF,
                  snA,
                  oldID,
@@ -1110,8 +1113,11 @@ int MakeHop(SNarray snA, int newID             , Charge *ch                    ,
                  electricEnergyX,
                  electricEnergyY,
                  electricEnergyZ,
-                 MarcusCoef );
+                 MarcusCoef,
+                 t );
 
+      //printf("Function decay success\n");
+      //fflush(stdout);
 		}else{
 			//This means the site the charge was going 
 			//to hop to was occupied so it didn't move
@@ -1422,7 +1428,7 @@ int Pre_randomWalk(const int CheckPtStatus  , char * FileNameCheckPtVersion, cha
 					KT, *snA,elXb, elXf, elYl, elYr, elZb, elZa, PF);
 
 
-			printf("Updating number of charges on electrodes based on .ckpt\n");
+			//printf("Updating number of charges on electrodes based on .ckpt\n");
 			if(elXb!=NULL){
 				setElectrode_Charges(*elXb,Num_elXb);
 			}
@@ -1701,8 +1707,10 @@ int checkDecay(ParameterFrame PF,\
                double electricEnergyX,\
                double electricEnergyY,\
                double electricEnergyZ,\
-               double MarcusCoef){
+               double MarcusCoef,
+               const long double t){
 
+  //printf("Check decay time %Lg\n",t);
   // Let's make sure that the site_ID is not an electrode and is between
   // 0 the length of the actual snA
   if(SN_ID<0 || SN_ID>=getAtotal(snA)) return 0;
@@ -1732,7 +1740,7 @@ int checkDecay(ParameterFrame PF,\
         // Print the line
         int x, y, z;
         getLoc(&x,&y,&z,SN_ID,snA); 
-        printFileDecay(x,y,z,gett(ch));
+        printFileDecay(x,y,z,t);
         return 1;
       }
     }
@@ -1756,12 +1764,17 @@ int checkDecay(ParameterFrame PF,\
         updateNeigh_JumPossibility(electricEnergyX, electricEnergyY, electricEnergyZ, PF,MarcusCoef, KT,snA,SN_ID);
         int x, y, z;
         getLoc(&x,&y,&z,SN_ID,snA); 
-        printFileDecay(x,y,z,gett(ch));
+        //printf("time decay %Lg\n",t);
+        printFileDecay(x,y,z,t);
+        //printf("Site Charge was on has decayed\n");
+        //fflush(stdout);
         return 2;
       }
       
     }
-  } 
+  }
+  //printf("No decay\n");
+  //fflush(stdout); 
   return 0;
 }
 
@@ -2188,7 +2201,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
                                R_neigh);
   }
 
-  printf("Entering Loop\n");
+  //printf("Entering Loop\n");
   /*************************************************
    *                     KEY LOOP
    *************************************************/
@@ -2215,6 +2228,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
                              YElecOn,
                              ZElecOn, 
                              nc);
+    //printf("global t %Lg\n",t); 
 
     if (nca==0){
 
@@ -2335,7 +2349,15 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 			//Grab the first charge in the sequence
 			JumpFromElec = 0;
-			ChargeID = getE(Sequence,1,1);
+			ChargeID = (int) getE(Sequence,1,1);
+      //printf("\nNew Charge ID %d\n",ChargeID);
+      for(int indx=1;indx<=getRows(Sequence);indx++){
+        Charge four = getCharge(*chA,(int)getE(Sequence,indx,1));
+        //printf("ChargeID %g DwellTime %g\n",getE(Sequence,indx,1),getDwel(four));
+
+      }
+      fflush(stdout);
+
 			one = getCharge(*chA, ChargeID);
 			if(getDwel(one)>1){
 				printf("Time to large from getDwel %g\n",getDwel(one));
@@ -2354,6 +2376,8 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			//occupied return -1. If site unoccupied hop and
 			//return 0
 
+      //printf("Project Charge Position\n");
+      //fflush(stdout);
       ProjectChargePositionOntoSiteNodeReferenceFrame(&x1,&y1,&z1,getCx(one),getCy(one),getCz(one),\
                                                       SLength,SWidth, SHeight);
 
@@ -2377,6 +2401,15 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			TotalXtemp = TotalX;
 			TotalYtemp = TotalY;
 			TotalZtemp = TotalZ;
+//      printf("\nAfter Hop Charge ChargeID %d\n",ChargeID);
+//      for(int indx=1;indx<=getRows(Sequence);indx++){
+//        Charge four = getCharge(*chA,(int)getE(Sequence,indx,1));
+//        printf("ChargeID %g DwellTime %g\n",getE(Sequence,indx,1),getDwel(four));
+//    }
+      
+
+
+    
 
 			//Function accounts for hops within system from electrodes
 			//and two electrodes.
@@ -2385,15 +2418,16 @@ int randomWalk( SNarray snA,int CheckptNum,\
       //it will however only move if the future site is not already occupied.
       //flag - 0 if sucessful
       //flag - 1 if site is already occupied
-			flag = MakeHop(snA, getE(FutureSite,ChargeID+1,1),\
+      //printf("Making hop\n");
+      //fflush(stdout);
+			flag = MakeHop(snA, (int) getE(FutureSite,ChargeID+1,1),\
 					&one, &TotalXtemp, &TotalYtemp, &TotalZtemp,\
 					PF, KT, electricEnergyX, electricEnergyY, electricEnergyZ,
-          MarcusCoeff);
+          MarcusCoeff,t);
 
-    
 			//Get the time it took to make the hop
       tim = getDwel(one);
-			
+		  //printf("tim %g from charge %g\n",tim,getE(Sequence,1,1));	
 			if(tim>1){
 				printf("time to large %g for charge located at (%d,%d,%d)\n",tim,PrevX,PrevY,PrevZ);
 				printChargeA(*chA);
@@ -2415,7 +2449,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				//This means at maximum can only increase the time by the 
 				//TStep because more charges need to be inserted. 
 				tim = TStep;
-        printf("tim %lg TStep %g\n",tim,TStep);
+        //printf("tim changed to %g\n",tim);
 				//Because the site does not hop we just make it progress
 				//in time a little we set the flag to -1
 				flag = -1;
@@ -2452,7 +2486,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
         if(ClusterAlg==2 && method==0){
          //At this point we want to ignore the electrodes
           //the electrodes all have id's greater than getAtotal(snA)
-			printf("Entering ClusterChargePath\n");
+			//printf("Entering ClusterChargePath\n");
 	        ClusterChargePath(one,
                             ChargeID,
                             FutureSite,
@@ -2575,14 +2609,17 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			//For all the charges still active 
 			//need to decrease their dwelltime
 			UpdateOccTime(&snA,&one,tim, PF);
-			for( i = 1; i<nca; i++ ){
-				two = getCharge(*chA,getE(Sequence,i,1));
+      int decayed_sites = 0;
+      matrix decayed_Sites = newMatrix(1,1);
+			for( i = 1; i<=nca; i++ ){
+				two = getCharge(*chA,(int)getE(Sequence,i,1));
+        //printf("Grabbing all charges %d\n",(int)getE(Sequence,i,1));
 				/*if(getDwel(two)>1){
 					printf("Dwelltime excessive %g\n",getDwel(two));
-					printf("tim to be minused %g\n",tim);
-				  printChargeA(*chA);
 					exit(1);
 				}*/
+				//printf("tim to be minused %g Charge id %g\n",tim,getE(Sequence,i,1));
+				//printChargeA(*chA);
 				MinusDwel(two,tim);
         // For every charge we need to check to see if the charge
         // decayed or not. If it does we also need to recalculate 
@@ -2614,17 +2651,50 @@ int randomWalk( SNarray snA,int CheckptNum,\
                                      electricEnergyX,
                                      electricEnergyY,
                                      electricEnergyZ,
-                                     MarcusCoeff);
+                                     MarcusCoeff,
+                                     t);
+          //printf("decay_val %d\n",decay_val);
+          //fflush(stdout);
           if(decay_val==2){
             // This means the site decayed so we need to update the time
             // the charge will spend on the site. 
           
-            double tim_new = 1/getsum(getSN(snA,getCx(two),getCy(two),getCz(two)));
-            setDwel(two, -log((double) rand()/RAND_MAX)*tim_new);
+            double tim_new = 1/getsum(getSN(snA,xxx,yyy,zzz));
+            //printf("tim_new %g\n",tim_new);
+            //if(tim_new<0){
+            //  printf("tim_new is less than 0\n");
+            //}
+            double new_dwell = -log((double) rand()/RAND_MAX)*tim_new;
+            //printf("new_dwell %g\n",new_dwell);
+            //fflush(stdout);
+            setDwel(two,new_dwell );
+            //printf("Setting Dwell\n");
+            //fflush(stdout);
+            //updateSequence(nca, *chA, &Sequence, i);
+            decayed_sites++;
+            if(decayed_sites>getRows(decayed_Sites)){
+              //printf("Resizing\n");
+              //fflush(stdout);
+              resizeRow(&decayed_Sites,getRows(decayed_Sites)+1);
+            }
+            setE(decayed_Sites,decayed_sites,1,getE(Sequence,i,1)); 
+            //printf("setting decay id of Charge %d with new dwell time %g\n",(int)getE(Sequence,i,1),new_dwell);
+            //fflush(stdout);
           } 
+        
         }
+        //printf("Updating OccTime\n");
+        //fflush(stdout);
 				UpdateOccTime(&snA, &two,tim, PF);
 			}
+      if(decayed_sites>0){
+        for(int dec=1;dec<=getRows(decayed_Sites);dec++){
+          //printf("Updating placement of site %d\n",(int)getE(decayed_Sites,dec,1));
+          updateSequence(nca,*chA,&Sequence,(int)getE(decayed_Sites,dec,1));
+        }
+      }
+      deleteMatrix(&decayed_Sites);
+
 			// *********************************************************************
 
 			//This is used to keep track of whether or not the charge exited at
@@ -2816,13 +2886,12 @@ int randomWalk( SNarray snA,int CheckptNum,\
 						//printf("Finished Printing to end pt file\n");
 					}
 					ChargeClosure(elXf, &one, &Sequence, &nc, &nca, &TotalCollected, Ntot);
-					getE(Sequence,1,1);
 					
-					ID2 = getE(Sequence,1,1);
+					ID2 = (int)getE(Sequence,1,1);
 
 					for(i=0; i<Ntot-1;i++){
 						//Updating the waiting queue of charges
-						ID = getE(Sequence,i+2,1);
+						ID = (int) getE(Sequence,i+2,1);
 						setE(Sequence,i+1,1,ID);
 					}
 
@@ -2845,11 +2914,11 @@ int randomWalk( SNarray snA,int CheckptNum,\
 						//printf("Finished Printing to end pt file\n");
 					}
 					ChargeClosure(elYr, &one, &Sequence, &nc, &nca, &TotalCollected, Ntot);
-					ID2 = getE(Sequence,1,1);
+					ID2 = (int)getE(Sequence,1,1);
 
 					for(i=0; i<Ntot-1;i++){
 						//Updating the waiting queue of charges
-						ID = getE(Sequence,i+2,1);
+						ID = (int) getE(Sequence,i+2,1);
 						setE(Sequence,i+1,1,ID);
 					}
 
@@ -2878,11 +2947,11 @@ int randomWalk( SNarray snA,int CheckptNum,\
 					//from 0 to Ntot-1;
 					//Placing the charge that just reached the electrode to 
 					//the back of the list
-					ID2 = getE(Sequence,1,1);
+					ID2 = (int)getE(Sequence,1,1);
 
 					for(i=0; i<Ntot-1;i++){
 						//Updating the waiting queue of charges
-						ID = getE(Sequence,i+2,1);
+						ID = (int) getE(Sequence,i+2,1);
 						setE(Sequence,i+1,1,ID);
 					}
 
@@ -3008,6 +3077,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 	return 0;
 }
 
+// Updates the time that a charge spend on a node
 int UpdateOccTime(SNarray * snA,Charge * ch, double time, ParameterFrame PF){
 
   #ifdef _ERROR_CHECKING_ON_
@@ -4955,7 +5025,7 @@ int Save_CheckPt(char * FileName, int * CheckptNum, SNarray snA,\
 		fprintf(CheckOut,"\n%d\n\n",getChargeA_len(chA));
 
 		for(element=0;element<getChargeA_len(chA);element++){
-			ID = getE(Sequence,element+1,1);
+			ID = (int) getE(Sequence,element+1,1);
 			ch = getCharge(chA,element);
 			//x y z ChargeID Xdist Dwelltime FutureSite
 			fprintf(CheckOut,"%d\t%d\t%d\t%d\t%d\t%g\t%d\n",getCx(ch),getCy(ch),getCz(ch),\
@@ -5075,7 +5145,7 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 			//printf("Number of Rows of Xelec_Source %d\n",getRows(Xelec_Source));
 
 			for(i=1;i<=getRows(timeArray);i++){
-				if(getE(timeArray,i,1)!=0){
+				if((int)getE(timeArray,i,1)!=0){
 
 					if(ElectricFieldX!=0){
 						//Time [s] Xcurrent [Amps] Source [unitless] Drain [unitless] System [unitless] DriftVelocity [m/s] Mobility [cm2/Vs]
@@ -5109,7 +5179,7 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 	}else{
 		if(YElecOn == 1){
 			for(i=1;i<=getRows(timeArray);i++){	
-				if(getE(timeArray,i,1)!=0){
+				if((int)getE(timeArray,i,1)!=0){
 					if(ElectricFieldY!=0){
 						//Time [s] Xcurrent [Amps] Source [unitless] Drain [unitless] System [unitless] DriftVelocity [m/s] Mobility [cm2/Vs]
 						fprintf(Yout,"%g \t %g \t %g \t %g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Ycurrent,i,1),\
@@ -5226,10 +5296,10 @@ int ChargeElectrode(Electrode el, Charge * one, matrix * Sequence, ChargeArray c
 	}
 	//Set Dwell time to that of the electrode
 	double tim = 1/getElectrode_Sum(el); 
-  if(-log((double)rand()/RAND_MAX)*tim<=0){
-    printf("ERROR in ChargeElectrode dwelltime less than or equal to 0\n");
-    exit(1);
-  }
+  //if(-log((double)rand()/RAND_MAX)*tim<=0){
+  //  printf("ERROR in ChargeElectrode dwelltime less than or equal to 0\n");
+  //  exit(1);
+  //}
 	setDwel(*one, -log((double)rand()/RAND_MAX)*tim);
 
 	if(tim>1){
@@ -5244,6 +5314,136 @@ int ChargeElectrode(Electrode el, Charge * one, matrix * Sequence, ChargeArray c
 
 }
 
+/* update the whole sequence */
+int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int IDCharge){
+
+	if( chA== NULL || Sequence==NULL || nca<0 || IDCharge<0){
+    printf("ERROR in updateSequence\n");
+    exit(1);
+		return -1;
+	}
+
+  //printf("Updating Sequence\n");
+  //fflush(stdout);
+	int ID;
+  Charge chi;
+  Charge chj;
+  int Indx_charge_in_Sequence;
+  // Step one find the index of the charge
+  int i;
+  for(i=1;i<=nca;i++){
+    ID = (int)getE(*Sequence,i,1); 
+    if(ID==IDCharge){
+      Indx_charge_in_Sequence = i;
+      break;
+    }
+  }
+  if(i>nca){
+    printf("We have a problem i is large than the number of active charges and we have not found the chargeID\n");
+    exit(1);
+  }
+
+  // Id of the charge
+  //printf("Gettting Charge index %d active charges %d \n",Indx_charge_in_Sequence, nca);
+  //fflush(stdout);
+
+	int high = nca;
+  //printf("Gettting ID %d ChargeID %d\n",ID,IDCharge);
+  //fflush(stdout);
+  chi = getCharge(chA,ID);
+  //printf("nca %d\n",nca);
+  for(int i=1;i<=nca;i++){
+  //  printf("i %d\n",i);
+ // fflush(stdout);
+    if(i!=Indx_charge_in_Sequence){
+      //printf("Grabbed Charge id %g\n",getE(*Sequence,i,1));
+      chj = getCharge(chA,(int)getE(*Sequence,i,1));
+      if(getDwel(chi)<getDwel(chj)){
+        //printf("high %d\n",high);
+        high = i;
+        break;
+      }
+    }
+  }
+  //printf("high %d Indx %d\n",high,Indx_charge_in_Sequence);
+  if(high<Indx_charge_in_Sequence){
+    for(int j=Indx_charge_in_Sequence;j>high;j--){
+      setE(*Sequence,j,1,getE(*Sequence,j-1,1));
+    }
+    setE(*Sequence,high,1,(double)IDCharge);
+  }else{
+    for(int j=Indx_charge_in_Sequence;j<(high-1);j++){
+      setE(*Sequence,j,1,getE(*Sequence,j+1,1));
+    }
+    setE(*Sequence,(high-1),1,(double)IDCharge);
+  }
+  //printf("Finished updating\n");
+  //fflush(stdout);
+	return 0;
+}
+
+/*// I  believe this updates the sequence
+int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int Indx_charge_in_Sequence){
+
+	if( chA== NULL || Sequence==NULL || nca<0 || Indx_charge_in_Sequence<0){
+    printf("ERROR in updateSequence\n");
+    exit(1);
+		return -1;
+	}
+
+  printf("Updating Sequence\n");
+  fflush(stdout);
+	int i;
+	int low;
+	int high;
+	int middle;
+	int ID;
+  int newID;
+  Charge chi;
+  Charge chj;
+
+  // Id of the charge
+  printf("Gettting Charge index %d active charges %d \n",Indx_charge_in_Sequence, nca);
+  fflush(stdout);
+	ID = (int) getE(*Sequence,Indx_charge_in_Sequence,1);
+
+	low = 1;
+	high = nca;
+  printf("Gettting ID %d\n",ID);
+  fflush(stdout);
+  chi = getCharge(chA,ID);
+  printf("nca %d\n",nca);
+  for(int i=1;i<=nca;i++){
+    printf("i %d\n",i);
+  fflush(stdout);
+    if(i!=Indx_charge_in_Sequence){
+      printf("Grabbed Charge id %g\n",getE(*Sequence,i,1));
+      chj = getCharge(chA,(int)getE(*Sequence,i,1));
+      if(getDwel(chi)<getDwel(chj)){
+        printf("high %d\n",high);
+        high = i;
+        break;
+      }
+    }
+  }
+  printf("high %d Indx %d\n",high,Indx_charge_in_Sequence);
+  if(high<Indx_charge_in_Sequence){
+    for(int j=Indx_charge_in_Sequence;j>high;j--){
+      setE(*Sequence,j,1,getE(*Sequence,j-1,1));
+    }
+    setE(*Sequence,high,1,Indx_charge_in_Sequence);
+  }else{
+    for(int j=Indx_charge_in_Sequence;j<high;j++){
+      setE(*Sequence,j,1,getE(*Sequence,j+1,1));
+    }
+    setE(*Sequence,high,1,Indx_charge_in_Sequence);
+  }
+  printf("Finished updating\n");
+  fflush(stdout);
+	return 0;
+}
+*/
+// I  believe this resorts the sequence
 int insertDwelltimePos(const int nca, ChargeArray chA, matrix * Sequence){
 
 	if( chA== NULL || Sequence==NULL || nca<0){
@@ -5260,7 +5460,7 @@ int insertDwelltimePos(const int nca, ChargeArray chA, matrix * Sequence){
   Charge chj;
 
 	//Charge id of first charge is the sequence
-	ID = getE(*Sequence,1,1);
+	ID = (int) getE(*Sequence,1,1);
 
 	low = 2;
 	high = nca;
@@ -5268,7 +5468,7 @@ int insertDwelltimePos(const int nca, ChargeArray chA, matrix * Sequence){
 	while(low<=high){
 		middle = (low+high)/2;
 		//Chi is a probe into the sequence array
-		chi = getCharge(chA,getE(*Sequence,middle,1));
+		chi = getCharge(chA,(int)getE(*Sequence,middle,1));
 		chj = getCharge(chA,ID);
 
 		if( getDwel(chi) > getDwel(chj)){
@@ -5288,7 +5488,7 @@ int insertDwelltimePos(const int nca, ChargeArray chA, matrix * Sequence){
 	//stored in middle should refer to a dwelltime
 	//that is just less than that of charge chj
 	for(i=1; i<high; i++){
-		newID = getE( *Sequence,i+1,1);
+		newID = (int)getE( *Sequence,i+1,1);
 		setE( *Sequence,i,1,newID);
 	}
 
@@ -6153,7 +6353,7 @@ int HoppingToSurroundingSites(SiteNode site, int codeX, int codeY, int codeZ){
 	return l;
 }
 
-int printFileDecay(int x, int y, int z, double time){
+int printFileDecay(int x, int y, int z,const long double time){
 
 	char buf[256];
 	snprintf(buf, sizeof buf,"%s","SiteDecay.txt");
@@ -6163,7 +6363,7 @@ int printFileDecay(int x, int y, int z, double time){
     printf("ERROR! unable to open SiteDecay.txt file\n");
     return -1;
   }else{
-    fprintf(DecayOut,"%g %d %d %d\n",time,x,y,z);
+    fprintf(DecayOut,"%Lg %d %d %d\n",time,x,y,z);
     fclose(DecayOut);
   }
   return 0;

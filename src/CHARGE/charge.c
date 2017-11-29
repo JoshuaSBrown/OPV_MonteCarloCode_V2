@@ -444,6 +444,17 @@ int MinusDwel(Charge ch, double dw){
 		return -1; 
   }
   #endif
+  if((ch->dwelltime-dw)<0){
+		#ifdef _ERROR_
+    printf("ERROR dwelltime is now negative in MinusDwel %g\n",ch->dwelltime-dw);
+    printf("      time minused %g\n",dw);
+    printf("Charge before change\n");
+    printCharge(ch);
+    #endif
+    #ifdef _FORCE_HARD_CRASH_
+    exit(1);
+    #endif
+  }
 	ch->dwelltime-=dw;
 	return 0; 
 }

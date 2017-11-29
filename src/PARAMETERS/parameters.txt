@@ -4,9 +4,9 @@
 method 0 
 
 //Number of nodes along the x-axis, y-axis and z-axis  
-SLength 10
-SWidth 10
-SHeight 10
+SLength 100
+SWidth 30
+SHeight 30
 
 //Defines whether sides are periodic or not
 // 0 - means non-periodic
@@ -107,7 +107,7 @@ D 20E14
 TCount 1
 
 //Number of charges injected per time step
-NCh 10
+NCh 50
 
 //Total number of charges passed through the system
 Ntot TCount*NCh
