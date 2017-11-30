@@ -2618,9 +2618,9 @@ int randomWalk( SNarray snA,int CheckptNum,\
       matrix decayed_Sites = newMatrix(1,1);
       // Do not minus from site 1 because tim is the old hop time whereas
       // site 1 now has the new hop time 
-      if(tim>getDwel(one)){
-        printf("Site thats moving %g\n",getE(Sequence,1,1));
-      }
+      //if(tim>getDwel(one)){
+      //  printf("Site thats moving %g\n",getE(Sequence,1,1));
+      //}
 			for( i = 1; i<=nca; i++ ){
 				two = getCharge(*chA,(int)getE(Sequence,i,1));
         //printf("Grabbing all charges %d\n",(int)getE(Sequence,i,1));
@@ -5358,10 +5358,10 @@ int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int dec, m
   }
 
   // Id of the charge
-  printf("Gettting Charge index %d active charges %d \n",Indx_charge_in_Sequence, nca);
-  fflush(stdout);
+  //printf("Gettting Charge index %d active charges %d \n",Indx_charge_in_Sequence, nca);
+  //fflush(stdout);
 
-	int high = nca;
+	int high = nca+1;
   //printf("Gettting ID %d ChargeID %d\n",ID,IDCharge);
   //fflush(stdout);
   chi = getCharge(chA,ID);
@@ -5373,13 +5373,14 @@ int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int dec, m
       //printf("Grabbed Charge id %g\n",getE(*Sequence,i,1));
       //Make sure the charge is not one of the ones that has decayed
       bool ignore = false;    
-      for(int k=dec;k<=getRows(Decayed_Sites);k++){
+      for(int k=(dec+1);k<=getRows(Decayed_Sites);k++){
         if(getE(*Sequence,i,1)==getE(Decayed_Sites,k,1)){
           ignore = true;
           break;
         }
       }
       chj = getCharge(chA,(int)getE(*Sequence,i,1));
+      // Find the first index that is greater than i and then exit
       if(getDwel(chi)<getDwel(chj) && !ignore){
         //printf("high %d\n",high);
         high = i;
@@ -5387,17 +5388,28 @@ int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int dec, m
       }
     }
   }
-  printf("high %d Indx %d\n",high,Indx_charge_in_Sequence);
+
+    //printf("high %d Indx %d \n",high,Indx_charge_in_Sequence);
   if(high<Indx_charge_in_Sequence){
     for(int j=Indx_charge_in_Sequence;j>high;j--){
       setE(*Sequence,j,1,getE(*Sequence,j-1,1));
     }
     setE(*Sequence,high,1,(double)IDCharge);
-  }else{
-    for(int j=Indx_charge_in_Sequence;j<high;j++){
+  }else if(high>Indx_charge_in_Sequence){
+    //if(high<nca){
+    //printf("high+1 %d Value of charge site %g Charge dwell %g\n",high+1,getE(*Sequence,high+1,1),getDwel(getCharge(chA,(int)getE(*Sequence,high+1,1))));
+    //}
+    //if(high<=nca){
+    //printf("high %d Value of charge site %g Charge dwell %g\n",high,getE(*Sequence,high,1),getDwel(getCharge(chA,(int)getE(*Sequence,high,1))));
+    //}
+    //printf("high-1 %d Value of charge site %g Charge dwell %g\n",high-1,getE(*Sequence,high-1,1),getDwel(getCharge(chA,(int)getE(*Sequence,high-1,1))));
+    //printf("Indx %d value of Charge site %g Charge dwell %g\n",Indx_charge_in_Sequence,getE(*Sequence,Indx_charge_in_Sequence,1),getDwel(getCharge(chA,(int)getE(*Sequence,Indx_charge_in_Sequence,1))));
+
+    for(int j=Indx_charge_in_Sequence;j<(high-1);j++){
       setE(*Sequence,j,1,getE(*Sequence,j+1,1));
     }
-    setE(*Sequence,high,1,(double)IDCharge);
+    //printf("Setting high-1 %d equal to IDCharge %d\n",high-1,IDCharge);
+    setE(*Sequence,(high-1),1,(double)IDCharge);
   }
   //printf("Finished updating\n");
   //fflush(stdout);
@@ -5418,7 +5430,7 @@ int checkSequence(const int nca, ChargeArray chA, matrix * Sequence){
       printf("ERROR Occurred with Charges %g and %g\n",getE(*Sequence,i,1),getE(*Sequence,i+1,1));
       printf("      and times of charges  %g and %g\n",getDwel(chi),getDwel(chj));
       for(int j=1;j<=nca;j++){
-        printf("Charge ID %g Time %g\n",getE(*Sequence,j,1),getDwel(getCharge(chA,(int)getE(*Sequence,j,1))));
+        printf("%d Charge ID %g Time %g\n",j,getE(*Sequence,j,1),getDwel(getCharge(chA,(int)getE(*Sequence,j,1))));
       }
       fflush(stdout);
       exit(1);

@@ -4,9 +4,9 @@
 method 0 
 
 //Number of nodes along the x-axis, y-axis and z-axis  
-SLength 100
-SWidth 30
-SHeight 30
+SLength 200
+SWidth 200
+SHeight 200
 
 //Defines whether sides are periodic or not
 // 0 - means non-periodic
@@ -78,7 +78,7 @@ ImageCharge 0
 IntrinsicFermi -5.3
 
 //Voltage across a single system in x, y and z [V]
-VoltageX 1.0
+VoltageX 5.0
 VoltageY 0.0
 VoltageZ 0.0
 
@@ -107,7 +107,7 @@ D 20E14
 TCount 1
 
 //Number of charges injected per time step
-NCh 50
+NCh 4000
 
 //Total number of charges passed through the system
 Ntot TCount*NCh
@@ -197,7 +197,7 @@ DecayOn 2
 
 //Decay Prob, each time a hop is made, this is the probability
 //the site decays as a value between 0 - 1
-DecayProb 0.0001
+DecayProb 0.00001
 
 // Decay time, will not be used unless DecayOn is set to 2 units seconds
 DecayTime 1E-12
