@@ -2701,7 +2701,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
         for(int dec=1;dec<=getRows(decayed_Sites);dec++){
           //printf("Updating placement of site %d\n",(int)getE(decayed_Sites,dec,1));
           printf("Site that decayed %g\n",getE(decayed_Sites,dec,1));
-          updateSequence(nca,*chA,&Sequence,dec,decayed_sites);
+          updateSequence(nca,*chA,&Sequence,dec,decayed_Sites);
         }
         checkSequence(nca,*chA,&Sequence);
       }
@@ -5329,6 +5329,7 @@ int ChargeElectrode(Electrode el, Charge * one, matrix * Sequence, ChargeArray c
 /* update the whole sequence */
 int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int dec, matrix Decayed_Sites){
 
+  
 	if( chA== NULL || Sequence==NULL || nca<0 || dec<0){
     printf("ERROR in updateSequence\n");
     exit(1);
@@ -5357,8 +5358,8 @@ int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int dec, m
   }
 
   // Id of the charge
-  //printf("Gettting Charge index %d active charges %d \n",Indx_charge_in_Sequence, nca);
-  //fflush(stdout);
+  printf("Gettting Charge index %d active charges %d \n",Indx_charge_in_Sequence, nca);
+  fflush(stdout);
 
 	int high = nca;
   //printf("Gettting ID %d ChargeID %d\n",ID,IDCharge);
@@ -5386,7 +5387,7 @@ int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int dec, m
       }
     }
   }
-  //printf("high %d Indx %d\n",high,Indx_charge_in_Sequence);
+  printf("high %d Indx %d\n",high,Indx_charge_in_Sequence);
   if(high<Indx_charge_in_Sequence){
     for(int j=Indx_charge_in_Sequence;j>high;j--){
       setE(*Sequence,j,1,getE(*Sequence,j-1,1));
