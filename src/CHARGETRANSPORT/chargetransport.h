@@ -235,7 +235,10 @@ int ChargeSystem(int * nc, Electrode el, const int nca, matrix Sequence, ChargeA
  */
 int ChargeClosure(Electrode el, Charge * one, matrix * Sequence, int * nc,int * nca, int * TotalCollected, int Ntot);
 
-int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int ChargeID);
+// Return -1 if error otherwise return 0
+int checkSequence(const int nca, ChargeArray chA, matrix *Sequence);
+
+int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int ind, matrix Decayed_Sites);
 
 /* After a charge makes an action (tries to hop or does hop)
 	 a new dwell time is assigned to it. The order by which charges

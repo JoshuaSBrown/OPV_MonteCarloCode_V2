@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <stdbool.h>
 
 #include "chargetransport.h"
 #include "../PARAMETERS/read.h"
@@ -2615,6 +2616,11 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			UpdateOccTime(&snA,&one,tim, PF);
       int decayed_sites = 0;
       matrix decayed_Sites = newMatrix(1,1);
+      // Do not minus from site 1 because tim is the old hop time whereas
+      // site 1 now has the new hop time 
+      if(tim>getDwel(one)){
+        printf("Site thats moving %g\n",getE(Sequence,1,1));
+      }
 			for( i = 1; i<=nca; i++ ){
 				two = getCharge(*chA,(int)getE(Sequence,i,1));
         //printf("Grabbing all charges %d\n",(int)getE(Sequence,i,1));
@@ -2694,11 +2700,13 @@ int randomWalk( SNarray snA,int CheckptNum,\
       if(decayed_sites>0){
         for(int dec=1;dec<=getRows(decayed_Sites);dec++){
           //printf("Updating placement of site %d\n",(int)getE(decayed_Sites,dec,1));
-          updateSequence(nca,*chA,&Sequence,(int)getE(decayed_Sites,dec,1));
+          printf("Site that decayed %g\n",getE(decayed_Sites,dec,1));
+          updateSequence(nca,*chA,&Sequence,dec,decayed_sites);
         }
+        checkSequence(nca,*chA,&Sequence);
       }
       deleteMatrix(&decayed_Sites);
-
+      
 			// *********************************************************************
 
 			//This is used to keep track of whether or not the charge exited at
@@ -5319,14 +5327,15 @@ int ChargeElectrode(Electrode el, Charge * one, matrix * Sequence, ChargeArray c
 }
 
 /* update the whole sequence */
-int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int IDCharge){
+int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int dec, matrix Decayed_Sites){
 
-	if( chA== NULL || Sequence==NULL || nca<0 || IDCharge<0){
+	if( chA== NULL || Sequence==NULL || nca<0 || dec<0){
     printf("ERROR in updateSequence\n");
     exit(1);
 		return -1;
 	}
 
+  int IDCharge = (int)getE(Decayed_Sites,dec,1);
   //printf("Updating Sequence\n");
   //fflush(stdout);
 	int ID;
@@ -5361,8 +5370,16 @@ int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int IDChar
  // fflush(stdout);
     if(i!=Indx_charge_in_Sequence){
       //printf("Grabbed Charge id %g\n",getE(*Sequence,i,1));
+      //Make sure the charge is not one of the ones that has decayed
+      bool ignore = false;    
+      for(int k=dec;k<=getRows(Decayed_Sites);k++){
+        if(getE(*Sequence,i,1)==getE(Decayed_Sites,k,1)){
+          ignore = true;
+          break;
+        }
+      }
       chj = getCharge(chA,(int)getE(*Sequence,i,1));
-      if(getDwel(chi)<getDwel(chj)){
+      if(getDwel(chi)<getDwel(chj) && !ignore){
         //printf("high %d\n",high);
         high = i;
         break;
@@ -5376,14 +5393,38 @@ int updateSequence(const int nca, ChargeArray chA, matrix * Sequence, int IDChar
     }
     setE(*Sequence,high,1,(double)IDCharge);
   }else{
-    for(int j=Indx_charge_in_Sequence;j<(high-1);j++){
+    for(int j=Indx_charge_in_Sequence;j<high;j++){
       setE(*Sequence,j,1,getE(*Sequence,j+1,1));
     }
-    setE(*Sequence,(high-1),1,(double)IDCharge);
+    setE(*Sequence,high,1,(double)IDCharge);
   }
   //printf("Finished updating\n");
   //fflush(stdout);
 	return 0;
+}
+
+// Simple check to ensure the sequence is correctly ordered
+int checkSequence(const int nca, ChargeArray chA, matrix * Sequence){
+  
+  Charge chi;
+  Charge chj;
+  for(int i=1;i<nca;i++){
+    chi = getCharge(chA,(int)getE(*Sequence,i,1));
+    chj = getCharge(chA,(int)getE(*Sequence,i+1,1));
+  
+    if(getDwel(chi)>getDwel(chj)){
+      printf("ERROR Sequence is now messed up. PrintingSequence\n");
+      printf("ERROR Occurred with Charges %g and %g\n",getE(*Sequence,i,1),getE(*Sequence,i+1,1));
+      printf("      and times of charges  %g and %g\n",getDwel(chi),getDwel(chj));
+      for(int j=1;j<=nca;j++){
+        printf("Charge ID %g Time %g\n",getE(*Sequence,j,1),getDwel(getCharge(chA,(int)getE(*Sequence,j,1))));
+      }
+      fflush(stdout);
+      exit(1);
+      return -1;
+    }
+  }
+  return 0;
 }
 
 /*// I  believe this updates the sequence

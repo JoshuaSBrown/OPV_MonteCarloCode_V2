@@ -822,25 +822,26 @@ int setE(matrix mtx, int row, int col, double val) {
 		return -1;
   }
   #endif
-
-  matrix mtxtemp;
-	matrix mtxprev;
-	int rowtemp;
-	int currentRow = 0;
-	mtxtemp = mtx;
-	mtxprev = mtx;
-	while(row>(currentRow+mtxtemp->rows)){
-		currentRow+=mtxtemp->rows;
-		mtxprev = mtxtemp;
-		mtxtemp = mtxtemp->Extra;
-		if(mtxtemp==NULL){
-			printf("ERROR exceeded size of matrix without finding the correct row!\n");
-			return -1;
-		}
-	}
-	
-	rowtemp = row-currentRow;
-  ELEM(mtxprev, rowtemp, col) = val;
+//
+//  matrix mtxtemp;
+//	matrix mtxprev;
+//	int rowtemp;
+//	int currentRow = 0;
+//	mtxtemp = mtx;
+//	mtxprev = mtx;
+//	while(row>(currentRow+mtxtemp->rows)){
+//		currentRow+=mtxtemp->rows;
+//		mtxprev = mtxtemp;
+//		mtxtemp = mtxtemp->Extra;
+//		if(mtxtemp==NULL){
+//			printf("ERROR exceeded size of matrix without finding the correct row!\n");
+//			return -1;
+//		}
+//	}
+//	
+//	rowtemp = row-currentRow;
+//  ELEM(mtxprev, rowtemp, col) = val;
+  ELEM(mtx,row,col) = val;
   return 0;
 }
 
