@@ -296,6 +296,9 @@ int SaveDataPoint(int * CurrentInc, int * NumAvgVel      , int nc               
 int HoppingToSurroundingSites(SiteNode site, int codeX, int codeY, int codeZ);
 
 int printFileDecay(int x, int y, int z ,const long double time);
+
+int printFileChargeEnergy(const_SNarray snA, ChargeArray chA, matrix Sequence,
+                          int nca, long double time, ParameterFrame PF);
 /* This function prints out the energies of all the sites showing the effect
 	 of the electric field on the energies as well as the image force
 */

@@ -113,7 +113,7 @@ NCh 4000
 Ntot TCount*NCh
 
 //Time between injections of charges [s]
-TStep 1E-13
+TStep 1E-12
 
 //Number of time steps that pass before data is averaged
 Nstep_av 10
@@ -219,6 +219,11 @@ Vcv 0.0
 Tlag 0.0 
 
 //*****File Generation Options*****
+
+//Output the average energy of sites the charges are occupying
+//It will output data at every time TStep
+AvgChargeEnergyFile 1
+HopsBetweenSave 1000
 
 //Charge End point File .endpt file
 //File prints out the time it takes a charge

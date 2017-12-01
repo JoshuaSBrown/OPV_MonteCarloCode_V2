@@ -90,6 +90,7 @@ struct _ParameterFrame{
 	double Tlag;
 	int EndPtFile;
 	int NumChargesTrack;
+  int AvgChargeEnergyFile;
 	int PathFile;
 	int LogFile;
 };
@@ -197,6 +198,7 @@ ParameterFrame newParamFrame(void){
 	PF->Tlag             =0;
 	PF->EndPtFile        =0;
 	PF->NumChargesTrack  =0;
+  PF->AvgChargeEnergyFile = 0;
 	PF->PathFile         =0; 
 	PF->LogFile          =0;
 	return PF;
@@ -1401,6 +1403,22 @@ ParameterFrame newParamFrame_File(void){
 			exit(1);
 		}
 
+		check = match(buffer,"\nAvgChargeEnergyFile");
+		if(check!=-1){
+			position = (unsigned int)check;
+			intval = GrabInt(position, &buffer[0]);
+			printf("AvgChargeEnergyFile %d\n",intval);
+			PF->AvgChargeEnergyFile = intval;
+			if(PF->AvgChargeEnergyFile<0 || PF->AvgChargeEnergyFile>1){
+				printf("ERROR AvgChargeEnergyFile can only be set to 0 for off\n");
+				printf("or set to 1 for on\n");
+				exit(1);
+			}
+		}else{
+			printf("ERROR when reading file can not find AvgChargeEnergyFile!\n");
+			exit(1);
+		}
+
 		check = match(buffer,"\nPathFile");
 		if(check!=-1){
 			position = (unsigned int)check;
@@ -1467,7 +1485,7 @@ int ReadParameter(int * method,\
     int * MovieFrames    , double * CutOffTime       , int * DecayOn          ,\
     double * DecayProb   , double * DecayTime        , double * DecayDisplacement, double * Tcv           ,\
     double * Vcv         , double * Tlag             , int * EndPtFile        ,\
-		int * NumChargesTrack, int * PathFile            , int * LogFile          ){
+		int * NumChargesTrack, int * AvgChargeEnergyFile , int * PathFile            , int * LogFile          ){
 
 			char *buffer = NULL;
 			int position;
@@ -1876,6 +1894,10 @@ int ReadParameter(int * method,\
 				position = match(buffer, "\nNumChargesTrack");
 				*NumChargesTrack = GrabInt(position, &buffer[0] );
 				printf("NumChargesTrack %d\n",*NumChargesTrack);
+
+				position = match(buffer, "\nAvgChargeEnergyFile");
+				*AvgChargeEnergyFile = GrabInt(position, &buffer[0] );
+				printf("AvgChargeEnergyFile %d\n",*AvgChargeEnergyFile);
 
 				position = match(buffer, "\nPathFile");
 				*PathFile = GrabInt(position, &buffer[0] );
@@ -2870,6 +2892,14 @@ int PFset_NumChargesTrack(ParameterFrame PF, int NumChargesTrack){
 	return 0;
 }
 
+int PFset_AvgChargeEnergyFile(ParameterFrame PF, int AvgChargeEnergyFile){
+	if(PF==NULL || AvgChargeEnergyFile<0 || AvgChargeEnergyFile>1){
+		return -1;
+	}
+	PF->AvgChargeEnergyFile=AvgChargeEnergyFile;
+	return 0;
+}
+
 int PFset_PathFile(ParameterFrame PF, int PathFile){
 	if(PF==NULL || PathFile<0 || PathFile>1){
 		return -1;
@@ -3603,6 +3633,13 @@ int PFget_NumChargesTrack(ParameterFrame PF){
 		return -1;
 	}
 	return PF->NumChargesTrack;
+}
+
+int PFget_AvgChargeEnergyFile(ParameterFrame PF){
+	if(PF==NULL){
+		return -1;
+	}
+	return PF->AvgChargeEnergyFile;
 }
 
 int PFget_PathFile(ParameterFrame PF){

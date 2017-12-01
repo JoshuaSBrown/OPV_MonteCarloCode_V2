@@ -2572,6 +2572,10 @@ int randomWalk( SNarray snA,int CheckptNum,\
 
 				}
 
+        if(PFget_AvgChargeEnergyFile(PF)){
+          printFileChargeEnergy(snA, *chA, Sequence, nca, t,PF);
+        }
+
 				if((SaveCount%Nstep_av)==0){
 					//Saving Data
 					//printf("Saving Data\n");
@@ -6423,6 +6427,44 @@ int printFileDecay(int x, int y, int z,const long double time){
   }else{
     fprintf(DecayOut,"%Lg %d %d %d\n",time,x,y,z);
     fclose(DecayOut);
+  }
+  return 0;
+}
+
+int printFileChargeEnergy(const_SNarray snA, ChargeArray chA, matrix Sequence,
+          int nca, long double time, ParameterFrame PF){
+
+  char buf[256];
+  snprintf(buf,sizeof buf,"%s","AverageChargeEnergy");
+
+  FILE * ChargeEnergy;
+  if((ChargeEnergy = fopen(buf,"a"))==NULL){
+    printf("ERROR! unable to open AverageChargeEnergy\n");
+    return -1;
+  }else{
+    double Energy=0;
+    // Cycle through all the charges and add all the energies up
+    for(int r=1;r<=nca;r++){
+      Charge ch = getCharge(chA,(int)getE(Sequence,r,1));
+      int x, y, z;
+      x = (getCx(ch)+PFget_Len(PF))%PFget_Len(PF);
+      y = (getCy(ch)+PFget_Wid(PF))%PFget_Wid(PF);
+      z = (getCz(ch)+PFget_Hei(PF))%PFget_Hei(PF);
+      if(x<0){
+        x = PFget_Len(PF)-x;
+      }
+      if(y<0){
+        y = PFget_Wid(PF)-y;
+      }
+      if(z<0){
+        z = PFget_Hei(PF)-z;
+      }
+      SiteNode sn = getSN(snA, x,y,z);
+      Energy+=getEnergy(sn); 
+    }
+    Energy = Energy/((double)nca);
+    fprintf(ChargeEnergy,"%Lg %g\n",time,Energy);
+    fclose(ChargeEnergy);
   }
   return 0;
 }

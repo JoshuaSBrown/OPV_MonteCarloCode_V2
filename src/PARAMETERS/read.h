@@ -51,7 +51,7 @@ int ReadParameter(int * method,\
     int * MovieFrames      , double * CutOffTime    ,	int * DecayOn          ,\
     double * DecayProb     , double * DecayTime     , double * DecayDisplacement, double * Tcv           ,\
     double * Vcv           , double * Tlag          , int * EndPtFile        ,\
-		int * NumChargesTrack  , int * PathFile         , int * LogFile          );
+		int * NumChargesTrack  , int * AvgChargeEnergyFile, int * PathFile         , int * LogFile          );
 
 int deleteParamFrame(ParameterFrame * PF);
 
@@ -141,6 +141,7 @@ int PFset_Tcv(ParameterFrame PF, double Tcv);
 int PFset_Tlag(ParameterFrame PF, double Tlag);
 int PFset_EndPtFile(ParameterFrame PF, int EndPtFile);
 int PFset_NumChargesTrack(ParameterFrame PF, int NumChargesTrack);
+int PFset_AvgChargeEnergyFile(ParameterFrame PF, int AvgChargeEnergyFile);
 int PFset_PathFile(ParameterFrame PF, int PathFile);
 int PFset_LogFile(ParameterFrame PF, int LogFile);
 
@@ -227,6 +228,7 @@ double PFget_Vcv(ParameterFrame PF);
 double PFget_Tlag(ParameterFrame PF);
 int PFget_EndPtFile(ParameterFrame PF);
 int PFget_NumChargesTrack(ParameterFrame PF);
+int PFget_AvgChargeEnergyFile(ParameterFrame PF);
 int PFget_PathFile(ParameterFrame PF);
 int PFget_LogFile(ParameterFrame PF);
 #endif
