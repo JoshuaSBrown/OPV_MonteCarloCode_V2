@@ -2641,16 +2641,25 @@ int randomWalk( SNarray snA,int CheckptNum,\
         int xxx, yyy, zzz;
         if(PFget_Px(PF)){
           xxx = (getCx(two)+getAlen(snA))%getAlen(snA);
+          if(xxx<0){
+            xxx = getAlen(snA)+xxx;
+          }
         }else{
           xxx = getCx(two);
         }
         if(PFget_Py(PF)){
           yyy = (getCy(two)+getAwid(snA))%getAwid(snA);
+          if(yyy<0){
+            yyy = getAwid(snA)+yyy;
+          }
         }else{
           yyy = getCy(two);
         }
         if(PFget_Pz(PF)){
           zzz = (getCz(two)+getAhei(snA))%getAhei(snA);
+          if(zzz<0){
+            zzz = getAhei(snA)+zzz;
+          }
         }else{
           zzz = getCz(two);
         }
@@ -3136,13 +3145,22 @@ int UpdateOccTime(SNarray * snA,Charge * ch, double time, ParameterFrame PF){
 	ZElecOn = PFget_ZElecOn(PF);
 
 	if(XElecOn==0){
-		i=(i+getAlen(*snA))%(getAlen(*snA));	
+		i=(i+getAlen(*snA))%(getAlen(*snA));
+    if(i<0){
+      i=getAlen(*snA)+i;
+    }	
 	}
 	if(YElecOn==0){
 		j=(j+getAwid(*snA))%(getAwid(*snA));
+    if(j<0){
+      j=getAwid(*snA)+j;
+    }	
 	}
 	if(ZElecOn==0){
 		k=(k+getAhei(*snA))%(getAhei(*snA));
+    if(k<0){
+      k=getAhei(*snA)+k;
+    }	
 	}
 
 	if(i>=0 && i<SLength &&  j>=0 && j<SWidth && k>=0 && k<SHeight){
@@ -6451,13 +6469,13 @@ int printFileChargeEnergy(const_SNarray snA, ChargeArray chA, matrix Sequence,
       y = (getCy(ch)+PFget_Wid(PF))%PFget_Wid(PF);
       z = (getCz(ch)+PFget_Hei(PF))%PFget_Hei(PF);
       if(x<0){
-        x = PFget_Len(PF)-x;
+        x = PFget_Len(PF)+x;
       }
       if(y<0){
-        y = PFget_Wid(PF)-y;
+        y = PFget_Wid(PF)+y;
       }
       if(z<0){
-        z = PFget_Hei(PF)-z;
+        z = PFget_Hei(PF)+z;
       }
       SiteNode sn = getSN(snA, x,y,z);
       Energy+=getEnergy(sn); 

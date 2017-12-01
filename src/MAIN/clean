@@ -9,3 +9,4 @@ rm -f out2.txt
 rm -f gmon.out
 rm -f SiteDecay.txt
 rm -f Post*.xyz
+rm -f AverageChargeEnergy
