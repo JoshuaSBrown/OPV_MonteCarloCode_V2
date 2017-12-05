@@ -2257,7 +2257,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 				//Here we check to see if we record the data
 				//Nstep is used to determine how many timesteps pass
 				//before recording
-
+        printf("SaveTime %Lg TStep %g\n",SaveTime,TStep);
 				//Here we will check the method if CELIV will update the site hop rates
 				if(method==1){
 
@@ -5171,15 +5171,17 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 		printf("Error! unable to open X.txt\n");
 	}else{
 		if(XElecOn == 1){
-			//printf("Number of Rows of timeArray %d\n",getRows(timeArray));
-			//printf("Number of Rows of Xcurrent %d\n",getRows(Xcurrent));
-			//printf("Number of Rows of Xvelocity %d\n",getRows(Xvelocity));
-			//printf("Number of Rows of System %d\n",getRows(System));
-			//printf("Number of Rows of Xelec_Drain %d\n",getRows(Xelec_Drain));
-			//printf("Number of Rows of Xelec_Source %d\n",getRows(Xelec_Source));
-
+//			printf("Number of Rows of timeArray %d\n",getRows(timeArray));
+//			printf("Number of Rows of Xcurrent %d\n",getRows(Xcurrent));
+//			printf("Number of Rows of Xvelocity %d\n",getRows(Xvelocity));
+//			printf("Number of Rows of System %d\n",getRows(System));
+//			printf("Number of Rows of Xelec_Drain %d\n",getRows(Xelec_Drain));
+//			printf("Number of Rows of Xelec_Source %d\n",getRows(Xelec_Source));
+//      
+//   
 			for(i=1;i<=getRows(timeArray);i++){
-				if((int)getE(timeArray,i,1)!=0){
+
+				if(getE(timeArray,i,1)!=0.0){
 
 					if(ElectricFieldX!=0){
 						//Time [s] Xcurrent [Amps] Source [unitless] Drain [unitless] System [unitless] DriftVelocity [m/s] Mobility [cm2/Vs]
@@ -5194,7 +5196,7 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 			}
 		}else{
 			for(i=1;i<=getRows(timeArray);i++){	
-				if(getE(timeArray,i,1)!=0){
+				if(getE(timeArray,i,1)!=0.0){
 					if(ElectricFieldX!=0){
 						//Time [s] Xcurrent [Amps]  DriftVelocity [m/s] Mobility [cm2/Vs]
 						fprintf(Xout,"%g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Xcurrent,i,1),getE(Xvelocity,i,1),getE(Xvelocity,i,1)/ElectricFieldX*1000);
@@ -5213,7 +5215,7 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 	}else{
 		if(YElecOn == 1){
 			for(i=1;i<=getRows(timeArray);i++){	
-				if((int)getE(timeArray,i,1)!=0){
+				if(getE(timeArray,i,1)!=0.0){
 					if(ElectricFieldY!=0){
 						//Time [s] Xcurrent [Amps] Source [unitless] Drain [unitless] System [unitless] DriftVelocity [m/s] Mobility [cm2/Vs]
 						fprintf(Yout,"%g \t %g \t %g \t %g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Ycurrent,i,1),\
@@ -5228,7 +5230,7 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 			}
 		}else{
 			for(i=1;i<=getRows(timeArray);i++){	
-				if(getE(timeArray,i,1)!=0){
+				if(getE(timeArray,i,1)!=0.0){
 					if(ElectricFieldY!=0){
 						//Time [s] Ycurrent [Amps]  DriftVelocity [m/s] Mobility [cm2/Vs]
 						fprintf(Yout,"%g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Ycurrent,i,1),getE(Yvelocity,i,1),getE(Yvelocity,i,1)/ElectricFieldY*1000);
@@ -5247,7 +5249,7 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 	}else{
 		if(ZElecOn == 1){
 			for(i=1;i<=getRows(timeArray);i++){	
-				if(getE(timeArray,i,1)!=0){
+				if(getE(timeArray,i,1)!=0.0){
 					if(ElectricFieldZ!=0){
 						//Time [s] Zcurrent [Amps] Source [unitless] Drain [unitless] System [unitless] DriftVelocity [m/s] Mobility [cm2/Vs]
 						fprintf(Zout,"%g \t %g \t %g \t %g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Zcurrent,i,1),\
@@ -5261,7 +5263,7 @@ int printTransportData( matrix System, matrix timeArray, matrix Xcurrent, matrix
 			}
 		}else{
 			for(i=1;i<=getRows(timeArray);i++){	
-				if(getE(timeArray,i,1)!=0){
+				if(getE(timeArray,i,1)!=0.0){
 					if(ElectricFieldZ!=0){
 						//Time [s] Zcurrent [Amps]  DriftVelocity [m/s] Mobility [cm2/Vs]
 						fprintf(Zout,"%g \t %g \t %g \t %g\n",getE(timeArray,i,1),getE(Zcurrent,i,1),getE(Zvelocity,i,1),getE(Zvelocity,i,1)/ElectricFieldZ*1000);
@@ -5593,11 +5595,13 @@ int SaveDataPoint(int * CurrentInc, int * NumAvgVel, int nc, int XElecOn, int YE
   double q = 1.602E-19;
   double val;
 	double vel;
+  //printf("Calling Save Data Point\n");
 
 	//Might need to resize the matrix if it becomes to large
 	if((*CurrentInc)>getRows(*Xcurrent)){
 		if (*CurrentInc >= 512 ){
-
+      
+      //printf("CurrentInc %d\n",*CurrentInc);
 			//Matrices have gotten to a size where they should be printed
 			//to a file and emptied to free memory
 			printTransportData(*System, *timeArray, *Xcurrent, *Ycurrent, *Zcurrent,\
