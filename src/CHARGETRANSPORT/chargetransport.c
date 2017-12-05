@@ -6485,7 +6485,7 @@ int printFileChargeEnergy(const_SNarray snA, ChargeArray chA, matrix Sequence,
       Energy+=getEnergy(sn); 
     }
     Energy = Energy/((double)nca);
-    fprintf(ChargeEnergy,"%Lg %g\n",time,Energy);
+    fprintf(ChargeEnergy,"%Lg %g %d\n",time,Energy,nca);
     fclose(ChargeEnergy);
   }
   return 0;
