@@ -2244,7 +2244,7 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			if(t==(t+(long double)tim)){
 				printf("Exceeded precision t+tim==t\n");
 				printf("t %Le tim %g\n",t,tim);
-				exit(1);
+//				exit(1);
 			}
 			
 			t += (long double) tim;
@@ -2513,14 +2513,14 @@ int randomWalk( SNarray snA,int CheckptNum,\
 			if(t==(long double)t+tim){
 				fprintf(stderr,"ERROR Exceeded precision t==t+tim\n");
 				fprintf(stderr,"t %Le tim %g\n",t,tim);
-				exit(1);
+//				exit(1);
 			}
 			t += (long double) tim;
 
 			if(tim==0){
 				fprintf(stderr,"Error tim is 0\n");
 				fprintf(stderr,"TimeTrack1 %Lg t %Lg\n",TimeTrack1,t);
-				exit(1);
+//				exit(1);
 			}
 			SaveTime += (long double)tim;
 			//The time the charge has been in the sample is updated
