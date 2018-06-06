@@ -71,8 +71,6 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	double SiteEnergy;
 	double SumEcor, SumEcor2;
 	double SumCor, SumCor2;
-	double MarcusJ0;
-	double MarcusCoeff;	
 	double CorRad=lambda*CutOff;
 	double CorRadtemp;
 	double percent;
@@ -89,370 +87,377 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	static const double hbar = 6.58211928E-16;
 	//printf("Value of fracSeed %e.\n",fracSeed);
 	SiteNode pN;
-	sites= SLength * SWidth * SHeight;
-	traps = (int)((double)sites * fraction);
-	seeds = (int)((double)sites * fracSeed);
+  //Calculating Marcus J0 coefficient assuming the Attempt to hop Rate
+  //is equivalent to the marcus coefficient at 300 K
+  double MarcusJ0 = pow( AttemptToHop*hbar*pow(4*reOrgEnergy*kB*300/M_PI,1/2),1/2);
 
-	//Calculating Marcus J0 coefficient assuming the Attempt to hop Rate
-	//is equivalent to the marcus coefficient at 300 K
-	MarcusJ0 = pow( AttemptToHop*hbar*pow(4*reOrgEnergy*kB*300/M_PI,1/2),1/2);
-	
-	//printf("Value of MarcusJ0 %g AttemptToHop %g kB %g\n",MarcusJ0, AttemptToHop, kB);
-	//Calculating full Marcus Coefficient;
-	MarcusCoeff = pow(MarcusJ0,2)/hbar * pow(M_PI/(4*reOrgEnergy*KT),1/2)*exp(-2*gamma*SiteDistance);
+  //printf("Value of MarcusJ0 %g AttemptToHop %g kB %g\n",MarcusJ0, AttemptToHop, kB);
+  //Calculating full Marcus Coefficient;
+  double MarcusCoeff = pow(MarcusJ0,2)/hbar * pow(M_PI/(4*reOrgEnergy*KT),1/2)*exp(-2*gamma*SiteDistance);
 
-	ratio = ((double)seeds)/((double)sites);
 
-	if (CorRad < SiteDistance) {
-		printf("WARNING CorRad is less than SiteDistance!!!\n");
-		printf("Neighbors are not within Correlation distance\n");
-		int temp=1;
-		while (temp*lambda< SiteDistance) {
-			temp++;
-		}
-		printf("Adjusted CutOff to %d\n", temp);
-		CorRad=temp*lambda;
-	}
+  if(PFget_LoadSiteEnergies(PF)==1){
+    // This means we will load the site energies from a file instead of generating them
+    loadFileEnergy(snA,PF);
 
-	printf("Value of Seeds %d.\n",seeds);
-	printf("Value of Sites %d.\n",sites);
-	printf("Value of Traps %d.\n",traps);
+  }else{
+    sites= SLength * SWidth * SHeight;
+    traps = (int)((double)sites * fraction);
+    seeds = (int)((double)sites * fracSeed);
 
-	if (seeds+traps > (sites) ){
-		seeds2=(sites) - traps;
-		printf("Total Sites %d.\n",sites);
-		printf("Traps %d.\n",traps);
-		printf("Sites to be Seeded %d.\n",seeds2);
-	}
+    ratio = ((double)seeds)/((double)sites);
 
-  matrix AsTr = NULL;
-	setDefaultSNa(snA);
-
-  /* Assigning Energies for traps */
-	if(traps!=0){
-		printf("Randomly determining which sites are traps & assigning energies.\n");
-    AsTr=newMatrix(traps,3);
-		percent=0;
-		i=0;
-		//Assign energies for traps
-		while(i < traps){
-			pN = getRandomSitePos( &ii, &jj, &kk, snA);
-			if (getInitE(pN)==0) {
-
-				if ( ((double)i)/((double)traps)>percent){
-					printf("Percent Complete %ld\n",(long int)(percent*100));
-					percent+=0.1;
-				}
-				setE(AsTr,i+1,1,(double)ii);
-				setE(AsTr,i+1,2,(double)jj);
-				setE(AsTr,i+1,3,(double)kk);
-
-				SiteEnergy = grn(Etrap, Tsigma);
-				setEnergy(pN,SiteEnergy);
-				setInitE(pN,1);
-				i++;
-			}
-		}
-		printf("Percent Complete %ld\n",(long int)(100));
-	}
-
-	//In the case that there are more correlated energies than assigned energies
-	//
-	if ( seeds+traps < sites/2 ){
-
-    matrix As = NULL;
-    if(seeds!=0){
-      printf("Seeds and trap assignment\n");
-      As=newMatrix(seeds,3);
-
-      if (As==NULL) {
-        printf("WARNING Malloc returned NULL for Assigned Matrix\n");
+    if (CorRad < SiteDistance) {
+      printf("WARNING CorRad is less than SiteDistance!!!\n");
+      printf("Neighbors are not within Correlation distance\n");
+      int temp=1;
+      while (temp*lambda< SiteDistance) {
+        temp++;
       }
-      i=0;
-      printf("Calculating Energies for Seeds\n");
+      printf("Adjusted CutOff to %d\n", temp);
+      CorRad=temp*lambda;
+    }
+
+    printf("Value of Seeds %d.\n",seeds);
+    printf("Value of Sites %d.\n",sites);
+    printf("Value of Traps %d.\n",traps);
+
+    if (seeds+traps > (sites) ){
+      seeds2=(sites) - traps;
+      printf("Total Sites %d.\n",sites);
+      printf("Traps %d.\n",traps);
+      printf("Sites to be Seeded %d.\n",seeds2);
+    }
+
+    matrix AsTr = NULL;
+    setDefaultSNa(snA);
+
+    /* Assigning Energies for traps */
+    if(traps!=0){
+      printf("Randomly determining which sites are traps & assigning energies.\n");
+      AsTr=newMatrix(traps,3);
       percent=0;
-      while( i < seeds) {
+      i=0;
+      //Assign energies for traps
+      while(i < traps){
         pN = getRandomSitePos( &ii, &jj, &kk, snA);
-        //if Site has not already been assigned energy
-        if ( getInitE(pN) == 0 ) {         
-          //Store the pointer in an array (Array contains sites that have been assigned energies)
-          if (((double)i)/((double)seeds)>percent) {
-            printf("Percent Complete %ld\n",(int long)(percent*100));
+        if (getInitE(pN)==0) {
+
+          if ( ((double)i)/((double)traps)>percent){
+            printf("Percent Complete %ld\n",(long int)(percent*100));
             percent+=0.1;
           }
-          setE(As,i+1,1,(double)ii);
-          setE(As,i+1,2,(double)jj);
-          setE(As,i+1,3,(double)kk);
-          //printf("Assigned locations to array\n");
-          if(SeedProt<2){
-            SiteEnergy = grn(E0, sigma);
-          }else if(SeedProt==2){
-            SiteEnergy = E0;
-          }
+          setE(AsTr,i+1,1,(double)ii);
+          setE(AsTr,i+1,2,(double)jj);
+          setE(AsTr,i+1,3,(double)kk);
 
-          if(i==0){
-            minEnergy = SiteEnergy;
-            maxEnergy = SiteEnergy;
-          }else{
-            if(SiteEnergy>maxEnergy){
-              maxEnergy = SiteEnergy;
-            }
-            if(SiteEnergy<minEnergy){
-              minEnergy = SiteEnergy;
-            }
-          }
-
+          SiteEnergy = grn(Etrap, Tsigma);
           setEnergy(pN,SiteEnergy);
           setInitE(pN,1);
           i++;
         }
       }
-      printf("Percent Complete %ld\n",(int long)(100));
-      //printVisitFreq(snA);
+      printf("Percent Complete %ld\n",(long int)(100));
     }
-		m=0;
-		printf("Calculating Energies for remaining sites\n");
-		percent=0;
-		for (i= 0; i < SLength; i++){
-			for(j = 0; j < SWidth; j++){
-				for(k = 0; k < SHeight; k++){
-        
-          /* For uncorrelated system*/
-          if(SeedProt==3){
 
-            SiteEnergy=grn(E0, sigma);
-            if(SiteEnergy>maxEnergy){
-              maxEnergy = SiteEnergy;
-            }
-            if(SiteEnergy<minEnergy){
-              minEnergy = SiteEnergy;
-            }
-            setEnergy(getSN(snA,i,j,k),SiteEnergy);
-            setInitE(getSN(snA,i,j,k),2);
-            if ( ((double)m)/((double)sites-(seeds+traps))>percent){
+    //In the case that there are more correlated energies than assigned energies
+    //
+    if ( seeds+traps < sites/2 ){
+
+      matrix As = NULL;
+      if(seeds!=0){
+        printf("Seeds and trap assignment\n");
+        As=newMatrix(seeds,3);
+
+        if (As==NULL) {
+          printf("WARNING Malloc returned NULL for Assigned Matrix\n");
+        }
+        i=0;
+        printf("Calculating Energies for Seeds\n");
+        percent=0;
+        while( i < seeds) {
+          pN = getRandomSitePos( &ii, &jj, &kk, snA);
+          //if Site has not already been assigned energy
+          if ( getInitE(pN) == 0 ) {         
+            //Store the pointer in an array (Array contains sites that have been assigned energies)
+            if (((double)i)/((double)seeds)>percent) {
               printf("Percent Complete %ld\n",(int long)(percent*100));
               percent+=0.1;
             }
-            m++;
+            setE(As,i+1,1,(double)ii);
+            setE(As,i+1,2,(double)jj);
+            setE(As,i+1,3,(double)kk);
+            //printf("Assigned locations to array\n");
+            if(SeedProt<2){
+              SiteEnergy = grn(E0, sigma);
+            }else if(SeedProt==2){
+              SiteEnergy = E0;
+            }
 
-          /* For Correlated system */
-          }else{
-          
-            SumEcor=0;
-            SumCor=0;
-            CorRadtemp=CorRad;
-
-            //printf("Initial ID %d initE %d\n",getIndex(snA,i,j,k), getInitE(getSN(snA,i,j,k)));
-            while (SumEcor==0 && getInitE(getSN(snA,i,j,k))==0){
-
-              SiteEnergy=grn(E0, sigma);
-
+            if(i==0){
+              minEnergy = SiteEnergy;
+              maxEnergy = SiteEnergy;
+            }else{
               if(SiteEnergy>maxEnergy){
                 maxEnergy = SiteEnergy;
               }
               if(SiteEnergy<minEnergy){
                 minEnergy = SiteEnergy;
               }
+            }
 
-              //assert(As!=NULL);
-              //Accounting for correlation from seeds
-              CorrCal(As, i,j,k, CorRadtemp, SiteEnergy, SiteDistance,snA, &SumCor, &SumEcor, &seed_dist,\
-                  SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
+            setEnergy(pN,SiteEnergy);
+            setInitE(pN,1);
+            i++;
+          }
+        }
+        printf("Percent Complete %ld\n",(int long)(100));
+        //printVisitFreq(snA);
+      }
+      m=0;
+      printf("Calculating Energies for remaining sites\n");
+      percent=0;
+      for (i= 0; i < SLength; i++){
+        for(j = 0; j < SWidth; j++){
+          for(k = 0; k < SHeight; k++){
+          
+            /* For uncorrelated system*/
+            if(SeedProt==3){
 
-              //Accounting for correlation from traps
-              if (traps!=0){
-                if(SeedProt==0){
-                  printf("WARNING: Effect of both seeds and traps has not been correctly accounted for SeedProt = 0!\n");
+              SiteEnergy=grn(E0, sigma);
+              if(SiteEnergy>maxEnergy){
+                maxEnergy = SiteEnergy;
+              }
+              if(SiteEnergy<minEnergy){
+                minEnergy = SiteEnergy;
+              }
+              setEnergy(getSN(snA,i,j,k),SiteEnergy);
+              setInitE(getSN(snA,i,j,k),2);
+              if ( ((double)m)/((double)sites-(seeds+traps))>percent){
+                printf("Percent Complete %ld\n",(int long)(percent*100));
+                percent+=0.1;
+              }
+              m++;
+
+            /* For Correlated system */
+            }else{
+            
+              SumEcor=0;
+              SumCor=0;
+              CorRadtemp=CorRad;
+
+              //printf("Initial ID %d initE %d\n",getIndex(snA,i,j,k), getInitE(getSN(snA,i,j,k)));
+              while (SumEcor==0 && getInitE(getSN(snA,i,j,k))==0){
+
+                SiteEnergy=grn(E0, sigma);
+
+                if(SiteEnergy>maxEnergy){
+                  maxEnergy = SiteEnergy;
+                }
+                if(SiteEnergy<minEnergy){
+                  minEnergy = SiteEnergy;
                 }
 
-                CorrCal(AsTr, i,j,k, CorRadtemp, SiteEnergy, SiteDistance, snA, &SumCor2, &SumEcor2, &trap_dist,\
+                //assert(As!=NULL);
+                //Accounting for correlation from seeds
+                CorrCal(As, i,j,k, CorRadtemp, SiteEnergy, SiteDistance,snA, &SumCor, &SumEcor, &seed_dist,\
                     SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
 
-                if(trap_dist<seed_dist && SumEcor2!=0){
-                  SumCor = SumCor2;
-                  SumEcor = SumEcor2;
+                //Accounting for correlation from traps
+                if (traps!=0){
+                  if(SeedProt==0){
+                    printf("WARNING: Effect of both seeds and traps has not been correctly accounted for SeedProt = 0!\n");
+                  }
+
+                  CorrCal(AsTr, i,j,k, CorRadtemp, SiteEnergy, SiteDistance, snA, &SumCor2, &SumEcor2, &trap_dist,\
+                      SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
+
+                  if(trap_dist<seed_dist && SumEcor2!=0){
+                    SumCor = SumCor2;
+                    SumEcor = SumEcor2;
+                  }
                 }
-              }
-              if (SumEcor==0) {
-                CorRadtemp=CorRadtemp*2;
-              }else{
-                setEnergy(getSN(snA,i,j,k),SiteEnergy+SumEcor/SumCor);
-                setInitE(getSN(snA,i,j,k),2);
-                if ( ((double)m)/((double)sites-(seeds+traps))>percent){
-                  printf("Percent Complete %ld\n",(int long)(percent*100));
-                  percent+=0.1;
+                if (SumEcor==0) {
+                  CorRadtemp=CorRadtemp*2;
+                }else{
+                  setEnergy(getSN(snA,i,j,k),SiteEnergy+SumEcor/SumCor);
+                  setInitE(getSN(snA,i,j,k),2);
+                  if ( ((double)m)/((double)sites-(seeds+traps))>percent){
+                    printf("Percent Complete %ld\n",(int long)(percent*100));
+                    percent+=0.1;
+                  }
+
+                  m++;
+
                 }
 
-                m++;
-
               }
-
             }
-					}
-				}
-				
-			}
-			
-		}
-		printf("Percent Complete %ld\n",(int long)(100));
+          }
+          
+        }
+        
+      }
+      printf("Percent Complete %ld\n",(int long)(100));
 
-		printf("Deleting Matrix As.\n");
-    if(As!=NULL) deleteMatrix(&As);
-	}
+      printf("Deleting Matrix As.\n");
+      if(As!=NULL) deleteMatrix(&As);
+    }
 
-	if ( seeds+traps >= sites/2 ) {
-		//In the case that there are more assigned energies than correlated energies
-		//Assign all energies
-    
-		matrix UnAs=newMatrix((sites-seeds-traps),3);
-		matrix As=newMatrix(seeds,3);
+    if ( seeds+traps >= sites/2 ) {
+      //In the case that there are more assigned energies than correlated energies
+      //Assign all energies
+      
+      matrix UnAs=newMatrix((sites-seeds-traps),3);
+      matrix As=newMatrix(seeds,3);
 
-		i=0;
+      i=0;
 
-		if (As == NULL ){
-			printf("ERROR Malloc returned NULL for As Matrix\n");
-		  exit(1);
-		}
-		if( UnAs == NULL) {
-			printf("WARNING Malloc returned NULL for UnAs Matrix\n");
-		}
-		
-		//pick unoccupied sites
-		
-		if(UnAs!=NULL){
-			printf("Randomly determining which sites to correlate.\n");
-			percent=0;
-			while( i<(sites-(seeds+traps))) {
-				pN = getRandomSitePos( &ii, &jj, &kk, snA);
-				//printf("Value of pN->initE %d\n",pN->initE);
-				if ( getInitE(pN) == 0 ) {         
-					if (((double)i)/((double)(sites-(seeds+traps)))>percent) {
-						printf("Percent Complete %ld\n",(long int) (percent*100));
-						percent+=0.1;
-					}
-					//Choosing sites that have not already been assigned energy
-					//For these sites the correlation function will be used to calculate their 
-					//energy. 
-					setE(UnAs,i+1,1,(double)ii);
-					setE(UnAs,i+1,2,(double)jj);
-					setE(UnAs,i+1,3,(double)kk);
-					setInitE(pN,2);
-					i++;
-				}
-			}
-			printf("Percent Complete %ld\n",(long int)(100));
-		}
+      if (As == NULL ){
+        printf("ERROR Malloc returned NULL for As Matrix\n");
+        exit(1);
+      }
+      if( UnAs == NULL) {
+        printf("WARNING Malloc returned NULL for UnAs Matrix\n");
+      }
+      
+      //pick unoccupied sites
+      
+      if(UnAs!=NULL){
+        printf("Randomly determining which sites to correlate.\n");
+        percent=0;
+        while( i<(sites-(seeds+traps))) {
+          pN = getRandomSitePos( &ii, &jj, &kk, snA);
+          //printf("Value of pN->initE %d\n",pN->initE);
+          if ( getInitE(pN) == 0 ) {         
+            if (((double)i)/((double)(sites-(seeds+traps)))>percent) {
+              printf("Percent Complete %ld\n",(long int) (percent*100));
+              percent+=0.1;
+            }
+            //Choosing sites that have not already been assigned energy
+            //For these sites the correlation function will be used to calculate their 
+            //energy. 
+            setE(UnAs,i+1,1,(double)ii);
+            setE(UnAs,i+1,2,(double)jj);
+            setE(UnAs,i+1,3,(double)kk);
+            setInitE(pN,2);
+            i++;
+          }
+        }
+        printf("Percent Complete %ld\n",(long int)(100));
+      }
 
-		printf("Calculating Energies for Seeds\n");
-		percent=0;
-		m=0;
-		for(i = 0; i < SLength; i++){
-			for(j = 0; j < SWidth; j++){
-				for(k = 0; k < SHeight; k++){
-					if( getInitE(getSN(snA,i,j,k))==0){   //if site is not considered a trap
+      printf("Calculating Energies for Seeds\n");
+      percent=0;
+      m=0;
+      for(i = 0; i < SLength; i++){
+        for(j = 0; j < SWidth; j++){
+          for(k = 0; k < SHeight; k++){
+            if( getInitE(getSN(snA,i,j,k))==0){   //if site is not considered a trap
 
-						if (((double)m)/((double)(seeds))>percent){
-							printf("Percent Complete %ld\n",(long int)(percent*100));
-							percent+=0.1;
-						}
-						if(SeedProt<2){
-							SiteEnergy = grn(E0, sigma);
-						}else if(SeedProt==2){
-							SiteEnergy = E0;
-						}
-						
-						if(i==0 && j==0 && k==0){
-							minEnergy = SiteEnergy;
-							maxEnergy = SiteEnergy;
-						}else{
-							if(SiteEnergy>maxEnergy){
-								maxEnergy = SiteEnergy;
-							}
-							if(SiteEnergy<minEnergy){
-								minEnergy = SiteEnergy;
-							}
-						}
-						setEnergy(getSN(snA,i,j,k),SiteEnergy);
-						setInitE(getSN(snA,i,j,k),1); //initialize  energy for seeds
-						setE(As,m+1,1,(double)i);
-						setE(As,m+1,2,(double)j);
-						setE(As,m+1,3,(double)k);
-						m++;
-					}
-				}
-			}
-		}
-		printf("Percent Complete %ld\n",(long int)(100));
+              if (((double)m)/((double)(seeds))>percent){
+                printf("Percent Complete %ld\n",(long int)(percent*100));
+                percent+=0.1;
+              }
+              if(SeedProt<2){
+                SiteEnergy = grn(E0, sigma);
+              }else if(SeedProt==2){
+                SiteEnergy = E0;
+              }
+              
+              if(i==0 && j==0 && k==0){
+                minEnergy = SiteEnergy;
+                maxEnergy = SiteEnergy;
+              }else{
+                if(SiteEnergy>maxEnergy){
+                  maxEnergy = SiteEnergy;
+                }
+                if(SiteEnergy<minEnergy){
+                  minEnergy = SiteEnergy;
+                }
+              }
+              setEnergy(getSN(snA,i,j,k),SiteEnergy);
+              setInitE(getSN(snA,i,j,k),1); //initialize  energy for seeds
+              setE(As,m+1,1,(double)i);
+              setE(As,m+1,2,(double)j);
+              setE(As,m+1,3,(double)k);
+              m++;
+            }
+          }
+        }
+      }
+      printf("Percent Complete %ld\n",(long int)(100));
 
-		//Here we are cycling through the sites that have not been assigned energies
-		if(UnAs!=NULL){
-			percent=0;
-			for( index=0; index<(sites-(seeds+traps));index++) {
+      //Here we are cycling through the sites that have not been assigned energies
+      if(UnAs!=NULL){
+        percent=0;
+        for( index=0; index<(sites-(seeds+traps));index++) {
 
-				SiteEnergy=grn(E0, sigma);
-				
-				if(SiteEnergy>maxEnergy){
-					maxEnergy = SiteEnergy;
-				}
-				if(SiteEnergy<minEnergy){
-					minEnergy = SiteEnergy;
-				}
-				
-				CorRadtemp=CorRad;
-				//Calculate Correlation Energies for the UnAssigned positions
-				SumEcor=0;
-				SumCor=0;
+          SiteEnergy=grn(E0, sigma);
+          
+          if(SiteEnergy>maxEnergy){
+            maxEnergy = SiteEnergy;
+          }
+          if(SiteEnergy<minEnergy){
+            minEnergy = SiteEnergy;
+          }
+          
+          CorRadtemp=CorRad;
+          //Calculate Correlation Energies for the UnAssigned positions
+          SumEcor=0;
+          SumCor=0;
 
-				if (((double)index)/((double)(sites-(seeds+traps)))>percent) {
-					printf("Percent Complete %ld\n",(long int) (percent*100));
-					percent+=0.1;
-				}	
+          if (((double)index)/((double)(sites-(seeds+traps)))>percent) {
+            printf("Percent Complete %ld\n",(long int) (percent*100));
+            percent+=0.1;
+          }	
 
-				while (SumEcor==0) {
+          while (SumEcor==0) {
 
-					i=(int)getE(UnAs,index+1,1);
-					j=(int)getE(UnAs,index+1,2);
-					k=(int)getE(UnAs,index+1,3);
+            i=(int)getE(UnAs,index+1,1);
+            j=(int)getE(UnAs,index+1,2);
+            k=(int)getE(UnAs,index+1,3);
 
-					//Accounting for correlation from seeds
-					CorrCal(As, i, j, k, CorRadtemp, SiteEnergy, SiteDistance, snA, &SumCor, &SumEcor, &seed_dist,\
-							SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
+            //Accounting for correlation from seeds
+            CorrCal(As, i, j, k, CorRadtemp, SiteEnergy, SiteDistance, snA, &SumCor, &SumEcor, &seed_dist,\
+                SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
 
-					//Accounting for correlation from traps
-					if (traps!=0) {
-						printf("Accounting for correlation from traps might be redundant\nCheck this out before you run it\n");
-						printf("functions.c file\n");
-						exit(1);
-						CorrCal(AsTr, i,j,k , CorRadtemp, SiteEnergy, SiteDistance, snA, &SumCor, &SumEcor, &trap_dist,\
-								SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
-						if(trap_dist<seed_dist && SumEcor2!=0){
-							SumEcor=SumEcor2;
-							SumCor=SumCor2;
-						}
-					}
-					if (SumEcor==0) {
-						CorRadtemp=CorRadtemp*2;
-					}else {
-						setEnergy(getSN(snA,i,j,k),SiteEnergy+SumEcor/SumCor);
-						setInitE(getSN(snA,i,j,k),2);
-					}
-				}
-			}
-			printf("Percent Complete %ld\n",(long int) (100));
+            //Accounting for correlation from traps
+            if (traps!=0) {
+              printf("Accounting for correlation from traps might be redundant\nCheck this out before you run it\n");
+              printf("functions.c file\n");
+              exit(1);
+              CorrCal(AsTr, i,j,k , CorRadtemp, SiteEnergy, SiteDistance, snA, &SumCor, &SumEcor, &trap_dist,\
+                  SeedProt, PeriodicX, PeriodicY, PeriodicZ, lambda,ratio);
+              if(trap_dist<seed_dist && SumEcor2!=0){
+                SumEcor=SumEcor2;
+                SumCor=SumCor2;
+              }
+            }
+            if (SumEcor==0) {
+              CorRadtemp=CorRadtemp*2;
+            }else {
+              setEnergy(getSN(snA,i,j,k),SiteEnergy+SumEcor/SumCor);
+              setInitE(getSN(snA,i,j,k),2);
+            }
+          }
+        }
+        printf("Percent Complete %ld\n",(long int) (100));
 
-		}
-		deleteMatrix(&As);
-		deleteMatrix(&UnAs);
-	}
+      }
+      deleteMatrix(&As);
+      deleteMatrix(&UnAs);
+    }
 
-  if(AsTr!=NULL){
-	  deleteMatrix(&AsTr);
+    if(AsTr!=NULL){
+      deleteMatrix(&AsTr);
+    }
+    //Final filter to normalize energies after applying correlation
+    if(ScaleAfterCorr==1){
+      ScaleAfterCorrFunc(maxEnergy,minEnergy, PF, &snA);
+    }
+
   }
-	//Final filter to normalize energies after applying correlation
-	if(ScaleAfterCorr==1){
-		ScaleAfterCorrFunc(maxEnergy,minEnergy, PF, &snA);
-	}
-
 	printf("Finished initializing.\n");
 	//initialize jumping possibility; that is initializing sum and p[6] inside this function
 	//For all the sitenodes
@@ -468,6 +473,46 @@ int initSite(const double electricEnergyX, const double electricEnergyY,\
 	printf("user : %d secs\n", (int)(finish-start));
 
 	return 0;
+}
+
+///////////////////////////////////////////////
+int loadFileEnergy(SNarray snA, ParameterFrame PF){
+  if(snA==NULL || PF==NULL){
+    return -1;
+  }
+
+  FILE * EnergyIn;
+  if((EnergyIn = fopen(PFget_SiteEnergyFile(PF),"r"))==NULL ){
+    printf("ERROR unable to read energies from file\n");
+    exit(1);
+  }else{
+
+    int expectedSites = PFget_Len(PF)*PFget_Wid(PF)*PFget_Hei(PF);
+    int numSites = 0;
+    fscanf(EnergyIn,"%d",&numSites);
+
+    if(numSites!=expectedSites){
+      printf("ERROR number of sites being read in(%d) is not equal to the number of sites expected as written in the Parameter.txt file (%d)\n",numSites,expectedSites);
+    }
+    // Read in as doubles will then need to be converted to ints
+    // also numbers start at 0
+    double id, jd, kd;
+    char * Buf;
+    double Energy;
+    double dBuf;
+
+    // Skip empty line
+    fscanf(EnergyIn,"%s",&Buf);
+    while(fscanf(EnergyIn,"%s %f %f %f %f %f",&Buf,&id,&jd,&kd,&Energy,&dBuf)!=EOF){
+      int i = (int) id;
+      int j = (int) jd;
+      int k = (int) kd;
+      SiteNode sn = getSN(snA,i,j,k);
+      setEnergy(sn,Energy);  
+    }
+    fclose(EnergyIn);
+  }
+  return 0;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

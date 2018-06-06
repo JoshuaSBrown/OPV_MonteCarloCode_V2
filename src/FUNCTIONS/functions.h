@@ -19,6 +19,9 @@
 int initSite(const double electricEnergyX, const double electricEnergyY,\
 		const double electricEnergyZ, double KT, SNarray snA, ParameterFrame PF);
 
+// Here we will load the site energies from a file
+int loadFileEnergy(SNarray snA, ParameterFrame PF);
+
 /* Rescale Energies after applying correlation
 */
 int ScaleAfterCorrFunc(double maxEnergy, double minEnergy, ParameterFrame PF,\
