@@ -88,6 +88,8 @@ struct _ParameterFrame{
 	double Tcv;
 	double Vcv;
 	double Tlag;
+  int LoadEnergyFlag;
+  char * EnergyFileName;
 	int EndPtFile;
 	int NumChargesTrack;
   int AvgChargeEnergyFile;
@@ -101,6 +103,9 @@ int deleteParamFrame(ParameterFrame * PF){
 		return -1;
 	}
 
+  if((*PF)->EnergyFileName!=NULL){
+    free((*PF)->EnergyFileName);
+  }
 	free(*PF);
 
 	return 0;
@@ -196,6 +201,8 @@ ParameterFrame newParamFrame(void){
 	PF->Tcv              =0;
 	PF->Vcv              =0;
 	PF->Tlag             =0;
+  PF->LoadEnergyFlag   =0;
+  PF->EnergyFileName   =NULL;
 	PF->EndPtFile        =0;
 	PF->NumChargesTrack  =0;
   PF->AvgChargeEnergyFile = 0;
@@ -1371,6 +1378,41 @@ ParameterFrame newParamFrame_File(void){
 			exit(1);
 		}			
 
+    check = match(buffer,"\nLoadSiteEnergies");
+    if(check!=-1){
+      position = (unsigned int) check;
+      intval = GrabInt(position, &buffer[0]);
+      printf("LoadSiteEnergyFile %d\n",intval);
+      PF->LoadEnergyFlag = intval;
+      if(PF->LoadEnergyFlag<0 || PF->LoadEnergyFlag>1){
+        printf("ERROR LoadEnergyFlag can only be set to 0 for off\n");
+        printf("or set to 1 for on\n");
+        exit(1);
+      }
+    }else{
+			printf("ERROR when reading file can not find LoadSiteEnergies!\n");
+			exit(1);
+    }
+
+    // Only need to load the file name if we will be loading the file
+    if(PF->LoadEnergyFlag==1){
+      check = match(buffer,"\nSiteEnergyFile");
+      if(check!=1){
+        position = (unsigned int) check;
+        char * fileName = GrabString(position,&buffer[0]);
+        printf("SiteEnergyFile %s\n",fileName);
+        PF->EnergyFileName = fileName;
+        if(PF->EnergyFileName == NULL ){
+          printf("ERROR EnergyFileName is NULL\n");
+          exit(1);
+        }
+      }else{
+        printf("ERROR when reading file unable to find EnergyFileName\n");
+        exit(1);
+      }
+    }
+
+
 		check = match(buffer,"\nEndPtFile");
 		if(check!=-1){
 			position = (unsigned int)check;
@@ -1486,6 +1528,10 @@ int ReadParameter(int * method,\
     double * DecayProb   , double * DecayTime        , double * DecayDisplacement, double * Tcv           ,\
     double * Vcv         , double * Tlag             , int * EndPtFile        ,\
 		int * NumChargesTrack, int * AvgChargeEnergyFile , int * PathFile            , int * LogFile          ){
+
+
+      printf("ReadParameter with all parameters is a depricated function call");
+      exit(1);
 
 			char *buffer = NULL;
 			int position;
@@ -1988,6 +2034,50 @@ int GrabInt(unsigned int position,char * buf ){
 	rv = (int) atoi(token);
 	return rv;
 
+}
+
+char * GrabString(unsigned int position, char * buf){
+  // First we will determine how big the string is
+  int strSize = 0;
+  int count = 0;
+  for(int i=0;i<100;++i){
+    if(isspace(buf[position+i])){
+      count++;
+      if(count==3){
+        break;
+      }
+    }
+    if(count>1 && count<3){
+      strSize++;
+    }
+  }
+
+  // Now we know the string size we will append one more 
+  // character to account for the Null terminator
+  ++strSize;
+  char * fileName = (char *) malloc(sizeof(char)*strSize);
+  if(fileName==NULL){
+		printf("ERROR unable to malloc space for string in GrabString Function\n");
+    exit(1);
+  }
+
+  // Now we will actually read the string in 
+  int j=0;
+  count = 0;
+  for(int i=0;i<100;++i){
+    if(isspace(buf[position+i])){
+      ++count;
+      if(count==3){
+        break;
+      }
+    }
+    if(count>1 && count<3){
+      fileName[j]=buf[position+i];
+      ++j;
+    }
+  }
+  fileName[j] = '\0';
+  return fileName;
 }
 
 double GrabDouble(unsigned int position,char * buf ){
@@ -2876,6 +2966,22 @@ int PFset_Tlag(ParameterFrame PF, double Tlag){
 	return 0;
 }
 
+int PFset_LoadSiteEnergies(ParameterFrame PF, int LoadEnergyFlag){
+  if(PF==NULL || LoadEnergyFlag<0 || LoadEnergyFlag>1){
+    return -1;
+  }
+  PF->LoadEnergyFlag = LoadEnergyFlag;
+  return 0;
+}
+
+int PFset_SiteEnergyFile(ParameterFrame PF, char * EnergyFileName){
+  if(PF==NULL || EnergyFileName==NULL){
+    return -1;
+  }
+  PF->EnergyFileName = EnergyFileName;
+  return 0;
+}
+
 int PFset_EndPtFile(ParameterFrame PF, int EndPtFile){
 	if(PF==NULL || EndPtFile<0 || EndPtFile>1){
 		return -1;
@@ -3619,6 +3725,20 @@ double PFget_Tlag(ParameterFrame PF){
 		return -1;
 	}
 	return PF->Tlag;
+}
+
+int PFget_LoadSiteEnergies(ParameterFrame PF){
+  if(PF==NULL){
+    return -1;
+  }
+  return PF->LoadEnergyFlag;
+}
+
+char * PFget_SiteEnergyFile(ParameterFrame PF){
+  if(PF==NULL){
+    return NULL;
+  }
+  return PF->EnergyFileName;
 }
 
 int PFget_EndPtFile(ParameterFrame PF){

@@ -218,7 +218,13 @@ Vcv 0.0
 //the voltage is cut
 Tlag 0.0 
 
-//*****File Generation Options*****
+//*****File Options*****
+
+// Choose to load the site energies from a specified file value
+// 0 - no 
+// 1 - yes
+LoadSiteEnergies 1
+SiteEnergyFile Data.xyz
 
 //Output the average energy of sites the charges are occupying
 //It will output data at every time TStep

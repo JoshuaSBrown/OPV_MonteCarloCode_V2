@@ -243,6 +243,7 @@ int main(void){
 	printf("Vcv %g\n",PFget_Vcv(PF));
 	printf("Tcv %g\n",PFget_Tcv(PF));
 
+/*
 	ReadParameter(&method,\
 			&SLength        , &SWidth        , &SHeight          ,\
 			&PeriodicX      , &PeriodicY     , &PeriodicZ        ,\
@@ -338,7 +339,7 @@ int main(void){
 	printf("RelativePerm %f\n",RelativePerm);
 	printf("Vcv %f\n",Vcv);
 	printf("Tcv %f\n",Tcv);
-
+*/
 	deleteParamFrame(&PF);
 
 	ParameterFrame PF2 = newParamFrame_File();

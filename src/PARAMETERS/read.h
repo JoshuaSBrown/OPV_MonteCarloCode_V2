@@ -18,12 +18,18 @@ int GrabInt(unsigned int position, char * buf);
 //and convert the number to a double
 double GrabDouble(unsigned int position, char * buf);
 
+// Given a string with a word followed by another word
+// which is separated with a single space will find and
+// convert the string to malloced string array
+char * GrabString(unsigned int position, char * buf);
+
 //Function Reads all the parameters from the parameter 
 //text file to read correctly the name of the variable 
 //must be placed next on a new line followed by a number
 //e.g.
 //
 //variable 33
+// WARNING this function should be made obsolete this is rediculous
 int ReadParameter(int * method,\
 		int * SLength          , int * SWidth           , int * SHeight          ,\
 		int * PeriodicX        , int * PeriodicY        , int * PeriodicZ        ,\
@@ -139,6 +145,8 @@ int PFset_DecayDisplacement(ParameterFrame PF, double DecayDisplacement);
 int PFset_Vcv(ParameterFrame PF, double Vcv);
 int PFset_Tcv(ParameterFrame PF, double Tcv);
 int PFset_Tlag(ParameterFrame PF, double Tlag);
+int PFset_LoadSiteEnergies(ParameterFrame PF, int LoadEnergyFlag);
+int PFset_SiteEnergyFile(ParameterFrame PF, char * EnergyFileName);
 int PFset_EndPtFile(ParameterFrame PF, int EndPtFile);
 int PFset_NumChargesTrack(ParameterFrame PF, int NumChargesTrack);
 int PFset_AvgChargeEnergyFile(ParameterFrame PF, int AvgChargeEnergyFile);
@@ -226,6 +234,8 @@ double PFget_DecayDisplacement(ParameterFrame PF);
 double PFget_Tcv(ParameterFrame PF);
 double PFget_Vcv(ParameterFrame PF);
 double PFget_Tlag(ParameterFrame PF);
+int PFget_LoadSiteEnergies(ParameterFrame PF);
+char * PFget_SiteEnergyFile(ParameterFrame PF);
 int PFget_EndPtFile(ParameterFrame PF);
 int PFget_NumChargesTrack(ParameterFrame PF);
 int PFget_AvgChargeEnergyFile(ParameterFrame PF);
