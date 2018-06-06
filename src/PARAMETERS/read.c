@@ -2065,19 +2065,21 @@ char * GrabString(unsigned int position, char * buf){
   int j=0;
   count = 0;
   for(int i=0;i<100;++i){
-    if(isspace(buf[position+i])){
+    if(count>1 && count<3 && !isspace(buf[position+i])){
+      fileName[j]=buf[position+i];	
+      ++j;
+    }
+
+   if(isspace(buf[position+i])){
       ++count;
       if(count==3){
         break;
       }
     }
-    if(count>1 && count<3){
-      fileName[j]=buf[position+i];
-      ++j;
-    }
-  }
+   }
   fileName[j] = '\0';
   return fileName;
+  exit(1);
 }
 
 double GrabDouble(unsigned int position,char * buf ){
