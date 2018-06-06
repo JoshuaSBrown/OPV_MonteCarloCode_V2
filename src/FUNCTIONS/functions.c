@@ -481,6 +481,7 @@ int loadFileEnergy(SNarray snA, ParameterFrame PF){
     return -1;
   }
 
+  printf("Reading from file %s\n",PFget_SiteEnergyFile(PF));
   FILE * EnergyIn;
   if((EnergyIn = fopen(PFget_SiteEnergyFile(PF),"r"))==NULL ){
     printf("ERROR unable to read energies from file\n");
@@ -497,13 +498,14 @@ int loadFileEnergy(SNarray snA, ParameterFrame PF){
     // Read in as doubles will then need to be converted to ints
     // also numbers start at 0
     double id, jd, kd;
-    char * Buf;
+    char Buf[50];
     double Energy;
     double dBuf;
 
     // Skip empty line
-    fscanf(EnergyIn,"%s",&Buf);
-    while(fscanf(EnergyIn,"%s %f %f %f %f %f",&Buf,&id,&jd,&kd,&Energy,&dBuf)!=EOF){
+    while(fscanf(EnergyIn,"%s %lf %lf %lf %lf %lf",Buf,&id,&jd,&kd,&Energy,&dBuf)!=EOF){
+
+      //printf("%g %g %g %g\n",id,jd,kd,Energy); 
       int i = (int) id;
       int j = (int) jd;
       int k = (int) kd;
