@@ -2229,7 +2229,7 @@ ChargeArray initCharget0_Thermal( const_SNarray snA,\
 		site = getSN(snA,i,j,k);
 		ran = rand();
 		setDwel(ch,-log(ran/RAND_MAX)/(getsum(site)));
-		if isinf(getDwel(ch)) {
+		if (isinf(getDwel(ch))) {
 			printf("Value of getsum(site) %g\n",getsum(site));
 			printf("ERROR Dweltime is infinite!\n");
 			printf("You probably failed to call initsite. This means that getsum(site)\n");
@@ -2457,7 +2457,7 @@ ChargeArray initCharget0( matrix Sequence, const_SNarray snA,const int Ntot,cons
 		do{ran = rand();}while(ran == 0 || ran == RAND_MAX);
 		setDwel(ch,-log(ran/RAND_MAX)/(getsum(site)));
 
-		if isinf(getDwel(ch)) {
+		if(isinf(getDwel(ch))) {
 			printf("Value of getsum(site) %g\n",getsum(site));
 			printf("ERROR Dweltime is infinite!\n");
 			printf("You probably failed to call initsite. This means that getsum(site)\n");
@@ -2653,7 +2653,7 @@ int initCharge(int nca,long int n, ChargeArray *chA, matrix Sequence, SNarray  s
 		do{ran = rand();}while(ran == 0 || ran == RAND_MAX);
 		setDwel(ch,-log(ran/RAND_MAX)/(getsum(site)));
 
-		if isinf(getDwel(ch)) {
+		if (isinf(getDwel(ch))) {
 			printf("Value of setsum %g\n",getsum(site));
 			printf("ERROR Dweltime is infinite!\n");
 			printf("You probably failed to call initsite. This means that getsum(site)\n");
